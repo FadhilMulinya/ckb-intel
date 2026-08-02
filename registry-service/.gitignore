@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# environment — never commit real credentials/URIs; use .env.example
+.env
+.env.local
+.env.*.local
+
+# build output
+dist/
+*.tsbuildinfo
+
+# logs
+*.log
+npm-debug.log*
+
+# editor/OS noise
+.vscode/
+.idea/
+.DS_Store
