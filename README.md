@@ -158,6 +158,7 @@ There is deliberately no single "ingest and classify" endpoint that does both in
 - **Each service can be developed, tested, and deployed independently.** Every test in this repo (Node's smoke tests, Python's offline test suite, and the full live loop) passes with the other service never running. That's only true because nothing here requires them to talk synchronously in one request.
 
 The two-call pattern (`GET /classify/{address}` on Python, then `GET /wallets/{address}` on Node to read the stored result) costs one extra HTTP round trip from a caller's perspective, in exchange for keeping both services independently correct, independently deployable, and independently debuggable. If a single combined call is ever worth adding, the right shape is a thin orchestration wrapper on top of the two existing endpoints - not new logic duplicated into either service.
+![alt text](image.png)
 
 ## 7. Data provenance (real data only)
 
