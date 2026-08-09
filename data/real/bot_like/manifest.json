@@ -1188,5 +1188,54 @@
     "label_source": "bot_like",
     "tx_count": 2247,
     "is_special": false
+  },
+  {
+    "index": 170,
+    "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwfjnz2axuppeu5r68084wjm6a0xtxfy9cj4a5sa",
+    "label_source": "bot_like",
+    "tx_count": 1335,
+    "is_special": false
+  },
+  {
+    "index": 171,
+    "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0vqkp4e093a5e6a2t3k08excpc3k74d0qpe0lt0",
+    "label_source": "bot_like",
+    "tx_count": 1657,
+    "is_special": false
+  },
+  {
+    "index": 172,
+    "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg6j932zy4ztkzmtpye2uhzsju5npw795s89dznx",
+    "label_source": "bot_like",
+    "tx_count": 1979,
+    "is_special": false
+  },
+  {
+    "index": 173,
+    "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwdr5q4rwruykhehd8hn6gxh892wtmdprcw3h3ce",
+    "label_source": "bot_like",
+    "tx_count": 45401,
+    "is_special": false
+  },
+  {
+    "index": 174,
+    "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvmmkpv65ayqg2c6ezrf2644lcfqe4vjng0qv493",
+    "label_source": "bot_like",
+    "tx_count": 1158,
+    "is_special": false
+  },
+  {
+    "index": 175,
+    "address": "ckb1qrgqep8saj8agswr30pls73hra28ry8jlnlc3ejzh3dl2ju7xxpjxqgqq9tj624ruuttnrcv4f5gxv5v3n4mm4mx65jvwena",
+    "label_source": "bot_like",
+    "tx_count": 1150,
+    "is_special": false
+  },
+  {
+    "index": 176,
+    "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqd5zvdgz64ygu94j8cwvcguc6wz5mhaknc3drq98",
+    "label_source": "bot_like",
+    "tx_count": 1054,
+    "is_special": false
   }
 ]
