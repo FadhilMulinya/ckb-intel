@@ -4,6 +4,9 @@
 **Program:** Nervos Spark Program grant <br>
 **Repo:** https://github.com/FadhilMulinya/ckb-intel <br>
 **Report date:** August 2, 2026 <br>
+**Revised:** August 10, 2026 - corrects §2.2's "manually verified / gold
+standard" labeling claim, adds §2.4 (label sensitivity analysis) and the
+sampling limitations in §2.3, per the committee's review response <br>
 **Author:** Fadhil Mulinya <br>
 
 ---
@@ -48,27 +51,102 @@ set, not the 264 on-disk count.
 
 ### 2.2 Labeling methodology
 
-Labels were initially generated via a heuristic - an `is_special` flag
-combined with lifetime transaction count - then **manually verified
-across the full trained dataset** (all 251 addresses): each label was
-individually reviewed against the wallet's actual transaction history
-(timing pattern, amounts, counterparty behavior) rather than accepted
-on the heuristic alone.
+**Correction to an earlier version of this report:** this section
+previously stated that all labels were "manually verified" against a
+"gold standard." That description is not accurate, and is inconsistent
+with `train_eval.py`, the classifier README, and `eval_results.json`,
+all of which correctly describe the labels as heuristic proxy labels
+rather than verified ground truth. The text below replaces the
+earlier, inaccurate description.
 
-The manual review found zero disagreements with the heuristic labels -
-every address's heuristic label matched independent manual judgment.
+Labels are generated via a heuristic - a lifetime-transaction-count
+threshold (1-50 lifetime transactions -> `human_like`; ≥1,000 -> `bot_like`;
+addresses in between are excluded). These thresholds are initial
+proxy-label boundaries, not derived from a formal CKB-specific study,
+known-identity dataset, or established research source; see §4 for the
+sensitivity analysis that tests how robust the resulting labels and
+model are to changes in them.
 
-This satisfies the committee's "gold standard" requirement directly:
-labels are not heuristic-only, but heuristic-generated and individually
-human-verified, with the heuristic confirmed accurate across the full
-labeled set rather than sampled.
+Two people (the author and a second contributor) separately inspected
+the trained addresses' transaction histories (timing pattern, amounts,
+counterparty behavior) alongside the heuristic label, as a supporting
+sanity check rather than a formal, blind, independent annotation
+study - the heuristic label was visible during review, no formal
+disagreement-resolution procedure was applied, and no inter-annotator
+agreement statistic was calculated. No disagreements were found between
+the heuristic label and reviewer judgment, but the absence of a
+disagreement in this informal review is not equivalent to verified
+ground truth, and is not being represented as such.
 
-### 2.3 Known limitation
+**The accurate framing:** labels are heuristic proxy labels, individually
+spot-checked by two reviewers with zero recorded disagreements, not a
+gold-standard verified dataset. The 95.24% held-out accuracy reported in
+§4.2 is accuracy against these heuristic proxy labels, not a verified
+accuracy for identifying human vs. automated wallet ownership.
+
+### 2.3 Known limitations
 
 Publicly discoverable CKB wallets skew toward exchange/service wallets
 rather than representative individual users, which constrains the
 diversity of the human-like class. This is a data-availability
 constraint noted from the start of the project, not a methodology gap.
+
+Two additional sampling limitations, surfaced by the sensitivity
+analysis in §4:
+
+- **Transaction-window asymmetry.** `human_like` wallets (≤50 lifetime
+  tx) have their complete history captured within the 300-tx return cap
+  used at collection time. `bot_like` wallets (≥1,000 lifetime tx) only
+  ever have up to 300 transactions represented out of a much larger
+  history, so timing/interval features for the bot class are computed
+  from a partial window, not full lifetime behavior.
+- **Label decay over time.** Because lifetime transaction count only
+  grows, the `human_like`/excluded boundary is not stable even at fixed
+  thresholds. Re-deriving labels from freshly-fetched transaction counts
+  shows roughly 5.5% of the trained `human_like` class (5 of 91) has
+  already drifted out of range since original collection (none moved to
+  `bot_like` - that class shows zero drift at any threshold ≥1,000,
+  since an address that already cleared it can't fall back below it).
+  The "91 human-like addresses" figure in §2.1 should be read as a
+  snapshot as of the original collection date, not a static property of
+  those addresses going forward.
+
+### 2.4 Label sensitivity / robustness analysis
+
+To test how robust the resulting labels and model are to the threshold
+choices in §2.2, all 9 combinations of `bot_min_tx` in {500, 1,000,
+2,000} x `human_max_tx` in {20, 50, 100} were re-run through the same
+model-selection/evaluation code used in §4, against the existing
+264-address committed pool. Random Forest was selected in every case;
+held-out accuracy stayed in the 95.2%-100% range throughout.
+
+| bot_min_tx | human_max_tx | n_bot | n_human | held-out acc | changed vs. current |
+|---|---|---|---|---|---|
+| 500 | 20 | 160 | 66 | 98.3% | 25 |
+| 500 | 50 | 160 | 86 | 95.2% | 5 |
+| 500 | 100 | 160 | 91 | 95.2% | 0 |
+| 1000 | 20 | 160 | 66 | 98.3% | 25 |
+| **1000** | **50 (current)** | **160** | **86** | **95.2%** | **5** |
+| 1000 | 100 | 160 | 91 | 95.2% | 0 |
+| 2000 | 20 | 90 | 66 | 100% | 95 |
+| 2000 | 50 | 90 | 86 | 95.5% | 75 |
+| 2000 | 100 | 90 | 91 | 95.7% | 70 |
+
+**Findings:**
+
+- Raising `bot_min_tx` to 2,000 is a meaningful test: only 90 of the
+  original 160 `bot_like` addresses (56%) still clear a doubled
+  threshold.
+- The `bot_min_tx = 500` rows are **not** evidence of robustness to a
+  looser bot threshold. This analysis can only relabel addresses
+  already in the 264-address committed pool, and every currently
+  labeled `bot_like` address already has a transaction count ≥1,000 by
+  construction, so testing a lower threshold against this same pool
+  necessarily returns the identical 160 addresses. It can't reveal
+  whether addresses with a true lifetime count in [500, 999) exist in
+  the wider population, since such addresses would have landed in the
+  excluded gap and never been fetched. This sweep is informative for
+  raising thresholds above the originals, not lowering them.
 
 ---
 
@@ -210,7 +288,8 @@ Per the committee's July 2026 ruling:
 |---|---|
 | Synthetic/bot-simulator data removed | Complete |
 | Real mainnet-only data pipeline | Complete |
-| Gold-standard labeled dataset (WIP) | Complete - heuristic labels, manually verified across full 251-address trained set, zero disagreements (see §2.2) |
+| Gold-standard labeled dataset | Not complete - labels are heuristic proxy labels, spot-checked by two reviewers with zero recorded disagreements, but not a formally verified gold-standard dataset (see §2.2) |
+| Label sensitivity / robustness analysis | Complete - 9 threshold combinations tested, Random Forest selected in every case, held-out accuracy in the 95.2%-100% range (see §2.4) |
 | Documented behavioral dimensions & weights | Complete (see §5) |
 | Model methodology clarification (RF, not NN) | Documented (see §4.1) |
 
