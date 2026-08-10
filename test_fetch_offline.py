@@ -44,6 +44,7 @@ BLOCK_TX_RESP = {
 ADDR_BOT_RESP = {"data": {"attributes": {"transactions_count": "5000", "is_special": "false"}}}
 ADDR_HUMAN_RESP = {"data": {"attributes": {"transactions_count": "12", "is_special": "false"}}}
 ADDR_AMBIGUOUS_RESP = {"data": {"attributes": {"transactions_count": "300", "is_special": "false"}}}
+ADDR_SPECIAL_LOW_TX_RESP = {"data": {"attributes": {"transactions_count": "40", "is_special": "true"}}}
 
 ADDR_TX_PAGE1 = {
     "data": [
@@ -67,6 +68,8 @@ def fake_api_get(path, params=None, **kwargs):
         return ADDR_HUMAN_RESP
     if path == "/addresses/ckb1addrMINER":
         return ADDR_AMBIGUOUS_RESP
+    if path == "/addresses/ckb1addrSPECIALLOWTX":
+        return ADDR_SPECIAL_LOW_TX_RESP
     if path.startswith("/address_transactions/"):
         page = (params or {}).get("page", 1)
         return ADDR_TX_PAGE1 if page == 1 else ADDR_TX_PAGE_EMPTY
@@ -79,10 +82,14 @@ def run():
         assert addrs == {"ckb1addrBOT", "ckb1addrHUMAN"}, f"unexpected discovery set: {addrs}"
         print("PASS: discover_addresses excludes cellbase-only addresses ->", addrs)
 
-        assert frd.classify_address("ckb1addrBOT", human_max_tx=50, bot_min_tx=1000) == ("bot_like", 5000)
-        assert frd.classify_address("ckb1addrHUMAN", human_max_tx=50, bot_min_tx=1000) == ("human_like", 12)
-        assert frd.classify_address("ckb1addrMINER", human_max_tx=50, bot_min_tx=1000) == (None, 300)
-        print("PASS: classify_address buckets correctly on tx-count/is_special only, and returns tx_count")
+        assert frd.classify_address("ckb1addrBOT", human_max_tx=50, bot_min_tx=1000) == ("bot_like", 5000, False)
+        assert frd.classify_address("ckb1addrHUMAN", human_max_tx=50, bot_min_tx=1000) == ("human_like", 12, False)
+        assert frd.classify_address("ckb1addrMINER", human_max_tx=50, bot_min_tx=1000) == (None, 300, False)
+        print("PASS: classify_address buckets correctly on tx-count only, and returns (bucket, tx_count, is_special)")
+
+        assert frd.classify_address("ckb1addrSPECIALLOWTX", human_max_tx=50, bot_min_tx=1000) == (None, 40, True), \
+            "is_special=true with tx_count below bot_min_tx must NOT be bucketed bot_like"
+        print("PASS: is_special=true with low tx_count does NOT grant bot_like (the actual fix)")
 
         txs = frd.fetch_address_transactions("ckb1addrHUMAN", max_tx=300, page_size=50)
         assert len(txs) == 1

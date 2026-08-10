@@ -20,12 +20,6 @@ class ApiError(Exception):
 
 
 def api_get(path, params=None, min_interval=0.25, max_retries=6, timeout=20, max_delay=30):
-    """GET against the Explorer API with polite rate limiting and backoff.
-
-    min_interval: minimum seconds between calls (self-imposed politeness).
-    Retries on 429/5xx with exponential backoff; raises on 4xx (other than
-    429) since those indicate a bad request, not a transient failure.
-    """
     url = BASE_URL + path
     if params:
         qs = "&".join(f"{k}={v}" for k, v in params.items())
@@ -91,7 +85,7 @@ def discover_addresses(start_block, end_block, page_size=40):
 def classify_address(address, human_max_tx=50, bot_min_tx=1000):
     data = api_get(f"/addresses/{address}")
     if not data or not data.get("data"):
-        return None, 0
+        return None, 0, False
     record = data["data"]
     records = record if isinstance(record, list) else [record]
     tx_count = 0
@@ -101,12 +95,11 @@ def classify_address(address, human_max_tx=50, bot_min_tx=1000):
         tx_count += int(attrs.get("transactions_count") or 0)
         is_special = is_special or (str(attrs.get("is_special", "false")).lower() == "true")
 
-    if is_special or tx_count >= bot_min_tx:
-        return "bot_like", tx_count
+    if tx_count >= bot_min_tx:
+        return "bot_like", tx_count, is_special
     if 1 <= tx_count <= human_max_tx and not is_special:
-        return "human_like", tx_count
-    return None, tx_count  # ambiguous middle ground -- don't guess, just skip
-
+        return "human_like", tx_count, is_special
+    return None, tx_count, is_special  
 
 def fetch_address_transactions(address, max_tx=300, page_size=50):
     out = []
@@ -152,10 +145,10 @@ def load_checkpoint(out_dir):
     else:
         state = json.load(open(path))
     state.setdefault("oldest_scanned_block", None)  
-    state.setdefault("discovered", [])              
+    state.setdefault("discovered", [])             
     state.setdefault("classified", {})               
-    state.setdefault("fetched", {"bot_like": [], "human_like": []}) 
-    state.setdefault("failed", {})                  
+    state.setdefault("fetched", {"bot_like": [], "human_like": []})  
+    state.setdefault("failed", {})                   
     return state
 
 
@@ -164,7 +157,35 @@ def save_checkpoint(out_dir, state):
     tmp_path = checkpoint_path(out_dir) + ".tmp"
     with open(tmp_path, "w") as f:
         json.dump(state, f)
-    os.replace(tmp_path, checkpoint_path(out_dir)) 
+    os.replace(tmp_path, checkpoint_path(out_dir))  
+
+
+def get_git_commit_hash():
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True, timeout=5,
+            cwd=os.path.dirname(os.path.abspath(__file__)),
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+    except Exception:
+        pass
+    return None
+
+
+def log_run_provenance(out_dir, args, scan_start, scan_end):
+    import datetime
+    record = {
+        "timestamp_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "args": vars(args),
+        "block_range_scanned": {"start": scan_start, "end": scan_end + 1},
+        "git_commit_hash": get_git_commit_hash(),
+    }
+    log_path = os.path.join(out_dir, "run_log.jsonl")
+    os.makedirs(out_dir, exist_ok=True)
+    with open(log_path, "a") as f:
+        f.write(json.dumps(record) + "\n")
 
 
 def entry_bucket(entry):
@@ -176,7 +197,13 @@ def entry_bucket(entry):
 def entry_tx_count(entry):
     if isinstance(entry, dict):
         return entry.get("tx_count", 0)
-    return 0  # unknown for old-format entries -- treated as "not huge"
+    return 0  
+
+
+def entry_is_special(entry):
+    if isinstance(entry, dict):
+        return entry.get("is_special", None)  
+    return None
 
 
 def main():
@@ -198,7 +225,7 @@ def main():
     classified = state["classified"]
     fetched = state["fetched"]
 
-    # --- 1. discover: advance the scan window further into the past each run ---
+   
     if state["oldest_scanned_block"] is None:
         tip = get_tip_block_number()
         scan_start, scan_end = tip, tip - args.n_blocks
@@ -209,6 +236,7 @@ def main():
 
     print(f"scanning blocks {scan_start} down to {scan_end + 1} "
           f"({scan_start - scan_end} blocks) for candidate addresses...", file=sys.stderr)
+    log_run_provenance(args.out_dir, args, scan_start, scan_end)
     new_addrs = discover_addresses(scan_start, scan_end, page_size=args.block_page_size)
     discovered |= new_addrs
     state["discovered"] = sorted(discovered)
@@ -216,13 +244,13 @@ def main():
     save_checkpoint(args.out_dir, state)
     print(f"found {len(new_addrs)} new addresses this run ({len(discovered)} accumulated total)", file=sys.stderr)
 
-    # --- 2. classify: only addresses not already cached from a prior run ---
+    
     to_classify = [a for a in discovered if a not in classified]
     print(f"classifying {len(to_classify)} not-yet-classified addresses "
           f"({len(classified)} already cached)...", file=sys.stderr)
     for i, addr in enumerate(to_classify):
-        bucket, tx_count = classify_address(addr, human_max_tx=args.human_max_tx, bot_min_tx=args.bot_min_tx)
-        classified[addr] = {"bucket": bucket, "tx_count": tx_count}
+        bucket, tx_count, is_special = classify_address(addr, human_max_tx=args.human_max_tx, bot_min_tx=args.bot_min_tx)
+        classified[addr] = {"bucket": bucket, "tx_count": tx_count, "is_special": is_special}
         if i % 25 == 0:
             state["classified"] = classified
             save_checkpoint(args.out_dir, state)
@@ -233,7 +261,7 @@ def main():
     state["classified"] = classified
     save_checkpoint(args.out_dir, state)
 
-    # --- 3. fetch tx history: top up each pool to --max-per-pool, skipping already-fetched/failed addresses ---
+    
     pool_candidates = {"bot_like": [], "human_like": []}
     for addr, entry in classified.items():
         bucket = entry_bucket(entry)
@@ -275,9 +303,16 @@ def main():
             fetched[bucket].append(addr)
             got += 1
             state["fetched"] = fetched
-            save_checkpoint(args.out_dir, state)  # checkpoint after EVERY address -- a crash loses at most one
+            save_checkpoint(args.out_dir, state) 
 
-        manifest = [{"index": i, "address": a, "label_source": bucket} for i, a in enumerate(fetched[bucket])]
+        manifest = [
+            {
+                "index": i, "address": a, "label_source": bucket,
+                "tx_count": entry_tx_count(classified.get(a)),
+                "is_special": entry_is_special(classified.get(a)),
+            }
+            for i, a in enumerate(fetched[bucket])
+        ]
         with open(os.path.join(bucket_dir, "manifest.json"), "w") as f:
             json.dump(manifest, f, indent=2)
         print(f"  '{bucket}' now has {len(fetched[bucket])}/{args.max_per_pool} addresses fetched", file=sys.stderr)
