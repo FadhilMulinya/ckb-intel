@@ -1,0 +1,34 @@
+{
+  "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2ul0rt55hnp2e2nzzhfkep4xtc3l88rxqes83vq",
+  "status": "complete",
+  "collected_at_utc": "2026-08-26T10:24:55.107860+00:00",
+  "window_start_epoch": 1724371200,
+  "window_end_epoch": 1787443200,
+  "window_start_utc": "2024-08-23T00:00:00+00:00",
+  "window_end_utc": "2026-08-23T00:00:00+00:00",
+  "lookback_days": 730,
+  "max_tx_listed": 0,
+  "max_tx_details": 50000,
+  "deepest_block": {
+    "block_number": 13954461,
+    "block_timestamp_epoch": 1725548760,
+    "block_timestamp_utc": "2024-09-05T15:06:00+00:00",
+    "tx_hash": "0xf92da2be97164397cdd7ae29d6ab279591719e213998419f672cb2c472d88531"
+  },
+  "shallowest_block": {
+    "block_number": 20227929,
+    "block_timestamp_epoch": 1787372033,
+    "block_timestamp_utc": "2026-08-22T04:13:53+00:00",
+    "tx_hash": "0x500ea3aca35eea65859c2abd70809f9b72d3d2a715a4f789dadff97363605d89"
+  },
+  "n_tx_in_window": 863,
+  "n_tx_detail_fetched": 863,
+  "n_tx_detail_reused_from_cache": 513,
+  "n_tx_detail_newly_fetched": 350,
+  "n_tx_detail_remaining": 0,
+  "n_tx_detail_remaining_is_exact": true,
+  "fetch_order": "sequential",
+  "listing_truncated": false,
+  "detail_sampled": false,
+  "n_dao_events": 0
+}
