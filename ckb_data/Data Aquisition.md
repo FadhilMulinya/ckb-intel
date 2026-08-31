@@ -309,6 +309,12 @@ report/labeling rather than deleting it.
 
 ## Database schema reference
 
+> **Phase 1/2 migration:** the normalized transaction/Cell schema documented in
+> [`CKB_NATIVE_SCHEMA.md`](CKB_NATIVE_SCHEMA.md) is now the source of truth.
+> The `edges` table below is retained only as a historical artifact; new
+> ingestion does not write it and pairwise value attribution is explicitly
+> `NOT_ESTABLISHED`.
+
 For anyone querying `ckb_explorer.sqlite` directly:
 
 | Table | Key columns | Notes |
@@ -317,7 +323,6 @@ For anyone querying `ckb_explorer.sqlite` directly:
 | `raw_addresses` | `address` (PK), `lock_hash`, `raw_json`, `fetched_at` | Cached address-detail API response; `lock_hash` is the real molecule/blake2b hash. |
 | `address_tx_seen` | `address`, `tx_hash`, `block_timestamp` (composite PK) | Every transaction observed for a wallet within its collected window. |
 | `raw_transactions` | `tx_hash` (PK), `raw_json`, `fetched_at` | Full transaction detail, cached permanently (content-addressed, immutable). |
-| `edges` | `from_lock_hash`, `to_lock_hash`, `value_shannon`, `tx_hash` (composite PK) | **Actually address-keyed**, not hash-keyed — see Design decisions above. |
+| `edges` | `from_lock_hash`, `to_lock_hash`, `value_shannon`, `tx_hash` (composite PK) | **LEGACY/DISABLED.** Preserved for historical compatibility; not a source of truth. |
 | `wallets` | `lock_hash` (PK), `address`, `lock_code_hash`, `lock_hash_type` | One row per unique lock script observed. |
 | `dao_events` | `address`, `event_type`, `tx_hash` | Nervos DAO deposit/withdrawal events, best-effort (this endpoint 404s for most wallets, which just means no DAO activity — not a fetch failure). |
-
