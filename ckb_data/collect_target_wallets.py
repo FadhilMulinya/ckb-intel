@@ -12,6 +12,19 @@ from typing import Optional
 
 try:
     import ckb_explorer_pull as crawler
+    from ckb_native import (
+        ObservationContract,
+        STATUS_COMPLETE,
+        STATUS_FAILED,
+        STATUS_INCOMPLETE,
+        STATUS_MISSING,
+        STATUS_NOT_APPLICABLE,
+        normalize_transaction,
+        persist_observation,
+        ratio,
+    )
+    from ckb_clients import resolve_observation_boundaries
+    from input_resolver import resolve_transaction_inputs
 except ImportError:
     print(
         "Could not import ckb_explorer_pull.py -- it must be in the same "
@@ -194,9 +207,10 @@ def write_provenance(data_dir: Path, address: str, window_start_s: int, window_e
 
 def clean_slate(conn: sqlite3.Connection, address: str) -> None:
     conn.execute("DELETE FROM address_tx_seen WHERE address = ?", (address,))
-    conn.execute("DELETE FROM edges WHERE from_lock_hash = ? OR to_lock_hash = ?", (address, address))
-    conn.execute("DELETE FROM dao_events WHERE address = ?", (address,))
-    conn.execute("DELETE FROM raw_addresses WHERE address = ?", (address,))
+    # `edges` is a preserved legacy artifact. Never mutate it from the native
+    # collector; it is not a source of truth and new edge writes are disabled.
+    # Raw address/transaction responses and prior DAO evidence are append-only
+    # evidence for migration purposes and are deliberately preserved.
 
 
 def collect_windowed_transactions(address: str, window_start_s: int, window_end_s: int,
@@ -275,15 +289,15 @@ def fetch_detail(tx_hash: str) -> tuple[str, Optional[dict]]:
     return tx_hash, crawler.fetch_transaction_detail(tx_hash)
 
 
-def store_detail(store, tx_hash: str, detail: Optional[dict]) -> None:
+def store_detail(store, tx_hash: str, detail: Optional[dict],
+                 target_lock_hash: Optional[str] = None) -> Optional[dict]:
     if not detail:
-        return
+        return None
     store.save_transaction(tx_hash, detail)  
-    for edge in crawler.resolve_transaction_to_edges(detail):
-        store.save_edge(
-            edge["from_lock_hash"], edge["to_lock_hash"], edge["value_shannon"],
-            edge.get("capacity_bytes"), edge.get("block_timestamp"), edge["tx_hash"],
-        )
+    tx = normalize_transaction(detail, target_lock_hash=target_lock_hash)
+    resolve_transaction_inputs(store.conn, tx)
+    crawler.persist_transaction(store.conn, tx)
+    return tx
 
 
 def pull_address_history(store, address: str, window_start_s: int, window_end_s: int,
@@ -292,12 +306,12 @@ def pull_address_history(store, address: str, window_start_s: int, window_end_s:
                           fetch_order: str = "sequential") -> tuple[dict, list[dict]]:
     conn = store.conn
 
+    lock_hash = None
     if needs_full_repull:
         clean_slate(conn, address)
 
     if needs_full_repull:
         addr_detail = crawler.fetch_address_detail(address)
-        lock_hash = None
         if addr_detail:
             item = addr_detail.get("data")
             if isinstance(item, list):
@@ -318,6 +332,11 @@ def pull_address_history(store, address: str, window_start_s: int, window_end_s:
                             lock_code_hash = COALESCE(wallets.lock_code_hash, excluded.lock_code_hash),
                             lock_hash_type = COALESCE(wallets.lock_hash_type, excluded.lock_hash_type)
                     """, (lock_hash, address, code_hash, hash_type))
+    else:
+        cached_address = conn.execute(
+            "SELECT lock_hash FROM raw_addresses WHERE address = ?", (address,)
+        ).fetchone()
+        lock_hash = cached_address[0] if cached_address else None
 
     
     tx_items, listing_truncated = collect_windowed_transactions(
@@ -359,7 +378,15 @@ def pull_address_history(store, address: str, window_start_s: int, window_end_s:
             futures = [pool.submit(fetch_detail, h) for h in tx_hashes]
             for f in as_completed(futures):
                 tx_hash, detail = f.result()  
-                store_detail(store, tx_hash, detail)  
+                store_detail(store, tx_hash, detail, target_lock_hash=lock_hash)
+
+    # Re-normalize cache hits too. This makes migration incremental and avoids
+    # any need to re-fetch details already preserved in raw_transactions.
+    for tx_hash in already_cached:
+        row = conn.execute("SELECT raw_json FROM raw_transactions WHERE tx_hash = ?", (tx_hash,)).fetchone()
+        if row:
+            cached_tx = normalize_transaction(json.loads(row[0]), target_lock_hash=lock_hash)
+            crawler.persist_transaction(conn, cached_tx)
 
     
     n_dao = 0
@@ -386,6 +413,51 @@ def pull_address_history(store, address: str, window_start_s: int, window_end_s:
         "detail_sampled": detail_truncated,
         "n_dao_events": n_dao,
     }
+
+    normalized = []
+    for item in tx_items:
+        tx_hash = _tx_hash_of(item)
+        row = conn.execute(
+            "SELECT raw_json FROM raw_transactions WHERE tx_hash = ?", (tx_hash,)
+        ).fetchone() if tx_hash else None
+        if row:
+            tx = normalize_transaction(json.loads(row[0]), target_lock_hash=lock_hash)
+            resolve_transaction_inputs(conn, tx)
+            crawler.persist_transaction(conn, tx)
+            normalized.append(tx)
+
+    total_inputs = sum(len(tx["inputs"]) for tx in normalized)
+    resolved_inputs = sum(
+        item["resolution_status"] == STATUS_COMPLETE
+        for tx in normalized for item in tx["inputs"]
+    )
+    input_ratio = ratio(resolved_inputs, total_inputs)
+    input_complete = (resolved_inputs == total_inputs) if total_inputs else None
+    observation = ObservationContract(
+        address=address,
+        canonical_lock_identifier=lock_hash or f"unresolved-address:{address}",
+        window_start_timestamp=window_start_s,
+        window_end_timestamp=window_end_s,
+        # Explorer listing items identify observed transaction blocks, not the
+        # exact chain blocks spanning arbitrary timestamps. Leave true contract
+        # boundary blocks missing until resolved from Explorer/RPC.
+        **resolve_observation_boundaries(window_start_s, window_end_s),
+        transactions_observed=len(tx_items),
+        lifetime_transaction_count_at_cutoff=None,
+        listing_status=STATUS_INCOMPLETE if listing_truncated else STATUS_COMPLETE,
+        detail_status=STATUS_INCOMPLETE if detail_truncated or len(normalized) < len(tx_items) else STATUS_COMPLETE,
+        input_resolution_status=(STATUS_NOT_APPLICABLE if total_inputs == 0
+                                 else STATUS_COMPLETE if input_complete
+                                 else STATUS_INCOMPLETE),
+        listing_complete=not listing_truncated,
+        detail_complete=not detail_truncated and len(normalized) == len(tx_items),
+        input_resolution_complete=input_complete,
+        history_censored=listing_truncated or detail_truncated,
+        listing_coverage_ratio=1.0 if not listing_truncated else None,
+        detail_coverage_ratio=ratio(len(normalized), len(tx_items)),
+        input_resolution_ratio=input_ratio,
+    )
+    persist_observation(conn, observation, normalized)
     return summary, tx_items
 
 
@@ -399,9 +471,8 @@ def main():
     p.add_argument("--test-address", type=str, default=None,
                     help="Pull just this one address, print the summary, and exit -- "
                          "use this to sanity-check window/sampling settings before a full run")
-    p.add_argument("--lookback-days", type=int, default=730,
-                    help="How far back from --as-of to pull. Default: 730 (~2 years). "
-                         "See module docstring for why this is recommended over 5 years / genesis.")
+    p.add_argument("--lookback-days", type=int, default=30,
+                    help="Fixed observation contract. Must be 30 (default: 30).")
     p.add_argument("--as-of", type=str, default=None,
                     help="Window end date, YYYY-MM-DD (default: today, UTC). Fix this "
                          "explicitly across a multi-day/resumed run -- otherwise 'today' "
@@ -430,6 +501,9 @@ def main():
                          "already matches this exact window (default: skip those -- this is "
                          "what makes an interrupted run resumable without redoing work)")
     args = p.parse_args()
+
+    if args.lookback_days != 30:
+        raise SystemExit("Phase 1 observation contract requires --lookback-days 30")
 
     as_of = dt.datetime.strptime(args.as_of, "%Y-%m-%d") if args.as_of else dt.datetime.utcnow()
     as_of = as_of.replace(tzinfo=dt.timezone.utc)
@@ -512,6 +586,22 @@ def main():
                   f"{summary.get('n_tx_detail_newly_fetched', summary['n_tx_detail_fetched'])} newly fetched"
                   f"{flag_str}")
         except Exception as e:
+            failed_observation = ObservationContract(
+                address=addr,
+                canonical_lock_identifier=f"unresolved-address:{addr}",
+                window_start_timestamp=window_start_s,
+                window_end_timestamp=window_end_s,
+                listing_status=STATUS_FAILED,
+                detail_status=STATUS_MISSING,
+                input_resolution_status=STATUS_NOT_APPLICABLE,
+                listing_complete=False,
+                detail_complete=None,
+                input_resolution_complete=None,
+                history_censored=True,
+            )
+            persist_observation(store.conn, failed_observation, [])
+            store.save_collection_receipt("wallet_observation", addr, STATUS_FAILED,
+                                          error=str(e))
             n_failed.append((addr, str(e)))
             print(f"  [{i}/{len(addresses)}] {addr} -- FAILED: {e}", file=sys.stderr)
         finally:
