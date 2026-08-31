@@ -15,8 +15,14 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from ckb_native import (
+    install_schema,
+    normalize_transaction,
+    persist_transaction,
+)
 
-BASE_URL = "https://mainnet-api.explorer.nervos.org/api/v1"
+
+BASE_URL = os.getenv("EXPLORER_API_URL", "https://mainnet-api.explorer.nervos.org/api/v1")
 HEADERS = {
     "Accept": "application/vnd.api+json",
     "Content-Type": "application/vnd.api+json",
@@ -166,6 +172,7 @@ class Store:
     def __init__(self, db_path: Path):
         self.conn = sqlite3.connect(str(db_path))
         self.conn.executescript(SCHEMA)
+        install_schema(self.conn)
         self._migrate()
         self.conn.commit()
 
@@ -189,20 +196,40 @@ class Store:
         return cur.fetchone() is not None
 
     def save_transaction(self, tx_hash: str, payload: dict):
+        collected_at = int(time.time())
         self.conn.execute(
             "INSERT OR REPLACE INTO raw_transactions (tx_hash, raw_json, fetched_at) "
             "VALUES (?, ?, ?)",
-            (tx_hash, json.dumps(payload), int(time.time())),
+            (tx_hash, json.dumps(payload), collected_at),
+        )
+        self.save_collection_receipt(
+            "transaction", tx_hash, "complete",
+            {"display_cells": True}, collected_at=collected_at,
         )
         self.conn.commit()
 
     def save_address_raw(self, address: str, lock_hash: Optional[str], payload: dict):
+        collected_at = int(time.time())
         self.conn.execute(
             "INSERT OR REPLACE INTO raw_addresses (address, lock_hash, raw_json, fetched_at) "
             "VALUES (?, ?, ?, ?)",
-            (address, lock_hash, json.dumps(payload), int(time.time())),
+            (address, lock_hash, json.dumps(payload), collected_at),
         )
+        self.save_collection_receipt("address", address, "complete", collected_at=collected_at)
         self.conn.commit()
+
+    def save_collection_receipt(self, resource_type: str, resource_id: Optional[str],
+                                status: str, request_parameters: Optional[dict] = None,
+                                error: Optional[str] = None,
+                                collected_at: Optional[int] = None) -> None:
+        self.conn.execute(
+            "INSERT INTO collection_receipts "
+            "(resource_type, resource_id, source, request_parameters_json, "
+            "collection_status, collected_at, error) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (resource_type, resource_id, BASE_URL,
+             json.dumps(request_parameters or {}, sort_keys=True), status,
+             collected_at or int(time.time()), error),
+        )
 
     def mark_address_tx_seen(self, address: str, tx_hash: str, ts: Optional[int]):
         self.conn.execute(
@@ -213,12 +240,16 @@ class Store:
 
     def save_edge(self, from_hash: str, to_hash: str, value: float,
                   capacity_bytes: Optional[int], ts: Optional[int], tx_hash: str):
-        self.conn.execute(
-            "INSERT OR REPLACE INTO edges "
-            "(from_lock_hash, to_lock_hash, value_shannon, capacity_bytes, block_timestamp, tx_hash) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
-            (from_hash, to_hash, value, capacity_bytes, ts, tx_hash),
+        raise RuntimeError(
+            "legacy pairwise edge writes are disabled: normalized transactions/Cells "
+            "are the source of truth and pairwise value attribution is NOT_ESTABLISHED"
         )
+
+    def save_normalized_transaction(self, payload: dict,
+                                    target_lock_hash: Optional[str] = None) -> dict:
+        tx = normalize_transaction(payload, target_lock_hash=target_lock_hash)
+        persist_transaction(self.conn, tx)
+        return tx
 
     def upsert_wallet(self, lock_hash: str, address: Optional[str],
                        code_hash: Optional[str], hash_type: Optional[str], ts: Optional[int]):
@@ -459,47 +490,8 @@ def _extract_capacity(cell: dict) -> Optional[int]:
 
 
 def resolve_transaction_to_edges(tx_payload: dict) -> list[dict]:
-    
-    data = tx_payload.get("data")
-    if isinstance(data, list):
-        data = data[0] if data else None
-    if not data:
-        return []
-    attrs = data.get("attributes", {})
-    tx_hash = attrs.get("transaction_hash") or data.get("id")
-    block_ts = _to_int(attrs.get("block_timestamp"))
-
-    inputs = attrs.get("display_inputs") or []
-    outputs = attrs.get("display_outputs") or []
-    if not inputs or not outputs:
-        return []
-
-    in_hashes = [_extract_lock_hash(c) for c in inputs]
-    out_caps = [
-        (_extract_lock_hash(c), _extract_address(c), _extract_capacity(c))
-        for c in outputs
-    ]
-    total_out = sum(c for _, _, c in out_caps if c) or 1
-
-    edges = []
-    seen_from = set(h for h in in_hashes if h)
-    for from_hash in seen_from:
-        for to_hash, to_address, cap in out_caps:
-            if not to_hash or not cap:
-                continue
-            if to_hash == from_hash:
-                continue  
-            share = cap / total_out
-            edges.append({
-                "from_lock_hash": from_hash,
-                "to_lock_hash": to_hash,
-                "to_address": to_address,
-                "value_shannon": share * total_out,  
-                "capacity_bytes": cap,
-                "block_timestamp": block_ts,
-                "tx_hash": tx_hash,
-            })
-    return edges
+    """Legacy compatibility shim; pairwise attribution is intentionally disabled."""
+    return []
 
 
 
@@ -629,25 +621,10 @@ def run(cfg: RunConfig):
                 )
                 detail = json.loads(cur.fetchone()[0])
 
-            edges = resolve_transaction_to_edges(detail)
-            for e in edges:
-                store.save_edge(
-                    e["from_lock_hash"], e["to_lock_hash"], e["value_shannon"],
-                    e["capacity_bytes"], e["block_timestamp"], e["tx_hash"],
-                )
-                store.upsert_wallet(e["from_lock_hash"], None, None, None, e["block_timestamp"])
-                store.upsert_wallet(e["to_lock_hash"], e.get("to_address"), None, None,
-                                     e["block_timestamp"])
-
-                to_address = e.get("to_address")
-                if to_address:
-                    store.remember_address(e["to_lock_hash"], to_address)
-                else:
-                    to_address = store.lookup_address(e["to_lock_hash"])
-
-                if hop < cfg.hops and to_address and not store.known(to_address):
-                    
-                    store.enqueue(to_address, hop + 1)
+            store.save_normalized_transaction(detail, target_lock_hash=lock_hash)
+            # BFS expansion from flattened value edges is disabled. Candidate
+            # counterparties can be projected later from the transaction
+            # hypergraph using an explicit, versioned method.
 
         if lock_hash:
             store.upsert_wallet(lock_hash, address, code_hash, hash_type, None)
