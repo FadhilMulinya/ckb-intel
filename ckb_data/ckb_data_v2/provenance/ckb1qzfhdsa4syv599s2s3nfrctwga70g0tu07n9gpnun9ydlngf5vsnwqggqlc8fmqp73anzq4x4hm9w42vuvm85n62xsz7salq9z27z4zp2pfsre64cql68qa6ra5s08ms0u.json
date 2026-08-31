@@ -1,0 +1,17 @@
+{
+  "address": "ckb1qzfhdsa4syv599s2s3nfrctwga70g0tu07n9gpnun9ydlngf5vsnwqggqlc8fmqp73anzq4x4hm9w42vuvm85n62xsz7salq9z27z4zp2pfsre64cql68qa6ra5s08ms0u",
+  "status": "complete",
+  "collected_at_utc": "2026-08-24T05:54:29.287371+00:00",
+  "window_start_epoch": 1724371200,
+  "window_end_epoch": 1787443200,
+  "window_start_utc": "2024-08-23T00:00:00+00:00",
+  "window_end_utc": "2026-08-23T00:00:00+00:00",
+  "lookback_days": 730,
+  "deepest_block": null,
+  "shallowest_block": null,
+  "n_tx_in_window": 0,
+  "n_tx_detail_fetched": 0,
+  "listing_truncated": false,
+  "detail_sampled": false,
+  "n_dao_events": 0
+}
