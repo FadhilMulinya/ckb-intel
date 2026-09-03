@@ -1,0 +1,54 @@
+{
+  "component_stability": [
+    {
+      "component": "PC1",
+      "median_absolute_loading_cosine": 0.9957778460026034,
+      "p05_absolute_loading_cosine": 0.9664778939504417,
+      "p95_absolute_loading_cosine": 0.999804238957361,
+      "resamples": 500,
+      "stability": "STABLE",
+      "unpermuted_order_retention_ratio": 1.0
+    },
+    {
+      "component": "PC2",
+      "median_absolute_loading_cosine": 0.9282833518866545,
+      "p05_absolute_loading_cosine": 0.7276521546500945,
+      "p95_absolute_loading_cosine": 0.9792778449544528,
+      "resamples": 500,
+      "stability": "STABLE",
+      "unpermuted_order_retention_ratio": 0.836
+    },
+    {
+      "component": "PC3",
+      "median_absolute_loading_cosine": 0.9209051000524384,
+      "p05_absolute_loading_cosine": 0.7321513259290767,
+      "p95_absolute_loading_cosine": 0.9837983706828692,
+      "resamples": 500,
+      "stability": "STABLE",
+      "unpermuted_order_retention_ratio": 0.824
+    },
+    {
+      "component": "PC4",
+      "median_absolute_loading_cosine": 0.8788431111891648,
+      "p05_absolute_loading_cosine": 0.6464698204656034,
+      "p95_absolute_loading_cosine": 0.969312819411952,
+      "resamples": 500,
+      "stability": "MODERATE",
+      "unpermuted_order_retention_ratio": 0.666
+    },
+    {
+      "component": "PC5",
+      "median_absolute_loading_cosine": 0.8113203516377121,
+      "p05_absolute_loading_cosine": 0.5321130674822051,
+      "p95_absolute_loading_cosine": 0.9487018989119596,
+      "resamples": 500,
+      "stability": "MODERATE",
+      "unpermuted_order_retention_ratio": 0.676
+    }
+  ],
+  "method": "80_PERCENT_BOOTSTRAP_WITH_REPLACEMENT",
+  "near_degenerate_eigenspaces": [],
+  "resamples": 500,
+  "sample_size": 200,
+  "seed": 20260903
+}

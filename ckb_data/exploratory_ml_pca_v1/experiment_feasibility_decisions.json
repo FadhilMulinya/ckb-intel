@@ -1,0 +1,59 @@
+[
+  {
+    "accepted": false,
+    "decision": "REJECTED: requires n>=100 and n/p>=5.0; observed n=28, p=59, n/p=0.475",
+    "experiment": "PCA_LOW_REDUNDANCY_COMPLETE_CASE_V1",
+    "feature_family_composition": {
+      "capacity": 8,
+      "lifecycle": 5,
+      "lineage": 5,
+      "scripts": 7,
+      "templates": 7,
+      "temporal": 13,
+      "topology": 14
+    },
+    "n_features": 59,
+    "n_wallets": 28,
+    "wallets_per_feature": 0.4745762711864407
+  },
+  {
+    "accepted": true,
+    "decision": "ACCEPTED",
+    "experiment": "PCA_TEMPORAL_STRUCTURE_BLOCK_V1",
+    "feature_family_composition": {
+      "templates": 7,
+      "temporal": 13,
+      "topology": 14
+    },
+    "n_features": 34,
+    "n_wallets": 249,
+    "wallets_per_feature": 7.323529411764706
+  },
+  {
+    "accepted": true,
+    "decision": "ACCEPTED",
+    "experiment": "PCA_CELL_STRUCTURE_BLOCK_V1",
+    "feature_family_composition": {
+      "capacity": 8,
+      "lifecycle": 5,
+      "lineage": 5
+    },
+    "n_features": 18,
+    "n_wallets": 172,
+    "wallets_per_feature": 9.555555555555555
+  },
+  {
+    "accepted": false,
+    "decision": "REJECTED: requires n>=100 and n/p>=5.0; observed n=46, p=36, n/p=1.278",
+    "experiment": "PCA_SCRIPT_TRANSACTION_STRUCTURE_BLOCK_V1",
+    "feature_family_composition": {
+      "capacity": 8,
+      "scripts": 7,
+      "templates": 7,
+      "topology": 14
+    },
+    "n_features": 36,
+    "n_wallets": 46,
+    "wallets_per_feature": 1.2777777777777777
+  }
+]

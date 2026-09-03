@@ -1,0 +1,65 @@
+[
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.0,
+    "n_neighbors": 15,
+    "seed": 20260902
+  },
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.1,
+    "n_neighbors": 15,
+    "seed": 20260902
+  },
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.5,
+    "n_neighbors": 15,
+    "seed": 20260902
+  },
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.0,
+    "n_neighbors": 30,
+    "seed": 20260902
+  },
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.1,
+    "n_neighbors": 30,
+    "seed": 20260902
+  },
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.5,
+    "n_neighbors": 30,
+    "seed": 20260902
+  },
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.0,
+    "n_neighbors": 50,
+    "seed": 20260902
+  },
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.1,
+    "n_neighbors": 50,
+    "seed": 20260902
+  },
+  {
+    "clustering_use": "PROHIBITED_VISUALIZATION_ONLY",
+    "metric": "euclidean",
+    "min_dist": 0.5,
+    "n_neighbors": 50,
+    "seed": 20260902
+  }
+]

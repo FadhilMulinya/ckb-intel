@@ -1,0 +1,317 @@
+{
+  "capacity|capacity": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 91,
+    "median_absolute_spearman": 0.2740155135623877,
+    "near_duplicate_pairs": 9,
+    "strong_pairs": 12
+  },
+  "capacity|cross_feature": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 140,
+    "median_absolute_spearman": 0.14207429673962546,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "capacity|lifecycle": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 98,
+    "median_absolute_spearman": 0.14392829090854997,
+    "near_duplicate_pairs": 2,
+    "strong_pairs": 2
+  },
+  "capacity|lineage": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 98,
+    "median_absolute_spearman": 0.14266698859515115,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "capacity|periodicity": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 126,
+    "median_absolute_spearman": 0.11838106088636721,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "capacity|scripts": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 182,
+    "median_absolute_spearman": 0.10984007859944564,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "capacity|templates": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 126,
+    "median_absolute_spearman": 0.07163360526285217,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "capacity|temporal": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 378,
+    "median_absolute_spearman": 0.15408685481280252,
+    "near_duplicate_pairs": 7,
+    "strong_pairs": 7
+  },
+  "capacity|topology": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 350,
+    "median_absolute_spearman": 0.1342022821654912,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "cross_feature|cross_feature": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 45,
+    "median_absolute_spearman": 0.1560056217933877,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "cross_feature|lifecycle": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 70,
+    "median_absolute_spearman": 0.18474722587115502,
+    "near_duplicate_pairs": 1,
+    "strong_pairs": 1
+  },
+  "cross_feature|lineage": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 70,
+    "median_absolute_spearman": 0.16403823583214022,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "cross_feature|periodicity": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 90,
+    "median_absolute_spearman": 0.12232595563101098,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "cross_feature|scripts": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 106,
+    "median_absolute_spearman": 0.13789174769193152,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "cross_feature|templates": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 90,
+    "median_absolute_spearman": 0.14516603374355908,
+    "near_duplicate_pairs": 2,
+    "strong_pairs": 2
+  },
+  "cross_feature|temporal": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 270,
+    "median_absolute_spearman": 0.1635447541570817,
+    "near_duplicate_pairs": 5,
+    "strong_pairs": 5
+  },
+  "cross_feature|topology": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 250,
+    "median_absolute_spearman": 0.14745146998642505,
+    "near_duplicate_pairs": 8,
+    "strong_pairs": 8
+  },
+  "lifecycle|lifecycle": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 21,
+    "median_absolute_spearman": 0.12482155938800947,
+    "near_duplicate_pairs": 1,
+    "strong_pairs": 2
+  },
+  "lifecycle|lineage": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 49,
+    "median_absolute_spearman": 0.16968171956738784,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "lifecycle|periodicity": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 63,
+    "median_absolute_spearman": 0.13978978724080343,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "lifecycle|scripts": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 63,
+    "median_absolute_spearman": 0.211579271778777,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "lifecycle|templates": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 63,
+    "median_absolute_spearman": 0.18413226567238936,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "lifecycle|temporal": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 189,
+    "median_absolute_spearman": 0.18397455033343935,
+    "near_duplicate_pairs": 14,
+    "strong_pairs": 14
+  },
+  "lifecycle|topology": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 175,
+    "median_absolute_spearman": 0.1351861990339151,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "lineage|lineage": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 21,
+    "median_absolute_spearman": 0.33791274361362894,
+    "near_duplicate_pairs": 2,
+    "strong_pairs": 2
+  },
+  "lineage|periodicity": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 63,
+    "median_absolute_spearman": 0.15437252225738643,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "lineage|scripts": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 91,
+    "median_absolute_spearman": 0.23421320739618426,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "lineage|templates": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 63,
+    "median_absolute_spearman": 0.1976026860660389,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 1
+  },
+  "lineage|temporal": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 189,
+    "median_absolute_spearman": 0.16760006425036136,
+    "near_duplicate_pairs": 1,
+    "strong_pairs": 2
+  },
+  "lineage|topology": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 175,
+    "median_absolute_spearman": 0.17152158966005537,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "periodicity|periodicity": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 36,
+    "median_absolute_spearman": 0.24570939563999192,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 1
+  },
+  "periodicity|scripts": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 81,
+    "median_absolute_spearman": 0.1903405451446014,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "periodicity|templates": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 81,
+    "median_absolute_spearman": 0.14220478971638115,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "periodicity|temporal": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 243,
+    "median_absolute_spearman": 0.20130275580634555,
+    "near_duplicate_pairs": 1,
+    "strong_pairs": 1
+  },
+  "periodicity|topology": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 225,
+    "median_absolute_spearman": 0.09696211528302985,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "scripts|scripts": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 78,
+    "median_absolute_spearman": 0.24357799884797496,
+    "near_duplicate_pairs": 2,
+    "strong_pairs": 2
+  },
+  "scripts|templates": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 117,
+    "median_absolute_spearman": 0.21493615632667537,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "scripts|temporal": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 243,
+    "median_absolute_spearman": 0.22080477566302545,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "scripts|topology": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 325,
+    "median_absolute_spearman": 0.17156784566154065,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "templates|templates": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 36,
+    "median_absolute_spearman": 0.456997979065288,
+    "near_duplicate_pairs": 2,
+    "strong_pairs": 3
+  },
+  "templates|temporal": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 243,
+    "median_absolute_spearman": 0.16717530155037527,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "templates|topology": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 225,
+    "median_absolute_spearman": 0.12117760770376773,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "temporal|temporal": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 351,
+    "median_absolute_spearman": 0.23718908145850448,
+    "near_duplicate_pairs": 34,
+    "strong_pairs": 37
+  },
+  "temporal|topology": {
+    "distinct_information_assessment": "DISTINCT_AT_CURRENT_THRESHOLD",
+    "eligible_pairs": 675,
+    "median_absolute_spearman": 0.1181654041104742,
+    "near_duplicate_pairs": 0,
+    "strong_pairs": 0
+  },
+  "topology|topology": {
+    "distinct_information_assessment": "REVIEW_OVERLAP",
+    "eligible_pairs": 300,
+    "median_absolute_spearman": 0.141795902476681,
+    "near_duplicate_pairs": 16,
+    "strong_pairs": 19
+  }
+}

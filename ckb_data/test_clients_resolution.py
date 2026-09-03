@@ -61,6 +61,9 @@ class ResolutionTests(unittest.TestCase):
         self.conn = sqlite3.connect(":memory:")
         install_schema(self.conn)
 
+    def tearDown(self):
+        self.conn.close()
+
     def rpc_payload(self):
         return {"transaction": {"outputs": [{"capacity": hex(100), "lock": LOCK_A, "type": None}],
                                 "outputs_data": ["0x"]}}

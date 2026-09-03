@@ -1,0 +1,187 @@
+{
+  "common_support_patterns": [
+    {
+      "families": [],
+      "pattern": "NONE",
+      "wallet_count": 629
+    },
+    {
+      "families": [
+        "scripts",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "scripts+capacity+lineage",
+      "wallet_count": 223
+    },
+    {
+      "families": [
+        "temporal",
+        "periodicity",
+        "topology",
+        "templates",
+        "lifecycle",
+        "scripts",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "temporal+periodicity+topology+templates+lifecycle+scripts+capacity+lineage",
+      "wallet_count": 167
+    },
+    {
+      "families": [
+        "topology",
+        "templates",
+        "scripts",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "topology+templates+scripts+capacity+lineage",
+      "wallet_count": 46
+    },
+    {
+      "families": [
+        "temporal",
+        "periodicity",
+        "topology",
+        "templates",
+        "scripts",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "temporal+periodicity+topology+templates+scripts+capacity+lineage",
+      "wallet_count": 40
+    },
+    {
+      "families": [
+        "temporal",
+        "topology",
+        "templates",
+        "lifecycle",
+        "scripts",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "temporal+topology+templates+lifecycle+scripts+capacity+lineage",
+      "wallet_count": 17
+    },
+    {
+      "families": [
+        "scripts",
+        "capacity"
+      ],
+      "pattern": "scripts+capacity",
+      "wallet_count": 14
+    },
+    {
+      "families": [
+        "temporal",
+        "periodicity",
+        "topology",
+        "templates",
+        "scripts",
+        "lineage"
+      ],
+      "pattern": "temporal+periodicity+topology+templates+scripts+lineage",
+      "wallet_count": 13
+    },
+    {
+      "families": [
+        "temporal",
+        "topology",
+        "templates",
+        "scripts",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "temporal+topology+templates+scripts+capacity+lineage",
+      "wallet_count": 8
+    },
+    {
+      "families": [
+        "topology",
+        "templates",
+        "lifecycle",
+        "scripts",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "topology+templates+lifecycle+scripts+capacity+lineage",
+      "wallet_count": 5
+    },
+    {
+      "families": [
+        "scripts",
+        "lineage"
+      ],
+      "pattern": "scripts+lineage",
+      "wallet_count": 3
+    },
+    {
+      "families": [
+        "temporal",
+        "topology",
+        "templates",
+        "lifecycle",
+        "scripts",
+        "typed_assets",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "temporal+topology+templates+lifecycle+scripts+typed_assets+capacity+lineage",
+      "wallet_count": 2
+    },
+    {
+      "families": [
+        "temporal",
+        "periodicity",
+        "topology",
+        "templates",
+        "lifecycle",
+        "scripts",
+        "typed_assets",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "temporal+periodicity+topology+templates+lifecycle+scripts+typed_assets+capacity+lineage",
+      "wallet_count": 2
+    },
+    {
+      "families": [
+        "lifecycle",
+        "scripts",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "lifecycle+scripts+capacity+lineage",
+      "wallet_count": 2
+    },
+    {
+      "families": [
+        "scripts",
+        "typed_assets",
+        "capacity",
+        "lineage"
+      ],
+      "pattern": "scripts+typed_assets+capacity+lineage",
+      "wallet_count": 1
+    }
+  ],
+  "coverage_threshold_counts": {
+    "at_least_20pct": 493,
+    "at_least_40pct": 300,
+    "at_least_50pct": 300,
+    "at_least_60pct": 257,
+    "at_least_70pct": 249,
+    "at_least_80pct": 230,
+    "at_least_90pct": 179
+  },
+  "data_support_cohorts": {
+    "HIGH_INFORMATION": 249,
+    "SCRIPT_CAPACITY_ONLY": 243,
+    "TRANSACTION_STRUCTURE": 51,
+    "VERY_LOW_ACTIVITY_OR_SUPPORT": 629
+  },
+  "predictor_count": 121,
+  "semantic_warning": "These are observation-support cohorts, not behavioural labels."
+}

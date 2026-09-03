@@ -11,6 +11,7 @@ from ckb_native import (
     STATUS_FAILED,
     STATUS_INCOMPLETE,
     STATUS_MISSING,
+    STATUS_NOT_APPLICABLE,
     _recompute_conservation,
     normalize_transaction,
     resolve_inputs_from_cells,
@@ -51,6 +52,8 @@ def _apply(item: dict, output: dict, source: str) -> bool:
     item.update(resolved_capacity=output["capacity"],
                 resolved_lock_script=output.get("lock_script"),
                 resolved_lock_script_hash=output.get("lock_script_hash"),
+                resolved_lock_identifier=(output.get("lock_identifier") or
+                                          output.get("lock_script_hash")),
                 resolved_type_script=output.get("type_script"),
                 resolved_type_script_hash=output.get("type_script_hash"),
                 resolved_output_data=output.get("output_data"),
@@ -61,18 +64,25 @@ def _apply(item: dict, output: dict, source: str) -> bool:
 
 def resolve_transaction_inputs(conn: sqlite3.Connection, tx: dict,
                                rpc: Optional[CkbRpcClient] = None,
-                               explorer: Optional[ExplorerClient] = None) -> dict:
+                               explorer: Optional[ExplorerClient] = None,
+                               stats=None) -> dict:
     """Resolve only the transaction's missing inputs in the required order."""
     resolve_inputs_from_cells(conn, tx)
     counts = {"normalized_local_cells": 0, "raw_cached_transaction": 0,
-              "ckb_rpc": 0, "explorer": 0, "unresolved": 0}
-    rpc = rpc or CkbRpcClient.from_env()
+              "ckb_rpc": 0, "explorer": 0, "unresolved": 0,
+              "not_applicable": 0}
     explorer = explorer or ExplorerClient()
 
     for item in tx["inputs"]:
+        if item["resolution_status"] == STATUS_NOT_APPLICABLE:
+            counts["not_applicable"] += 1
+            continue
         if item["resolution_status"] == STATUS_COMPLETE:
             counts[item.get("resolution_source", "normalized_local_cells")] = \
                 counts.get(item.get("resolution_source", "normalized_local_cells"), 0) + 1
+            if stats:
+                stats.increment("normalized_cache_hits")
+                stats.increment("previous_output_cache_hits")
             continue
         previous_hash, index = item.get("previous_tx_hash"), item.get("previous_output_index")
         if previous_hash is None or index is None:
@@ -86,8 +96,16 @@ def resolve_transaction_inputs(conn: sqlite3.Connection, tx: dict,
         except sqlite3.OperationalError:
             cached = None
         if cached:
+            if stats:
+                stats.increment("raw_cache_hits")
+                stats.increment("previous_output_cache_hits")
             try:
-                output = _output_from_explorer(json.loads(cached[0]), index)
+                cached_payload = json.loads(cached[0])
+                cached_tx = normalize_transaction(cached_payload)
+                from ckb_native import persist_transaction
+                persist_transaction(conn, cached_tx)
+                output = next((value for value in cached_tx["outputs"]
+                               if value["output_index"] == index), None)
                 if output and _apply(item, output, "raw_cached_transaction"):
                     counts["raw_cached_transaction"] += 1
                     continue
@@ -95,18 +113,38 @@ def resolve_transaction_inputs(conn: sqlite3.Connection, tx: dict,
             except (ValueError, json.JSONDecodeError):
                 item["resolution_status"] = STATUS_INCOMPLETE
 
+        if stats:
+            stats.increment("previous_output_cache_misses")
+
         fetch_failed = False
-        try:
-            output = _output_from_rpc(rpc.get_transaction(previous_hash), index)
-            if output and _apply(item, output, "ckb_rpc"):
-                counts["ckb_rpc"] += 1
-                continue
-        except ClientUnavailable:
-            fetch_failed = True
+        if rpc is not None:
+            try:
+                output = _output_from_rpc(rpc.get_transaction(previous_hash), index)
+                if output and _apply(item, output, "ckb_rpc"):
+                    counts["ckb_rpc"] += 1
+                    continue
+            except ClientUnavailable:
+                fetch_failed = True
 
         try:
             payload = explorer.get_transaction(previous_hash)
-            output = _output_from_explorer(payload, index) if payload else None
+            output = None
+            if payload:
+                raw = json.dumps(payload)
+                try:
+                    conn.execute(
+                        "INSERT OR REPLACE INTO raw_transactions "
+                        "(tx_hash,raw_json,fetched_at,source_kind) "
+                        "VALUES (?,?,strftime('%s','now'),'ckb_explorer_previous_output')",
+                        (previous_hash, raw),
+                    )
+                except sqlite3.OperationalError:
+                    pass
+                previous_tx = normalize_transaction(payload)
+                from ckb_native import persist_transaction
+                persist_transaction(conn, previous_tx)
+                output = next((value for value in previous_tx["outputs"]
+                               if value["output_index"] == index), None)
             if output and _apply(item, output, "explorer"):
                 counts["explorer"] += 1
                 continue

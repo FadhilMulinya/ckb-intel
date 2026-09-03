@@ -1,0 +1,131 @@
+{
+  "activity_hour_concentration": {
+    "adjacent_week_rank_stability": [
+      {
+        "left_week": 1,
+        "overlap": 186,
+        "right_week": 2,
+        "spearman_rank_stability": 0.8036379136414841
+      },
+      {
+        "left_week": 2,
+        "overlap": 188,
+        "right_week": 3,
+        "spearman_rank_stability": 0.7862632861516757
+      },
+      {
+        "left_week": 3,
+        "overlap": 222,
+        "right_week": 4,
+        "spearman_rank_stability": 0.7568870780399146
+      }
+    ],
+    "median_within_wallet_cv": 0.15609072770643168,
+    "median_within_wallet_variance": 0.0029296875,
+    "wallets_with_two_or_more_weeks": 282
+  },
+  "dominant_period_seconds": {
+    "adjacent_week_rank_stability": [
+      {
+        "left_week": 1,
+        "overlap": 113,
+        "right_week": 2,
+        "spearman_rank_stability": 0.9313409018690375
+      },
+      {
+        "left_week": 2,
+        "overlap": 118,
+        "right_week": 3,
+        "spearman_rank_stability": 0.9125602331437157
+      },
+      {
+        "left_week": 3,
+        "overlap": 123,
+        "right_week": 4,
+        "spearman_rank_stability": 0.9160258207194315
+      }
+    ],
+    "median_within_wallet_cv": 0.10655194619066322,
+    "median_within_wallet_variance": 218583.46875,
+    "wallets_with_two_or_more_weeks": 150
+  },
+  "limitations": [
+    "Four fixed seven-day windows cover days 1-28; days 29-30 are excluded from stability only.",
+    "Stability is descriptive and support-aware; transient bursts need not be stable."
+  ],
+  "periodicity_strength": {
+    "adjacent_week_rank_stability": [
+      {
+        "left_week": 1,
+        "overlap": 113,
+        "right_week": 2,
+        "spearman_rank_stability": 0.7844302411361224
+      },
+      {
+        "left_week": 2,
+        "overlap": 118,
+        "right_week": 3,
+        "spearman_rank_stability": 0.7725984265329214
+      },
+      {
+        "left_week": 3,
+        "overlap": 123,
+        "right_week": 4,
+        "spearman_rank_stability": 0.7770324424396554
+      }
+    ],
+    "median_within_wallet_cv": 0.08901008654235222,
+    "median_within_wallet_variance": 0.0021373268088458438,
+    "wallets_with_two_or_more_weeks": 150
+  },
+  "template_repeat_ratio": {
+    "adjacent_week_rank_stability": [
+      {
+        "left_week": 1,
+        "overlap": 140,
+        "right_week": 2,
+        "spearman_rank_stability": 0.8753424106051727
+      },
+      {
+        "left_week": 2,
+        "overlap": 144,
+        "right_week": 3,
+        "spearman_rank_stability": 0.86445177596301
+      },
+      {
+        "left_week": 3,
+        "overlap": 159,
+        "right_week": 4,
+        "spearman_rank_stability": 0.8091250981217395
+      }
+    ],
+    "median_within_wallet_cv": 0.15185176183444088,
+    "median_within_wallet_variance": 0.0009791836979269927,
+    "wallets_with_two_or_more_weeks": 187
+  },
+  "topology_repeat_ratio": {
+    "adjacent_week_rank_stability": [
+      {
+        "left_week": 1,
+        "overlap": 140,
+        "right_week": 2,
+        "spearman_rank_stability": 0.15474489086753132
+      },
+      {
+        "left_week": 2,
+        "overlap": 144,
+        "right_week": 3,
+        "spearman_rank_stability": 0.19992346451279214
+      },
+      {
+        "left_week": 3,
+        "overlap": 159,
+        "right_week": 4,
+        "spearman_rank_stability": 0.3187164806212761
+      }
+    ],
+    "median_within_wallet_cv": 0.0,
+    "median_within_wallet_variance": 0.0,
+    "wallets_with_two_or_more_weeks": 187
+  }
+}
