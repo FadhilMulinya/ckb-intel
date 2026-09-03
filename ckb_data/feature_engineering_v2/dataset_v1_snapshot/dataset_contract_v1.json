@@ -1,0 +1,29 @@
+{
+  "applicable_input_count": 56407,
+  "collection_states": {
+    "COMPLETE": 939,
+    "FAILED_INVALID_ADDRESS": 3,
+    "FAILED_RETRY_EXHAUSTED": 224,
+    "PARTIAL": 6
+  },
+  "complete_wallets": 939,
+  "creation_timestamp": "2026-09-02T06:27:59.288811+00:00",
+  "dataset_version": "ckb-behaviour-dataset-v1",
+  "failed_wallets": 227,
+  "feature_schema_version": "ckb-behaviour-features-v1",
+  "freeze_strategy": "LOGICAL_CONTENT_ADDRESSED_SNAPSHOT",
+  "input_count": 92515,
+  "manifest_hash": "6d8b5cd777e9ea9825466dc7500fdcb1dd639981d74475387c405aa6599583fe",
+  "observation_contract_version": "wallet-observation-30d-v1",
+  "observation_window_id": "ckb-mainnet-30d-2026-08-31-v1",
+  "partial_wallets": 6,
+  "population_version": "ckb-wallet-population-local-v1",
+  "resolved_input_count": 56407,
+  "source_database": {
+    "bytes": 862994432,
+    "path": "ckb_data/ckb_data_v2/ckb_explorer.sqlite",
+    "sha256": "e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322"
+  },
+  "total_wallets": 1172,
+  "transaction_count": 51816
+}

@@ -1,0 +1,63 @@
+{
+  "duplicate_occurrences": 4286,
+  "evidence_tiers": {
+    "A": 11,
+    "B": 369,
+    "C": 792
+  },
+  "legacy_proxy_labels": {
+    "bot_like": 222,
+    "human_like": 203,
+    "null": 747
+  },
+  "manifest_version": "ckb-wallet-research-manifest-v1",
+  "missing_lifetime_counts": 706,
+  "normalized_wallets": 13,
+  "provenance_wallets": 887,
+  "raw_wallets": 380,
+  "sampling_strata": {
+    "1-10": {
+      "percentage": 13.14,
+      "provisionally_sufficient": true,
+      "wallets": 154
+    },
+    "1001-5000": {
+      "percentage": 12.03,
+      "provisionally_sufficient": true,
+      "wallets": 141
+    },
+    "11-50": {
+      "percentage": 3.75,
+      "provisionally_sufficient": true,
+      "wallets": 44
+    },
+    "201-500": {
+      "percentage": 2.3,
+      "provisionally_sufficient": true,
+      "wallets": 27
+    },
+    "5000+": {
+      "percentage": 4.61,
+      "provisionally_sufficient": true,
+      "wallets": 54
+    },
+    "501-1000": {
+      "percentage": 1.45,
+      "provisionally_sufficient": true,
+      "wallets": 17
+    },
+    "51-200": {
+      "percentage": 2.47,
+      "provisionally_sufficient": true,
+      "wallets": 29
+    },
+    "unknown": {
+      "percentage": 60.24,
+      "provisionally_sufficient": null,
+      "wallets": 706
+    }
+  },
+  "source_occurrences": 5458,
+  "unique_wallets": 1172,
+  "wallets_appearing_multiple_times": 1166
+}

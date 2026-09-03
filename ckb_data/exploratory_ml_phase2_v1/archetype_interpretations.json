@@ -1,0 +1,29 @@
+[
+  {
+    "activity_dependence": "LOW_ACTIVITY_DEPENDENCE",
+    "group": 0,
+    "initial_name": "BEHAVIOUR_GROUP_01",
+    "promoted_archetype": "LOW_TARGET_CONSUMED_CAPACITY_STRUCTURE",
+    "promotion_status": "EVIDENCE_SUPPORTED_DESCRIPTIVE",
+    "standardized_difference": -2.1244382714547387,
+    "strongest_feature": "capacity__target_consumed_capacity"
+  },
+  {
+    "activity_dependence": "LOW_ACTIVITY_DEPENDENCE",
+    "group": 1,
+    "initial_name": "BEHAVIOUR_GROUP_02",
+    "promoted_archetype": "SCRIPT_TYPE_DIVERSE_STRUCTURE",
+    "promotion_status": "EVIDENCE_SUPPORTED_DESCRIPTIVE",
+    "standardized_difference": 1.9612208184751214,
+    "strongest_feature": "scripts__type_family_count"
+  },
+  {
+    "activity_dependence": "LOW_ACTIVITY_DEPENDENCE",
+    "group": 2,
+    "initial_name": "BEHAVIOUR_GROUP_03",
+    "promoted_archetype": "UNINTERPRETED",
+    "promotion_status": "UNINTERPRETED",
+    "standardized_difference": -0.5007292737035348,
+    "strongest_feature": "scripts__type_family_count"
+  }
+]

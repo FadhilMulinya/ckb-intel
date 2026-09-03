@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import logging
+import os
 import sqlite3
 import sys
 import time
@@ -11,9 +12,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Iterator, Optional
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+try:
+    import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+except ImportError:  # Store/cache operations require only the standard library.
+    requests = None
+    HTTPAdapter = Retry = None
 
 from ckb_native import (
     install_schema,
@@ -44,6 +49,8 @@ log = logging.getLogger("ckb_pull")
 
 
 def build_session() -> requests.Session:
+    if requests is None:
+        return None
     session = requests.Session()
     session.headers.update(HEADERS)
     retry = Retry(
@@ -65,6 +72,13 @@ SESSION = build_session()
 def api_get(path: str, params: Optional[dict] = None) -> Optional[dict]:
     """GET a single Explorer API endpoint, return parsed JSON or None on failure."""
     url = f"{BASE_URL}{path}"
+    if SESSION is None:
+        from ckb_clients import ClientUnavailable, ExplorerClient
+        try:
+            return ExplorerClient(BASE_URL, timeout=REQUEST_TIMEOUT)._get(path, params)
+        except ClientUnavailable as e:
+            log.warning("request error %s %s: %s", url, params, e)
+            return None
     try:
         resp = SESSION.get(url, params=params or {}, timeout=REQUEST_TIMEOUT)
     except requests.RequestException as e:
@@ -106,7 +120,8 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS raw_transactions (
     tx_hash TEXT PRIMARY KEY,
     raw_json TEXT NOT NULL,
-    fetched_at INTEGER NOT NULL
+    fetched_at INTEGER NOT NULL,
+    source_kind TEXT NOT NULL DEFAULT 'ckb_explorer_api'
 );
 
 CREATE TABLE IF NOT EXISTS raw_addresses (
@@ -114,6 +129,15 @@ CREATE TABLE IF NOT EXISTS raw_addresses (
     lock_hash TEXT,
     raw_json TEXT NOT NULL,
     fetched_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS raw_address_pages (
+    address TEXT NOT NULL,
+    observation_window_id TEXT NOT NULL,
+    page INTEGER NOT NULL,
+    raw_json TEXT NOT NULL,
+    fetched_at INTEGER NOT NULL,
+    PRIMARY KEY (address, observation_window_id, page)
 );
 
 CREATE TABLE IF NOT EXISTS address_tx_seen (
@@ -170,6 +194,7 @@ CREATE TABLE IF NOT EXISTS resolved_addresses (
 
 class Store:
     def __init__(self, db_path: Path):
+        self._closed = False
         self.conn = sqlite3.connect(str(db_path))
         self.conn.executescript(SCHEMA)
         install_schema(self.conn)
@@ -182,10 +207,32 @@ class Store:
             self.conn.execute(
                 "ALTER TABLE queue ADD COLUMN dao_pulled INTEGER NOT NULL DEFAULT 0"
             )
+        raw_cols = [r[1] for r in self.conn.execute("PRAGMA table_info(raw_transactions)")]
+        if "source_kind" not in raw_cols:
+            self.conn.execute(
+                "ALTER TABLE raw_transactions ADD COLUMN source_kind TEXT NOT NULL "
+                "DEFAULT 'ckb_explorer_api'"
+            )
 
     def close(self):
+        if self._closed:
+            return
         self.conn.commit()
         self.conn.close()
+        self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _exc_type, _exc, _traceback):
+        self.close()
+
+    def __del__(self):
+        # Exception paths must not leave sqlite connections for the GC to warn on.
+        try:
+            self.close()
+        except Exception:
+            pass
 
     # ---- caching helpers ----
 
@@ -195,16 +242,17 @@ class Store:
         )
         return cur.fetchone() is not None
 
-    def save_transaction(self, tx_hash: str, payload: dict):
+    def save_transaction(self, tx_hash: str, payload: dict,
+                         source_kind: str = "ckb_explorer_api"):
         collected_at = int(time.time())
         self.conn.execute(
-            "INSERT OR REPLACE INTO raw_transactions (tx_hash, raw_json, fetched_at) "
-            "VALUES (?, ?, ?)",
-            (tx_hash, json.dumps(payload), collected_at),
+            "INSERT OR REPLACE INTO raw_transactions "
+            "(tx_hash, raw_json, fetched_at, source_kind) VALUES (?, ?, ?, ?)",
+            (tx_hash, json.dumps(payload), collected_at, source_kind),
         )
         self.save_collection_receipt(
             "transaction", tx_hash, "complete",
-            {"display_cells": True}, collected_at=collected_at,
+            {"display_cells": True, "source_kind": source_kind}, collected_at=collected_at,
         )
         self.conn.commit()
 

@@ -1,4 +1,6 @@
-# Bot vs. Human Detection - Model Development
+# LEGACY / ABANDONED BASELINE — Bot vs. Human Model
+
+> This service implements the historical proxy-label classifier. It is retained for auditability and is not part of the final CKB-native methodology or an identity-ground-truth system.
 
 Classifies CKB addresses as bot/exchange-operated or human-operated from their
 transaction behavior. The model is a **supervised binary classifier

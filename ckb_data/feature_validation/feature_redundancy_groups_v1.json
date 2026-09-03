@@ -1,0 +1,166 @@
+[
+  {
+    "group_id": 1,
+    "predictors": [
+      "capacity__input_capacity_mean",
+      "capacity__input_capacity_median",
+      "capacity__output_capacity_mean",
+      "capacity__output_capacity_median"
+    ]
+  },
+  {
+    "group_id": 2,
+    "predictors": [
+      "capacity__target_consumed_capacity",
+      "capacity__target_created_capacity",
+      "capacity__target_excess_capacity"
+    ]
+  },
+  {
+    "group_id": 3,
+    "predictors": [
+      "capacity__target_occupied_capacity",
+      "lifecycle__observed_cell_count",
+      "lifecycle__right_censored_cell_count",
+      "rule__BURST_EXECUTION__score",
+      "temporal__burst_count",
+      "temporal__max_burst_size",
+      "temporal__max_transactions_per_session",
+      "temporal__mean_burst_duration",
+      "temporal__mean_burst_size",
+      "temporal__mean_session_duration",
+      "temporal__mean_transactions_per_session",
+      "temporal__median_session_duration",
+      "temporal__positive_gap_count",
+      "temporal__transaction_count",
+      "temporal__transactions_in_bursts_ratio"
+    ]
+  },
+  {
+    "group_id": 4,
+    "predictors": [
+      "lifecycle__rapid_consumption_ratio",
+      "rule__RAPID_CELL_TURNOVER__score"
+    ]
+  },
+  {
+    "group_id": 5,
+    "predictors": [
+      "lineage__branch_count",
+      "lineage__split_count"
+    ]
+  },
+  {
+    "group_id": 6,
+    "predictors": [
+      "lineage__continuation_count",
+      "lineage__continuation_ratio"
+    ]
+  },
+  {
+    "group_id": 7,
+    "predictors": [
+      "lineage__merge_count",
+      "temporal__activity_session_count"
+    ]
+  },
+  {
+    "group_id": 8,
+    "predictors": [
+      "periodicity__dominant_period_seconds",
+      "temporal__interarrival_median_seconds"
+    ]
+  },
+  {
+    "group_id": 9,
+    "predictors": [
+      "rule__CELL_CONSOLIDATION__score",
+      "topology__consolidation_event_count",
+      "topology__consolidation_event_ratio",
+      "topology__max_consolidation_factor",
+      "topology__mean_consolidation_factor"
+    ]
+  },
+  {
+    "group_id": 10,
+    "predictors": [
+      "rule__CELL_FRAGMENTATION__score",
+      "topology__fragmentation_event_count",
+      "topology__fragmentation_event_ratio",
+      "topology__max_fragmentation_factor",
+      "topology__mean_fragmentation_factor"
+    ]
+  },
+  {
+    "group_id": 11,
+    "predictors": [
+      "rule__SCRIPT_TEMPLATE_REPETITION__score",
+      "templates__rare_template_ratio",
+      "templates__template_repeat_ratio"
+    ]
+  },
+  {
+    "group_id": 12,
+    "predictors": [
+      "scripts__dominant_type_family_ratio",
+      "scripts__type_family_entropy"
+    ]
+  },
+  {
+    "group_id": 13,
+    "predictors": [
+      "scripts__type_family_count",
+      "scripts__unknown_type_script_ratio"
+    ]
+  },
+  {
+    "group_id": 14,
+    "predictors": [
+      "templates__dominant_template_count",
+      "templates__unique_template_count"
+    ]
+  },
+  {
+    "group_id": 15,
+    "predictors": [
+      "temporal__active_day_concentration",
+      "temporal__weekday_entropy"
+    ]
+  },
+  {
+    "group_id": 16,
+    "predictors": [
+      "temporal__active_hour_concentration",
+      "temporal__hour_of_day_entropy"
+    ]
+  },
+  {
+    "group_id": 17,
+    "predictors": [
+      "temporal__interarrival_p10",
+      "temporal__interarrival_p25"
+    ]
+  },
+  {
+    "group_id": 18,
+    "predictors": [
+      "topology__dominant_topology_ratio",
+      "topology__topology_repeat_ratio"
+    ]
+  },
+  {
+    "group_id": 19,
+    "predictors": [
+      "topology__external_output_lock_mean",
+      "topology__output_cell_count_mean",
+      "topology__output_cell_count_median"
+    ]
+  },
+  {
+    "group_id": 20,
+    "predictors": [
+      "topology__topology_entropy",
+      "topology__topology_transition_entropy"
+    ]
+  }
+]

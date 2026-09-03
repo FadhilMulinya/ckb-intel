@@ -1,4 +1,6 @@
-# CKB Wallet Behaviour Intelligence - Formal Analysis Report
+# LEGACY / ABANDONED BASELINE — CKB Wallet Behaviour Intelligence
+
+> This historical report evaluates heuristic transaction-count proxy labels. It is retained for transparency and is not the final report or verified identity ground truth. See `reports/final-research-report.md`.
 
 **Project:** CKB Wallet Behaviour Intelligence <br>
 **Program:** Nervos Spark Program grant <br>

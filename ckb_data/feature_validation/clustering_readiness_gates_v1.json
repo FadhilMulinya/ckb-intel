@@ -1,0 +1,88 @@
+{
+  "recommended_preconditions": [
+    {
+      "gate": "minimum_wallet_cohort_size",
+      "reason": "Supports exploratory stability checks while sensitivity reports show the cost of stricter support.",
+      "recommendation": 200
+    },
+    {
+      "gate": "maximum_feature_missing_ratio",
+      "reason": "Use only after selecting a support-aware cohort; do not impute before the missingness mechanism is chosen.",
+      "recommendation": 0.4
+    },
+    {
+      "gate": "minimum_non_missing_per_predictor",
+      "reason": "Provides a defensible floor for correlation and transformation estimates.",
+      "recommendation": 300
+    },
+    {
+      "gate": "near_duplicate_absolute_correlation",
+      "reason": "Apply documented KEEP_ONE decisions, then rerun redundancy on the selected cohort.",
+      "recommendation": 0.95
+    },
+    {
+      "gate": "activity_leakage_reviewed",
+      "reason": "High-activity dependence must be interpreted or excluded before clustering.",
+      "recommendation": true
+    },
+    {
+      "gate": "typed_assets_excluded",
+      "reason": "No typed-asset predictor has fully supported observations.",
+      "recommendation": true
+    },
+    {
+      "gate": "scaling_strategy_locked",
+      "reason": "Capacity, lifetime, count, ratio, and entropy scales are materially different.",
+      "recommendation": true
+    }
+  ],
+  "sensitivity": {
+    "features_by_maximum_missing_ratio": {
+      "0.2": 0,
+      "0.4": 0,
+      "0.5": 0,
+      "0.6": 21,
+      "0.7": 28,
+      "0.8": 90
+    },
+    "features_by_minimum_non_missing": {
+      "100": 109,
+      "200": 98,
+      "300": 62,
+      "400": 28,
+      "500": 21
+    },
+    "redundancy_pairs_by_absolute_threshold": {
+      "0.9": 121,
+      "0.95": 107,
+      "0.98": 93
+    },
+    "wallet_cohorts": {
+      "coverage_threshold_sensitivity": {
+        "at_least_20pct": 493,
+        "at_least_40pct": 300,
+        "at_least_50pct": 300,
+        "at_least_60pct": 266,
+        "at_least_70pct": 249,
+        "at_least_80pct": 231,
+        "at_least_90pct": 184
+      },
+      "named_cohorts": {
+        "A_at_least_50pct_broad": 300,
+        "B_topology_templates_scripts_capacity": 283,
+        "C_temporal_topology_templates": 249,
+        "D_at_least_6_supported_families": 254
+      },
+      "selection_status": "CANDIDATES_ONLY_NO_FINAL_COHORT_SELECTED",
+      "supported_family_threshold_sensitivity": {
+        "at_least_3_families": 526,
+        "at_least_4_families": 302,
+        "at_least_5_families": 300,
+        "at_least_6_families": 254,
+        "at_least_7_families": 226,
+        "at_least_8_families": 167
+      }
+    }
+  },
+  "warning": "Thresholds are recommendations accompanied by sensitivity, not statistical power guarantees."
+}
