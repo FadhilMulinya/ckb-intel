@@ -2,7 +2,7 @@
 
 The grant-review path uses frozen local evidence and must not call Explorer.
 
-Download `ckb-behaviour-dataset-v1.sqlite` from `<DATASET_RELEASE_URL>`, place it at `ckb_data/ckb_data_v2/ckb_explorer.sqlite`, and verify SHA-256 `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`. The URL is intentionally a placeholder until the release artifact is published.
+Download `ckb-behaviour-dataset-v1.sqlite` from the [Dataset V1 release](https://github.com/FadhilMulinya/ckb-intel/releases/tag/ckb-behaviour-dataset-v1), place/rename it to `ckb_data/ckb_data_v2/ckb_explorer.sqlite`, and verify SHA-256 `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`.
 
 ```bash
 python3 -m venv .venv

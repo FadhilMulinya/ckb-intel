@@ -73,7 +73,7 @@ python3 -m venv .venv
 ./scripts/verify_final_research.sh .venv/bin/python
 ```
 
-`requirements-research.lock.txt` records the exact artifact-generation versions; the flexible file is the supported installer. The frozen database is distributed separately at `<DATASET_RELEASE_URL>` and must be placed at `ckb_data/ckb_data_v2/ckb_explorer.sqlite`.
+`requirements-research.lock.txt` records the exact artifact-generation versions; the flexible file is the supported installer. The frozen database is distributed separately in the [Dataset V1 release](https://github.com/FadhilMulinya/ckb-intel/releases/tag/ckb-behaviour-dataset-v1) and must be downloaded as `ckb-behaviour-dataset-v1.sqlite` and placed at `ckb_data/ckb_data_v2/ckb_explorer.sqlite`.
 
 The verifier does not call Explorer. It validates hashes, contracts, row alignment, SQLite integrity, and runs the complete offline suite. The currently verified suite contains **80 passing tests**.
 

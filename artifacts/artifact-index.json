@@ -185,7 +185,7 @@
     "path": "reports/final-research-report.md",
     "description": "Final report",
     "row_count": null,
-    "sha256": "5b767ba0f2ea2bd6254a38081600270b5b37b9d7ad4081bb7fcc28100f2b31c8",
+    "sha256": "1ec4eaf4353111d1d6f4a0ef19741d4a8b1228d53a86386153767c257c8c73b7",
     "generated_by": "documented phase command or scripts/build_artifact_index.py",
     "status": "derived"
   }
