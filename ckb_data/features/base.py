@@ -79,6 +79,8 @@ def load_normalized_observation(conn, observation_id: str) -> dict:
             item["resolved_capacity"] = item.pop("resolved_capacity_shannon")
             item["resolved_lock_script"] = script("lock_scripts", item["resolved_lock_script_hash"])
             item["resolved_type_script"] = script("type_scripts", item["resolved_type_script_hash"])
+            item["resolved_lock_script_hash"] = (item.get("resolved_lock_script_hash") or
+                                                  item.get("resolved_lock_identifier"))
             item["target_controls_input"] = item["resolved_lock_script_hash"] == target
             tx["inputs"].append(item)
         tx["outputs"] = []
@@ -88,6 +90,7 @@ def load_normalized_observation(conn, observation_id: str) -> dict:
             item["capacity"] = item.pop("capacity_shannon")
             item["lock_script"] = script("lock_scripts", item["lock_script_hash"])
             item["type_script"] = script("type_scripts", item["type_script_hash"])
+            item["lock_script_hash"] = item.get("lock_script_hash") or item.get("lock_identifier")
             item["target_controls_output"] = item["lock_script_hash"] == target
             tx["outputs"].append(item)
         transactions.append(tx)

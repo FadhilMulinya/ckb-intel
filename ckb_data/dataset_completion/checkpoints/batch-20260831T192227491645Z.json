@@ -1,0 +1,440 @@
+{
+  "batch_id": "batch-20260831T192227491645Z",
+  "boundary_inconsistent": 0,
+  "completed_at": "2026-08-31T19:22:27.608778+00:00",
+  "detail_incomplete": 0,
+  "elapsed_seconds": 0.117,
+  "mean_input_resolution": 1.0,
+  "previous_outputs_resolved": 10,
+  "safety_stop": null,
+  "started_at": "2026-08-31T19:22:27.491638+00:00",
+  "statistics": {
+    "address_page_cache_hits": 0,
+    "address_page_cache_misses": 0,
+    "block_cache_hits": 0,
+    "block_cache_misses": 0,
+    "explorer_failures": 0,
+    "explorer_requests": 0,
+    "explorer_retries": 0,
+    "explorer_successes": 0,
+    "normalized_cache_hits": 10,
+    "previous_output_cache_hits": 10,
+    "previous_output_cache_misses": 0,
+    "rate_limit_events": 0,
+    "raw_cache_hits": 0,
+    "transaction_cache_hits": 0,
+    "transaction_cache_misses": 0,
+    "transactions_fetched": 0,
+    "transactions_reused": 0
+  },
+  "transaction_bearing_wallets": 2,
+  "transactions_fetched": 0,
+  "transactions_reused": 0,
+  "unresolved_previous_outputs": 0,
+  "wallet_results": [
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq084l0edu0ucchdngufewmh2mp2mlmqk8cqsq99n",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq087uc2epsa0ft08zu747g30c6zuh2lyxcsqugmn",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09090kz3h40xhhrmrcdeq62fadgp0gt2g8zqepy",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0a7apfhwtpcrx2vwh4rverv53y377dgsqtkmuyv",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0atd3ep6w47442fk86cxg5n0nsactvlts9nzk3r",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0cq8e9avklws5c6s8zqkh4gluc0q2jrasq93la2",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0d430ajed30h2df3d4eudc2d2jr45mr2qtpx9rj",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0frvgc8jdeyr5j98ggzmyn2rekwvyy06g9mywsl",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0g3rymnznt4dm00ep5yekxtdulmepc85g8av65a",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0gc0l4ju4sqmn2zcvhsv54srw725z40ac9kk09c",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0gcd2fr4d0exdafwmywgj7kvt0c8lqfnsjctg09",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0gk6md9mexs90tmr5tq2lu58zjf22jvqg2eq8hj",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0gkgcrl7qacdmyzhu8p2w56w6t6dpw5qqu9k5jr",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0hc9ft83yg4jvdq8cughyzj768dmkgg8cxwylmn",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0hdpsvr460r784ym6afepeygsacdj7vksh7jjd6",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0jgfy45kerhxuncn2sc3tv26dcv3q39vccuenfr",
+      "detail_coverage": 1.0,
+      "evidence_state": "PARTIAL",
+      "input_resolution": 1.0,
+      "state": "COMPLETE",
+      "transactions": 1
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0jlpszzdm77mdd9hrknh9ppd9g850pfcs3yqwhx",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0k8gu6ynsad22synmfldq806qtp7mpkpcxd0jp5",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0kc5h0xhqlmc2y7d6w3lghpg60xda5e0cynpnzj",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0kjhyk3k6yh6s0x0qhcfzu42l0nshm5rsmfmr6g",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0kzrpyd0u6t2wmnlp82gftx9n4cd8mjrgctxnlu",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0mmaezyca50v248mvc47vss8sxtrt0h9c4z835r",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0ndt7t03er7m8tz3x3u8uev388dt2qqfgsq68gq",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0p5lrjfdzfh92a6dqx05lr7dfdc70umuqq76ec9",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0p7kmkyh5zkqmmv02ulc6hkxuwmatxdqsnt2lme",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0p7tanj5wym5l7nt88rta0rcvmn56fhlsa56w75",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0pjpqcp5ztfhfr2ccqe340vwcmskss8uqqm0jvz",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0pqtmdkm4krzmr2frcwaug2zdndcm9mcgj0lp5q",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0pv054z4htt9f4da6kwftf7jewrsagsxgn7hpwf",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0q485qey2an63exarx43ev9p3xrftaxys7yxcls",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0q7j4qlaslzp5hhf78d6xyungvhetzy8cj9wr5a",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0rre7n3l6dg4vynznnguarmfnu696kr6czfgxqm",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0s0kdxjtk6w92mphezmw02vgq8f9c3n2chrrtuk",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0she9la0u4z5zlwj3ckv25cvg6f2kjxmgw9vxx3",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0tc0g06xvj256jx3v9f7ffxsrtfd8zuhqr9cqcg",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0tmqv9558dmffj72454pzkvfx5etm2rsg2jzelt",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0tpsqq08mkay9ewrfrdwlcghv62qw704s93hhsj",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0tqc7zg0a3erg4gan6835q6sn7w4vtnnqftsz8l",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0uvd88lln59s8u4rcg3gwzx4t7avza9vsrzpap9",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0vqkp4e093a5e6a2t3k08excpc3k74d0qpe0lt0",
+      "detail_coverage": 1.0,
+      "evidence_state": "PARTIAL",
+      "input_resolution": 1.0,
+      "state": "COMPLETE",
+      "transactions": 6
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0w5cger8gkfqrzly29erurag0yrmkx8vgk92dj4",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0w5hq42v9hxcvpkn78lvsf20wx2ntek6gw8xg99",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0w7teyh77d48krwz2837wwejrppzw905cm588n0",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0waqpr4l6j5tner8x2wtpup932dkl662cl3rmn9",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0wlyxvzqxl0p7y2etl45uarxww37p9x7gz7k0hq",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0wvtsw4tryz04jxrr65wew5lfdcxypzlcgevcrd",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0wzyrefxu9nctwv7ykp96pgpw9ustvdgss2aaev",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0xelq2n2enr2zzqjhymap9k3mjwea3nfcywjcvf",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0y8vr6jd8jg8fg576su907xqcdazsf65q20s3zy",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    },
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0y9wlz9hgd8yt8rtckqxejvja2wtde45sxllrnv",
+      "detail_coverage": null,
+      "evidence_state": "INSUFFICIENT_EVIDENCE",
+      "input_resolution": null,
+      "state": "COMPLETE",
+      "transactions": 0
+    }
+  ],
+  "wallets_attempted": 50,
+  "wallets_completed": 50,
+  "wallets_failed": 0,
+  "wallets_partial": 0
+}

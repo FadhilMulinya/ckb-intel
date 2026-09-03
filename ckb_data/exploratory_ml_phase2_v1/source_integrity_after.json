@@ -1,0 +1,15 @@
+{
+  "artifacts": {
+    "ckb_data/exploratory_ml_pca_v1/cross_experiment_comparison.json": "a1137b614062393a92f40c3c86e9ddb700a5d11b11df0177a12a5a7e0460d5ec",
+    "ckb_data/exploratory_ml_pca_v1/experiment_contract.json": "46effa585fb53443cfa116339bdbe95682934e36084469143d1a37016c8b0925",
+    "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2_evidence.jsonl": "8c35e586c7f3d5150281e73a2845c7ad2129b06441b87d233861df8198016add",
+    "ckb_data/feature_validation/activity_diagnostics_v1.csv": "a171f570906f319b5b6079424c6e1552a0e8f9c31e4a9edacd1972e762aaa794"
+  },
+  "database": {
+    "bytes": 862994432,
+    "path": "ckb_data/ckb_data_v2/ckb_explorer.sqlite",
+    "sha256": "e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322"
+  },
+  "manifest": "6d8b5cd777e9ea9825466dc7500fdcb1dd639981d74475387c405aa6599583fe",
+  "quick_check": "ok"
+}

@@ -1,0 +1,53 @@
+[
+  {
+    "ami": 0.5113378640334088,
+    "ari": 0.28698282004041126,
+    "gmm_choice": {
+      "aic": -11164.771598980056,
+      "bic": -10278.553947339366,
+      "components": 10,
+      "converged": true,
+      "covariance_type": "diag",
+      "mean_assignment_entropy": 0.005450913041832471,
+      "minimum_component_size": 25,
+      "representation": "HIGH_CONFIDENCE_SCALED"
+    },
+    "hdbscan_available": true,
+    "hdbscan_comparison_representation": "HIGH_CONFIDENCE_PCA4",
+    "representation": "HIGH_CONFIDENCE_SCALED"
+  },
+  {
+    "ami": 0.0,
+    "ari": 0.0,
+    "gmm_choice": {
+      "aic": 11364.361961741848,
+      "bic": 13576.839833618149,
+      "components": 1,
+      "converged": true,
+      "covariance_type": "full",
+      "mean_assignment_entropy": 0.0,
+      "minimum_component_size": 249,
+      "representation": "TEMPORAL_STRUCTURE_SCALED"
+    },
+    "hdbscan_available": true,
+    "hdbscan_comparison_representation": "TEMPORAL_STRUCTURE_SCALED",
+    "representation": "TEMPORAL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.2318060643515892,
+    "ari": 0.21431766010682693,
+    "gmm_choice": {
+      "aic": -2067.670802416857,
+      "bic": -1488.5318186831817,
+      "components": 5,
+      "converged": true,
+      "covariance_type": "diag",
+      "mean_assignment_entropy": 0.0031761564982487533,
+      "minimum_component_size": 5,
+      "representation": "CELL_STRUCTURE_SCALED"
+    },
+    "hdbscan_available": true,
+    "hdbscan_comparison_representation": "CELL_STRUCTURE_SCALED",
+    "representation": "CELL_STRUCTURE_SCALED"
+  }
+]

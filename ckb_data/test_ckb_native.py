@@ -90,6 +90,15 @@ class NativeTransactionTests(unittest.TestCase):
         self.assertEqual(tx["inputs"][0]["previous_output_index"], 7)
         self.assertIsNone(tx["input_capacity_shannon"])
 
+    def test_cellbase_input_is_not_applicable_to_previous_output_resolution(self):
+        cellbase = {"from_cellbase": True, "generated_tx_hash": "0xcellbase",
+                    "target_block_number": "20025197"}
+        tx = normalize_transaction(payload([cellbase], [cell(100, LOCK_A)]))
+        self.assertTrue(tx["is_cellbase"])
+        self.assertEqual(tx["inputs"][0]["resolution_status"], "not_applicable")
+        self.assertEqual(tx["inputs"][0]["resolution_source"], "cellbase")
+        self.assertEqual(tx["capacity_conservation_status"], "not_applicable")
+
     def test_previous_output_resolves_from_normalized_cache(self):
         conn = sqlite3.connect(":memory:")
         install_schema(conn)

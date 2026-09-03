@@ -1,6 +1,10 @@
 """Versioned registry of conservatively recognized CKB script families."""
 from __future__ import annotations
 
+from collections import Counter
+
+from .base import FeatureResult, SupportState, observation_support
+
 REGISTRY_VERSION = "ckb-script-registry-v1"
 UNKNOWN = "UNKNOWN"
 
@@ -27,3 +31,33 @@ def identify(script: dict | None) -> dict:
 def family_or_hash(script: dict | None, digest: str | None) -> str:
     match = identify(script)
     return match["script_family"] if match["script_family"] != UNKNOWN else (digest or UNKNOWN)
+
+
+def extract(observation: dict) -> FeatureResult:
+    txs = observation.get("transactions", [])
+    support = observation_support(observation, minimum_transactions=1,
+                                  require_inputs=False)
+    scripts = []
+    for tx in txs:
+        scripts.extend(item.get("resolved_lock_script") for item in tx.get("inputs", []))
+        scripts.extend(item.get("lock_script") for item in tx.get("outputs", []))
+        scripts.extend(item.get("resolved_type_script") for item in tx.get("inputs", []))
+        scripts.extend(item.get("type_script") for item in tx.get("outputs", []))
+    known = [identify(item)["script_family"] for item in scripts if item]
+    families = Counter(known)
+    if not txs:
+        state = SupportState.INSUFFICIENT_EVIDENCE
+    elif not scripts or not known:
+        state = SupportState.PARTIAL
+    else:
+        state = support
+    total_cells = sum(len(tx.get("inputs", [])) + len(tx.get("outputs", [])) for tx in txs)
+    values = {
+        "script_family_counts": dict(sorted(families.items())),
+        "cells_with_full_script": len(known),
+        "total_cells": total_cells,
+        "full_script_coverage_ratio": len(known) / total_cells if total_cells else None,
+    }
+    return FeatureResult("scripts", state, values,
+                         {"minimum_transactions": 1, "requires_full_scripts": True},
+                         {"transactions": len(txs), "registry_version": REGISTRY_VERSION})

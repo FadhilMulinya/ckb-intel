@@ -1,0 +1,55 @@
+{
+  "artifacts": {
+    "ckb_data/feature_engineering_v2/feature_definitions_v2.json": {
+      "bytes": 8360,
+      "sha256": "cb507335fa3db56b873ee46c2ed4b65880d86612731221911ff65eba0601dee6"
+    },
+    "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2.csv": {
+      "bytes": 1551738,
+      "sha256": "3ffed28c9ad2bed98e735ee02bdad6cd56a6ab956e9fd8a31fbe622707a6ef33"
+    },
+    "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2_evidence.jsonl": {
+      "bytes": 88802904,
+      "sha256": "8c35e586c7f3d5150281e73a2845c7ad2129b06441b87d233861df8198016add"
+    },
+    "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2_metadata.csv": {
+      "bytes": 185969,
+      "sha256": "7746900b415c2d9634ec4960301817ad280df029bfaabf67c8c145e150db35df"
+    },
+    "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2_ml.csv": {
+      "bytes": 423490,
+      "sha256": "cd952bfcaf3d492d42564fffdc2cc94179f3a7d7f3cd9143b793cdca826dfb62"
+    },
+    "ckb_data/feature_validation/activity_diagnostics_v1.csv": {
+      "bytes": 131125,
+      "sha256": "a171f570906f319b5b6079424c6e1552a0e8f9c31e4a9edacd1972e762aaa794"
+    },
+    "ckb_data/feature_validation/candidate_feature_sets_v1.json": {
+      "bytes": 21369,
+      "sha256": "81fe3fe2129b45498f2ac9b3756ee0150a9c3283ec85c436dc55c845e52d919b"
+    },
+    "ckb_data/feature_validation/candidate_matrix_metadata_v1.csv": {
+      "bytes": 138975,
+      "sha256": "b50e764feca303030e638fcadee02109018c7013a74a27f58dc865bdd451ff11"
+    },
+    "ckb_data/feature_validation/high_confidence.csv": {
+      "bytes": 33401,
+      "sha256": "3ecfde6b1108dd162b0dfb3d7e604579922091291e6df59bd2a6c38bcd3b35b8"
+    },
+    "ckb_data/feature_validation/low_redundancy_core.csv": {
+      "bytes": 221831,
+      "sha256": "a706b60a8b4c9e0984f7cb739d0cd7e062229c66084c5a3d6a2141a98d21a8b0"
+    },
+    "ckb_data/feature_validation/predictor_registry_v1.csv": {
+      "bytes": 71828,
+      "sha256": "1e109bfeee4c2473587f54ec33b557c0bdbb9774d47d8427a07cf08c47f10dca"
+    }
+  },
+  "database": {
+    "bytes": 862994432,
+    "path": "ckb_data/ckb_data_v2/ckb_explorer.sqlite",
+    "sha256": "e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322"
+  },
+  "manifest_hash": "6d8b5cd777e9ea9825466dc7500fdcb1dd639981d74475387c405aa6599583fe",
+  "sqlite_quick_check": "ok"
+}

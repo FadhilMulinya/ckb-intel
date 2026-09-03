@@ -10,6 +10,7 @@ import datetime as dt
 import hashlib
 import json
 import sqlite3
+from decimal import Decimal, InvalidOperation
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS cells (
     output_index INTEGER NOT NULL,
     capacity_shannon INTEGER,
     lock_script_hash TEXT,
+    lock_identifier TEXT,
     type_script_hash TEXT,
     output_data TEXT,
     raw_json TEXT NOT NULL,
@@ -79,6 +81,7 @@ CREATE TABLE IF NOT EXISTS transaction_inputs (
     previous_output_index INTEGER,
     resolved_capacity_shannon INTEGER,
     resolved_lock_script_hash TEXT,
+    resolved_lock_identifier TEXT,
     resolved_type_script_hash TEXT,
     resolved_output_data TEXT,
     resolution_status TEXT NOT NULL,
@@ -149,6 +152,8 @@ def install_schema(conn: sqlite3.Connection) -> None:
                  ("legacy_edges_status", "LEGACY_DISABLED_NOT_SOURCE_OF_TRUTH"))
     _ensure_column(conn, "transaction_inputs", "resolution_source",
                    "TEXT NOT NULL DEFAULT 'normalized_payload'")
+    _ensure_column(conn, "transaction_inputs", "resolved_lock_identifier", "TEXT")
+    _ensure_column(conn, "cells", "lock_identifier", "TEXT")
     _ensure_column(conn, "wallet_observations", "boundary_resolution_source", "TEXT")
     _ensure_column(conn, "wallet_observations", "boundary_resolution_status",
                    "TEXT NOT NULL DEFAULT 'unresolved'")
@@ -188,8 +193,8 @@ def script_hash(script: Optional[dict]) -> Optional[str]:
 
 def _int(value: Any) -> Optional[int]:
     try:
-        return int(value) if value is not None else None
-    except (TypeError, ValueError):
+        return int(Decimal(str(value))) if value is not None else None
+    except (TypeError, ValueError, InvalidOperation):
         return None
 
 
@@ -201,6 +206,8 @@ def _epoch_seconds(value: Any) -> Optional[int]:
 
 
 def _attrs(payload: dict) -> tuple[dict, dict]:
+    if payload.get("transaction_hash"):
+        return payload, payload
     data = payload.get("data")
     if isinstance(data, list):
         data = data[0] if data else None
@@ -237,6 +244,11 @@ def _data(cell: dict) -> Optional[str]:
     return value if isinstance(value, str) else None
 
 
+def _lock_identifier(cell: dict, lock: Optional[dict]) -> Optional[str]:
+    """Return a script hash, or preserve the historical address fallback."""
+    return script_hash(lock) or cell.get("lock_hash") or cell.get("address_hash")
+
+
 def normalize_transaction(payload: dict, target_lock_hash: Optional[str] = None) -> dict:
     data, attrs = _attrs(payload)
     tx_hash = attrs.get("transaction_hash") or data.get("id") or payload.get("tx_hash")
@@ -250,24 +262,28 @@ def normalize_transaction(payload: dict, target_lock_hash: Optional[str] = None)
         lock = _script(cell, "lock")
         type_script = _script(cell, "type")
         outputs.append({
-            "output_index": _int(cell.get("output_index")) if cell.get("output_index") is not None else index,
+            "output_index": (_int(cell.get("output_index")) if cell.get("output_index") is not None
+                             else _int(cell.get("cell_index")) if cell.get("cell_index") is not None else index),
             "capacity": _int(cell.get("capacity")),
             "lock_script": lock,
             "lock_script_hash": script_hash(lock),
+            "lock_identifier": _lock_identifier(cell, lock),
             "type_script": type_script,
             "type_script_hash": script_hash(type_script),
             "output_data": _data(cell),
-            "target_controls_output": bool(target_lock_hash and script_hash(lock) == target_lock_hash),
+            "target_controls_output": bool(target_lock_hash and _lock_identifier(cell, lock) == target_lock_hash),
             "raw": cell,
         })
 
     inputs = []
     for index, cell in enumerate(raw_inputs):
+        from_cellbase = bool(cell.get("from_cellbase"))
         previous_tx_hash, previous_output_index = _outpoint(cell)
         lock = _script(cell, "lock")
         type_script = _script(cell, "type")
         capacity = _int(cell.get("capacity"))
-        has_resolved_cell = capacity is not None and lock is not None
+        lock_identifier = _lock_identifier(cell, lock)
+        has_resolved_cell = capacity is not None and lock_identifier is not None
         inputs.append({
             "input_index": index,
             "previous_tx_hash": previous_tx_hash,
@@ -275,12 +291,16 @@ def normalize_transaction(payload: dict, target_lock_hash: Optional[str] = None)
             "resolved_capacity": capacity,
             "resolved_lock_script": lock,
             "resolved_lock_script_hash": script_hash(lock),
+            "resolved_lock_identifier": lock_identifier,
             "resolved_type_script": type_script,
             "resolved_type_script_hash": script_hash(type_script),
             "resolved_output_data": _data(cell),
-            "resolution_status": STATUS_COMPLETE if has_resolved_cell else STATUS_INCOMPLETE,
-            "resolution_source": "normalized_payload" if has_resolved_cell else "unresolved",
-            "target_controls_input": bool(target_lock_hash and script_hash(lock) == target_lock_hash),
+            "resolution_status": (STATUS_NOT_APPLICABLE if from_cellbase else
+                                  STATUS_COMPLETE if has_resolved_cell else STATUS_INCOMPLETE),
+            "resolution_source": ("cellbase" if from_cellbase else
+                                  ("normalized_payload" if lock is not None else
+                                   "local_address_transaction") if has_resolved_cell else "unresolved"),
+            "target_controls_input": bool(target_lock_hash and lock_identifier == target_lock_hash),
             "raw": cell,
         })
 
@@ -292,7 +312,8 @@ def normalize_transaction(payload: dict, target_lock_hash: Optional[str] = None)
         "inputs": inputs,
         "outputs": outputs,
         "reported_fee_shannon": _int(attrs.get("transaction_fee")),
-        "is_cellbase": bool(attrs.get("is_cellbase")),
+        "is_cellbase": bool(attrs.get("is_cellbase")) or any(
+            item.get("from_cellbase") for item in raw_inputs),
         "pairwise_value_attribution": PAIRWISE_VALUE_ATTRIBUTION,
     }
     _recompute_conservation(tx)
@@ -307,7 +328,8 @@ def _recompute_conservation(tx: dict) -> None:
     output_total = sum(item["capacity"] for item in tx["outputs"]) if output_known else None
     fee = input_total - output_total if input_total is not None and output_total is not None else None
     reported_fee = tx.get("reported_fee_shannon")
-    if not tx["inputs"] and tx.get("is_cellbase"):
+    if tx.get("is_cellbase") and (not tx["inputs"] or all(
+            item["resolution_status"] == STATUS_NOT_APPLICABLE for item in tx["inputs"])):
         status = STATUS_NOT_APPLICABLE
     elif fee is None:
         status = STATUS_INCOMPLETE
@@ -341,7 +363,7 @@ def resolve_inputs_from_cells(conn: sqlite3.Connection, tx: dict) -> int:
         if item["previous_tx_hash"] is None or item["previous_output_index"] is None:
             continue
         row = conn.execute(
-            "SELECT capacity_shannon, lock_script_hash, type_script_hash, "
+            "SELECT capacity_shannon, lock_script_hash, lock_identifier, type_script_hash, "
             "output_data FROM cells WHERE creating_tx_hash = ? AND output_index = ?",
             (item["previous_tx_hash"], item["previous_output_index"]),
         ).fetchone()
@@ -349,11 +371,12 @@ def resolve_inputs_from_cells(conn: sqlite3.Connection, tx: dict) -> int:
             continue
         item["resolved_capacity"] = row[0]
         item["resolved_lock_script_hash"] = row[1]
-        item["resolved_type_script_hash"] = row[2]
-        item["resolved_output_data"] = row[3]
+        item["resolved_lock_identifier"] = row[2] or row[1]
+        item["resolved_type_script_hash"] = row[3]
+        item["resolved_output_data"] = row[4]
         item["resolved_lock_script"] = _stored_script(conn, "lock_scripts", row[1])
-        item["resolved_type_script"] = _stored_script(conn, "type_scripts", row[2])
-        item["resolution_status"] = (STATUS_COMPLETE if row[0] is not None and row[1]
+        item["resolved_type_script"] = _stored_script(conn, "type_scripts", row[3])
+        item["resolution_status"] = (STATUS_COMPLETE if row[0] is not None and (row[2] or row[1])
                                      else STATUS_INCOMPLETE)
         item["resolution_source"] = "normalized_local_cells"
         resolved_count += item["resolution_status"] == STATUS_COMPLETE
@@ -379,9 +402,13 @@ def persist_transaction(conn: sqlite3.Connection, tx: dict) -> None:
     for output in tx["outputs"]:
         _save_script(conn, "lock_scripts", output["lock_script"], output["lock_script_hash"])
         _save_script(conn, "type_scripts", output["type_script"], output["type_script_hash"])
-        conn.execute("INSERT INTO cells VALUES (?, ?, ?, ?, ?, ?, ?)", (
+        conn.execute("""INSERT INTO cells
+            (creating_tx_hash,output_index,capacity_shannon,lock_script_hash,
+             lock_identifier,type_script_hash,output_data,raw_json)
+             VALUES (?,?,?,?,?,?,?,?)""", (
             tx["tx_hash"], output["output_index"], output["capacity"],
-            output["lock_script_hash"], output["type_script_hash"], output["output_data"],
+            output["lock_script_hash"], output.get("lock_identifier"),
+            output["type_script_hash"], output["output_data"],
             json.dumps(output["raw"], sort_keys=True)))
     for item in tx["inputs"]:
         _save_script(conn, "lock_scripts", item["resolved_lock_script"], item["resolved_lock_script_hash"])
@@ -389,11 +416,12 @@ def persist_transaction(conn: sqlite3.Connection, tx: dict) -> None:
         conn.execute("""INSERT INTO transaction_inputs
             (tx_hash,input_index,previous_tx_hash,previous_output_index,
              resolved_capacity_shannon,resolved_lock_script_hash,
-             resolved_type_script_hash,resolved_output_data,resolution_status,
-             resolution_source,raw_json) VALUES (?,?,?,?,?,?,?,?,?,?,?)""", (
+             resolved_lock_identifier,resolved_type_script_hash,resolved_output_data,resolution_status,
+             resolution_source,raw_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""", (
             tx["tx_hash"], item["input_index"], item["previous_tx_hash"],
             item["previous_output_index"], item["resolved_capacity"],
-            item["resolved_lock_script_hash"], item["resolved_type_script_hash"],
+            item["resolved_lock_script_hash"], item.get("resolved_lock_identifier"),
+            item["resolved_type_script_hash"],
             item["resolved_output_data"], item["resolution_status"], item["resolution_source"],
             json.dumps(item["raw"], sort_keys=True)))
 

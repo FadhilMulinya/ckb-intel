@@ -1,0 +1,230 @@
+[
+  {
+    "cluster_survival": {
+      "0": 1.0,
+      "1": 0.9551886356175511,
+      "2": 0.9996,
+      "3": 1.0,
+      "4": 0.996938775510204
+    },
+    "mean_ami": 0.6452506446554298,
+    "mean_ari": 0.3732679964030673,
+    "mean_noise_ratio": 0.10778588807785887,
+    "representation": "HIGH_CONFIDENCE_SCALED",
+    "selected_run": {
+      "ami_to_selected": 1.0,
+      "ari_to_selected": 1.0,
+      "cluster_count": 5,
+      "cluster_sizes": "{\"1\": 79, \"3\": 60, \"2\": 27, \"0\": 83, \"4\": 60}",
+      "mean_cluster_persistence": 0.1967651133363581,
+      "mean_membership_probability": 0.4772994001008227,
+      "min_cluster_size": 25,
+      "min_samples": 10,
+      "noise_count": 204,
+      "noise_ratio": 0.39766081871345027,
+      "pathological": false,
+      "rejection_reasons": "[]",
+      "representation": "HIGH_CONFIDENCE_SCALED",
+      "run_id": "HIGH_CONFIDENCE_SCALED_mcs25_ms10_eom",
+      "selection_method": "eom"
+    },
+    "stability_class": "UNSTABLE"
+  },
+  {
+    "cluster_survival": {
+      "0": 0.9988430510599831,
+      "1": 0.9788526503107559
+    },
+    "mean_ami": 0.94584188968711,
+    "mean_ari": 0.9489028801701849,
+    "mean_noise_ratio": 0.016982968369829682,
+    "representation": "HIGH_CONFIDENCE_PCA3",
+    "selected_run": {
+      "ami_to_selected": 1.0,
+      "ari_to_selected": 1.0,
+      "cluster_count": 2,
+      "cluster_sizes": "{\"1\": 426, \"0\": 84}",
+      "mean_cluster_persistence": 0.397011085791302,
+      "mean_membership_probability": 0.6747329534725494,
+      "min_cluster_size": 25,
+      "min_samples": 10,
+      "noise_count": 3,
+      "noise_ratio": 0.005847953216374269,
+      "pathological": false,
+      "rejection_reasons": "[]",
+      "representation": "HIGH_CONFIDENCE_PCA3",
+      "run_id": "HIGH_CONFIDENCE_PCA3_mcs25_ms10_eom",
+      "selection_method": "eom"
+    },
+    "stability_class": "ROBUST"
+  },
+  {
+    "cluster_survival": {
+      "0": 0.9932504958664427,
+      "1": 0.9326184138929512,
+      "2": 0.97240068011564
+    },
+    "mean_ami": 0.9097299396269104,
+    "mean_ari": 0.9422508681014711,
+    "mean_noise_ratio": 0.082992700729927,
+    "representation": "HIGH_CONFIDENCE_PCA4",
+    "selected_run": {
+      "ami_to_selected": 1.0,
+      "ari_to_selected": 1.0,
+      "cluster_count": 3,
+      "cluster_sizes": "{\"1\": 78, \"2\": 322, \"0\": 84}",
+      "mean_cluster_persistence": 0.2624049272315489,
+      "mean_membership_probability": 0.66254225173997,
+      "min_cluster_size": 25,
+      "min_samples": 10,
+      "noise_count": 29,
+      "noise_ratio": 0.056530214424951264,
+      "pathological": false,
+      "rejection_reasons": "[]",
+      "representation": "HIGH_CONFIDENCE_PCA4",
+      "run_id": "HIGH_CONFIDENCE_PCA4_mcs25_ms10_eom",
+      "selection_method": "eom"
+    },
+    "stability_class": "ROBUST"
+  },
+  {
+    "cluster_survival": {
+      "0": 1.0,
+      "1": 0.9079675919869413
+    },
+    "mean_ami": 0.8939551499383817,
+    "mean_ari": 0.868288803347093,
+    "mean_noise_ratio": 0.055182481751824816,
+    "representation": "HIGH_CONFIDENCE_PCA6",
+    "selected_run": {
+      "ami_to_selected": 1.0,
+      "ari_to_selected": 1.0,
+      "cluster_count": 2,
+      "cluster_sizes": "{\"1\": 425, \"0\": 84}",
+      "mean_cluster_persistence": 0.27136088537495295,
+      "mean_membership_probability": 0.890294112244624,
+      "min_cluster_size": 25,
+      "min_samples": 10,
+      "noise_count": 4,
+      "noise_ratio": 0.007797270955165692,
+      "pathological": false,
+      "rejection_reasons": "[]",
+      "representation": "HIGH_CONFIDENCE_PCA6",
+      "run_id": "HIGH_CONFIDENCE_PCA6_mcs25_ms10_eom",
+      "selection_method": "eom"
+    },
+    "stability_class": "ROBUST"
+  },
+  {
+    "cluster_survival": {
+      "0": 0.7220547838230614,
+      "1": 0.9064804324624371
+    },
+    "mean_ami": 0.6871918042887489,
+    "mean_ari": 0.7060460979501485,
+    "mean_noise_ratio": 0.6595500000000001,
+    "representation": "TEMPORAL_STRUCTURE_SCALED",
+    "selected_run": {
+      "ami_to_selected": 1.0,
+      "ari_to_selected": 1.0,
+      "cluster_count": 2,
+      "cluster_sizes": "{\"1\": 44, \"0\": 64}",
+      "mean_cluster_persistence": 0.12397536652867233,
+      "mean_membership_probability": 0.40703606822651967,
+      "min_cluster_size": 25,
+      "min_samples": 10,
+      "noise_count": 141,
+      "noise_ratio": 0.5662650602409639,
+      "pathological": false,
+      "rejection_reasons": "[]",
+      "representation": "TEMPORAL_STRUCTURE_SCALED",
+      "run_id": "TEMPORAL_STRUCTURE_SCALED_mcs25_ms10_eom",
+      "selection_method": "eom"
+    },
+    "stability_class": "MODERATELY_STABLE"
+  },
+  {
+    "cluster_survival": {
+      "0": 0.7737108376068501,
+      "1": 0.9992857142857143
+    },
+    "mean_ami": 0.17612239758634649,
+    "mean_ari": 0.06449302379320945,
+    "mean_noise_ratio": 0.82865,
+    "representation": "TEMPORAL_STRUCTURE_PCA3",
+    "selected_run": {
+      "ami_to_selected": 1.0,
+      "ari_to_selected": 1.0,
+      "cluster_count": 2,
+      "cluster_sizes": "{\"0\": 136, \"1\": 15}",
+      "mean_cluster_persistence": 0.12377257836984253,
+      "mean_membership_probability": 0.5043768652775563,
+      "min_cluster_size": 15,
+      "min_samples": 10,
+      "noise_count": 98,
+      "noise_ratio": 0.39357429718875503,
+      "pathological": false,
+      "rejection_reasons": "[]",
+      "representation": "TEMPORAL_STRUCTURE_PCA3",
+      "run_id": "TEMPORAL_STRUCTURE_PCA3_mcs15_ms10_eom",
+      "selection_method": "eom"
+    },
+    "stability_class": "UNSTABLE"
+  },
+  {
+    "cluster_survival": {
+      "0": 0.9674328955358368,
+      "1": 0.921692352117279
+    },
+    "mean_ami": 0.5269128917894622,
+    "mean_ari": 0.5513978075358598,
+    "mean_noise_ratio": 0.5995652173913043,
+    "representation": "CELL_STRUCTURE_SCALED",
+    "selected_run": {
+      "ami_to_selected": 1.0,
+      "ari_to_selected": 1.0,
+      "cluster_count": 2,
+      "cluster_sizes": "{\"0\": 19, \"1\": 85}",
+      "mean_cluster_persistence": 0.14894720408514997,
+      "mean_membership_probability": 0.538022128115418,
+      "min_cluster_size": 15,
+      "min_samples": 5,
+      "noise_count": 68,
+      "noise_ratio": 0.3953488372093023,
+      "pathological": false,
+      "rejection_reasons": "[]",
+      "representation": "CELL_STRUCTURE_SCALED",
+      "run_id": "CELL_STRUCTURE_SCALED_mcs15_ms5_eom",
+      "selection_method": "eom"
+    },
+    "stability_class": "MODERATELY_STABLE"
+  },
+  {
+    "cluster_survival": {
+      "0": 1.0,
+      "1": 1.0
+    },
+    "mean_ami": 0.0,
+    "mean_ari": 0.0,
+    "mean_noise_ratio": 1.0,
+    "representation": "CELL_STRUCTURE_PCA7",
+    "selected_run": {
+      "ami_to_selected": 1.0,
+      "ari_to_selected": 1.0,
+      "cluster_count": 2,
+      "cluster_sizes": "{\"0\": 20, \"1\": 16}",
+      "mean_cluster_persistence": 0.04550412936984431,
+      "mean_membership_probability": 0.20852296729730602,
+      "min_cluster_size": 15,
+      "min_samples": 10,
+      "noise_count": 136,
+      "noise_ratio": 0.7906976744186046,
+      "pathological": false,
+      "rejection_reasons": "[]",
+      "representation": "CELL_STRUCTURE_PCA7",
+      "run_id": "CELL_STRUCTURE_PCA7_mcs15_ms10_eom",
+      "selection_method": "eom"
+    },
+    "stability_class": "UNSTABLE"
+  }
+]

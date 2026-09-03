@@ -3,15 +3,21 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import urllib.error
 import urllib.request
 import statistics
+import time
 from dataclasses import dataclass
 from typing import Any, Optional
 
 
 class ClientUnavailable(RuntimeError):
-    pass
+    def __init__(self, message: str, *, error_type: str | None = None,
+                 http_status: int | None = None):
+        super().__init__(message)
+        self.error_type = error_type
+        self.http_status = http_status
 
 
 _BOUNDARY_CACHE: dict[tuple[int, int], dict] = {}
@@ -87,34 +93,144 @@ class CkbIndexerClient(JsonRpcClient):
 
 
 class ExplorerClient:
-    def __init__(self, url: Optional[str] = None, timeout: float = 5.0):
+    def __init__(self, url: Optional[str] = None, timeout: Optional[float] = None,
+                 stats=None, max_retries: Optional[int] = None,
+                 request_delay_ms: Optional[int] = None):
         self.url = (url or os.getenv("EXPLORER_API_URL") or
                     "https://mainnet-api.explorer.nervos.org/api/v1").rstrip("/")
-        self.timeout = timeout
+        self.timeout = timeout if timeout is not None else float(
+            os.getenv("EXPLORER_TIMEOUT_SECONDS", "20"))
+        self.stats = stats
+        self.max_retries = max_retries if max_retries is not None else int(
+            os.getenv("EXPLORER_MAX_RETRIES", "3"))
+        self.request_delay_ms = request_delay_ms if request_delay_ms is not None else int(
+            os.getenv("EXPLORER_REQUEST_DELAY_MS", "250"))
+        self._block_cache: dict[int, dict] = {}
+
+    def _count(self, name: str, amount: int = 1) -> None:
+        if self.stats is not None:
+            self.stats.increment(name, amount)
 
     def _get(self, path: str, params: Optional[dict] = None) -> dict:
         from urllib.parse import urlencode
         query = "?" + urlencode(params) if params else ""
         request = urllib.request.Request(self.url + path + query,
-                                         headers={"Accept": "application/vnd.api+json"})
-        try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                return json.loads(response.read())
-        except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
-            raise ClientUnavailable(f"Explorer {path}: {exc}") from exc
+                                         headers={
+                                             "Accept": "application/vnd.api+json",
+                                             "Content-Type": "application/vnd.api+json",
+                                             "User-Agent": "ckb-wallet-behavior-research/1.0",
+                                         })
+        last_error = None
+        for attempt in range(self.max_retries + 1):
+            retry_after = None
+            self._count("explorer_requests")
+            try:
+                with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                    payload = json.loads(response.read())
+                self._count("explorer_successes")
+                if self.request_delay_ms:
+                    time.sleep((self.request_delay_ms / 1000) + random.uniform(0, 0.05))
+                return payload
+            except urllib.error.HTTPError as exc:
+                last_error = exc
+                if exc.code == 429:
+                    self._count("rate_limit_events")
+                    retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                retryable = exc.code == 429 or exc.code >= 500
+            except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
+                last_error, retryable = exc, True
+            if not retryable or attempt >= self.max_retries:
+                break
+            self._count("explorer_retries")
+            try:
+                delay = float(retry_after) if retry_after else min(2 ** attempt, 8)
+            except (TypeError, ValueError):
+                delay = min(2 ** attempt, 8)
+            time.sleep(delay + random.uniform(0, 0.25))
+        self._count("explorer_failures")
+        http_status = last_error.code if isinstance(last_error, urllib.error.HTTPError) else None
+        if isinstance(last_error, TimeoutError) or "timed out" in str(last_error).lower():
+            error_type = "EXPLORER_TIMEOUT"
+        elif http_status == 429:
+            error_type = "EXPLORER_RATE_LIMIT"
+        elif http_status is not None:
+            error_type = "EXPLORER_HTTP_ERROR"
+        elif isinstance(last_error, json.JSONDecodeError):
+            error_type = "EXPLORER_SCHEMA_OR_JSON_ERROR"
+        else:
+            error_type = "EXPLORER_NETWORK_ERROR"
+        raise ClientUnavailable(f"Explorer {path}: {last_error}",
+                                error_type=error_type,
+                                http_status=http_status) from last_error
 
     def get_transaction(self, tx_hash: str) -> Optional[dict]:
         return self._get(f"/transactions/{tx_hash}", {"display_cells": "true"})
+
+    def get_address(self, address: str) -> Optional[dict]:
+        return self._get(f"/addresses/{address}")
+
+    def get_address_transactions(self, address: str, page: int = 1,
+                                 page_size: int = 50) -> dict:
+        return self._get(f"/address_transactions/{address}",
+                         {"page": page, "page_size": page_size, "sort": "time.desc"})
 
     def get_tip_block_number(self) -> int:
         payload = self._get("/statistics/tip_block_number")
         return int(payload["data"]["attributes"]["tip_block_number"])
 
     def get_block_by_number(self, number: int) -> dict:
-        return self._get(f"/blocks/{number}")
+        if number not in self._block_cache:
+            self._count("block_cache_misses")
+            self._block_cache[number] = self._get(f"/blocks/{number}")
+        else:
+            self._count("block_cache_hits")
+        return self._block_cache[number]
 
     def resolve_block_for_timestamp(self, timestamp_s: int, *, side: str) -> int:
-        return binary_search_block(self, timestamp_s, side=side)
+        return binary_search_explorer_block(self, timestamp_s, side=side)
+
+
+def binary_search_explorer_block(client: ExplorerClient, timestamp_s: int,
+                                 *, side: str) -> int:
+    """Bounded Explorer lookup using block timestamps, with adjacent proof.
+
+    This avoids recomputing CKB's 37-header median at every search step (over
+    1,000 Explorer calls).  A boundary is accepted only when the candidate and
+    its adjacent block prove the requested inequality; otherwise the caller
+    records a PARTIAL boundary rather than substituting observed wallet blocks.
+    """
+    if side not in {"start", "end"}:
+        raise ValueError("side must be start or end")
+    low, high = 0, client.get_tip_block_number()
+    candidate = None
+    while low <= high:
+        middle = (low + high) // 2
+        value = block_timestamp_seconds(client.get_block_by_number(middle))
+        if value is None:
+            raise ClientUnavailable(f"Explorer block {middle} has no timestamp")
+        if side == "start":
+            if value >= timestamp_s:
+                candidate, high = middle, middle - 1
+            else:
+                low = middle + 1
+        else:
+            if value <= timestamp_s:
+                candidate, low = middle, middle + 1
+            else:
+                high = middle - 1
+    if candidate is None:
+        raise ClientUnavailable(f"timestamp {timestamp_s} outside Explorer chain")
+    current = block_timestamp_seconds(client.get_block_by_number(candidate))
+    neighbor_height = candidate - 1 if side == "start" else candidate + 1
+    neighbor = (block_timestamp_seconds(client.get_block_by_number(neighbor_height))
+                if 0 <= neighbor_height <= client.get_tip_block_number() else None)
+    valid = ((current is not None and current >= timestamp_s and
+              (neighbor is None or neighbor < timestamp_s)) if side == "start" else
+             (current is not None and current <= timestamp_s and
+              (neighbor is None or neighbor > timestamp_s)))
+    if not valid:
+        raise ClientUnavailable("Explorer timestamps did not prove an exact adjacent boundary")
+    return candidate
 
 
 def block_timestamp_seconds(payload: Optional[dict]) -> Optional[int]:

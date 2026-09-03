@@ -1,0 +1,18 @@
+{
+  "creation_timestamp": "2026-08-31T19:19:15.588255+00:00",
+  "manifest_hash": "6d8b5cd777e9ea9825466dc7500fdcb1dd639981d74475387c405aa6599583fe",
+  "population_wallet_count": 1172,
+  "research_population_version": "ckb-wallet-population-local-v1",
+  "source_dataset_versions": {
+    "ckb_data/addresses.txt": "ckb-wallet-research-manifest-v1",
+    "ckb_data/ckb_data_v2/provenance": "ckb-wallet-research-manifest-v1",
+    "ckb_data/ckb_data_v2/wallets_active.txt": "ckb-wallet-research-manifest-v1",
+    "ckb_data/ckb_data_v2/wallets_malformed.txt": "ckb-wallet-research-manifest-v1",
+    "ckb_data/ckb_data_v2/wallets_unused.txt": "ckb-wallet-research-manifest-v1",
+    "ckb_data/ckb_features/features_full.csv": "ckb-wallet-research-manifest-v1",
+    "data/real/bot_like/manifest.json": "ckb-wallet-research-manifest-v1",
+    "data/real/checkpoint.json": "ckb-wallet-research-manifest-v1",
+    "data/real/human_like/manifest.json": "ckb-wallet-research-manifest-v1",
+    "data/real/lifetime_stats.jsonl": "ckb-wallet-research-manifest-v1"
+  }
+}

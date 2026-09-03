@@ -1,4 +1,6 @@
-# registry-service
+# LEGACY / ABANDONED BASELINE — registry-service
+
+> This service stores historical proxy-classifier outputs. It is retained for auditability and is not part of the final CKB-native behavioural research result.
 
 ## What this service does
 

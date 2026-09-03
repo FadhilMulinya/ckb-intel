@@ -1,0 +1,198 @@
+[
+  {
+    "ami": 0.41413911881354853,
+    "ari": 0.19921814220122896,
+    "left": "HIGH_CONFIDENCE_SCALED",
+    "overlap": 513,
+    "right": "HIGH_CONFIDENCE_PCA3"
+  },
+  {
+    "ami": 0.6309828126345365,
+    "ari": 0.38539656164093256,
+    "left": "HIGH_CONFIDENCE_SCALED",
+    "overlap": 513,
+    "right": "HIGH_CONFIDENCE_PCA4"
+  },
+  {
+    "ami": 0.4135014678460197,
+    "ari": 0.1973770173327361,
+    "left": "HIGH_CONFIDENCE_SCALED",
+    "overlap": 513,
+    "right": "HIGH_CONFIDENCE_PCA6"
+  },
+  {
+    "ami": 0.0896566649160367,
+    "ari": 0.05173113308477141,
+    "left": "HIGH_CONFIDENCE_SCALED",
+    "overlap": 236,
+    "right": "TEMPORAL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.03900686837619153,
+    "ari": 0.03664321970187661,
+    "left": "HIGH_CONFIDENCE_SCALED",
+    "overlap": 236,
+    "right": "TEMPORAL_STRUCTURE_PCA3"
+  },
+  {
+    "ami": 0.17427407335358466,
+    "ari": 0.06289604367449135,
+    "left": "HIGH_CONFIDENCE_SCALED",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.23598377866886294,
+    "ari": 0.3444175299067037,
+    "left": "HIGH_CONFIDENCE_SCALED",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_PCA7"
+  },
+  {
+    "ami": 0.6054546340101696,
+    "ari": 0.4820747078472897,
+    "left": "HIGH_CONFIDENCE_PCA3",
+    "overlap": 513,
+    "right": "HIGH_CONFIDENCE_PCA4"
+  },
+  {
+    "ami": 0.9811880260151961,
+    "ari": 0.9920158592996474,
+    "left": "HIGH_CONFIDENCE_PCA3",
+    "overlap": 513,
+    "right": "HIGH_CONFIDENCE_PCA6"
+  },
+  {
+    "ami": 0.04348111028767427,
+    "ari": -0.017401344632841046,
+    "left": "HIGH_CONFIDENCE_PCA3",
+    "overlap": 236,
+    "right": "TEMPORAL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.06214296775896598,
+    "ari": 0.07593379606876391,
+    "left": "HIGH_CONFIDENCE_PCA3",
+    "overlap": 236,
+    "right": "TEMPORAL_STRUCTURE_PCA3"
+  },
+  {
+    "ami": -0.00037833524999217517,
+    "ari": 0.0006904759985706878,
+    "left": "HIGH_CONFIDENCE_PCA3",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": -0.007252313359698882,
+    "ari": -0.009362923705421222,
+    "left": "HIGH_CONFIDENCE_PCA3",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_PCA7"
+  },
+  {
+    "ami": 0.5965527778096723,
+    "ari": 0.47852786141746406,
+    "left": "HIGH_CONFIDENCE_PCA4",
+    "overlap": 513,
+    "right": "HIGH_CONFIDENCE_PCA6"
+  },
+  {
+    "ami": 0.11729424587661855,
+    "ari": -0.0834452374455359,
+    "left": "HIGH_CONFIDENCE_PCA4",
+    "overlap": 236,
+    "right": "TEMPORAL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.05251131300540045,
+    "ari": 0.06929889216008228,
+    "left": "HIGH_CONFIDENCE_PCA4",
+    "overlap": 236,
+    "right": "TEMPORAL_STRUCTURE_PCA3"
+  },
+  {
+    "ami": 0.09288039827148678,
+    "ari": 0.11367775600263309,
+    "left": "HIGH_CONFIDENCE_PCA4",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.064872746674406,
+    "ari": -0.15983506416470916,
+    "left": "HIGH_CONFIDENCE_PCA4",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_PCA7"
+  },
+  {
+    "ami": 0.04623580116669354,
+    "ari": -0.021150993755619792,
+    "left": "HIGH_CONFIDENCE_PCA6",
+    "overlap": 236,
+    "right": "TEMPORAL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.05896373590744557,
+    "ari": 0.07272643409064725,
+    "left": "HIGH_CONFIDENCE_PCA6",
+    "overlap": 236,
+    "right": "TEMPORAL_STRUCTURE_PCA3"
+  },
+  {
+    "ami": 0.008804444933886416,
+    "ari": 0.001659803874529183,
+    "left": "HIGH_CONFIDENCE_PCA6",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": -0.005908290232760896,
+    "ari": -0.01828585325401125,
+    "left": "HIGH_CONFIDENCE_PCA6",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_PCA7"
+  },
+  {
+    "ami": 0.1132427335711877,
+    "ari": 0.07128649432978323,
+    "left": "TEMPORAL_STRUCTURE_SCALED",
+    "overlap": 249,
+    "right": "TEMPORAL_STRUCTURE_PCA3"
+  },
+  {
+    "ami": 0.17183585121273806,
+    "ari": 0.05566879867882402,
+    "left": "TEMPORAL_STRUCTURE_SCALED",
+    "overlap": 166,
+    "right": "CELL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.08946128767196238,
+    "ari": 0.16080435212277625,
+    "left": "TEMPORAL_STRUCTURE_SCALED",
+    "overlap": 166,
+    "right": "CELL_STRUCTURE_PCA7"
+  },
+  {
+    "ami": 0.00036445630195129457,
+    "ari": 0.001807192970998934,
+    "left": "TEMPORAL_STRUCTURE_PCA3",
+    "overlap": 166,
+    "right": "CELL_STRUCTURE_SCALED"
+  },
+  {
+    "ami": 0.002856544633908792,
+    "ari": 0.01871267199092275,
+    "left": "TEMPORAL_STRUCTURE_PCA3",
+    "overlap": 166,
+    "right": "CELL_STRUCTURE_PCA7"
+  },
+  {
+    "ami": 0.20580344768133513,
+    "ari": 0.013138344927304877,
+    "left": "CELL_STRUCTURE_SCALED",
+    "overlap": 172,
+    "right": "CELL_STRUCTURE_PCA7"
+  }
+]
