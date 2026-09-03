@@ -8,7 +8,7 @@
 | Broad/Core sparsity | `DOCUMENTED` | Diagnostic sparse spaces separated from the 513×10 no-imputation High-Confidence reference; 28×59 experiment remains rejected. |
 | Dependency snapshot | `FIXED` | Flexible requirements retained; exact CPython 3.12.13 artifact-generation versions added in `requirements-research.lock.txt`; independent Python 3.14 verification noted. |
 | SQLite `ResourceWarning` | `FIXED` | Store closure is idempotent, context-managed, and exception-safe; regression test passes with ResourceWarning treated as error. |
-| 863 MB DB distribution | `REQUIRES HUMAN ACTION` | Filename, placement, expected SHA, verifier behavior, and `<DATASET_RELEASE_URL>` placeholder documented. |
+| 863 MB DB distribution | `FIXED` | Filename, placement, expected SHA, verifier behavior, and the public Dataset V1 release URL are documented. |
 | Final-report disclosure | `DOCUMENTED` | Provenance, label exclusion, matrix roles, `since`, generalization, and release instructions added without changing the conclusion. |
 
 ## Verification result
@@ -19,7 +19,7 @@
 - `OFFLINE VERIFICATION: PASS`
 - `TESTS: 80 PASSING`
 - `DOCUMENTATION: READY`
-- `PUBLIC DATASET RELEASE: REQUIRES HUMAN ACTION`
+- `PUBLIC DATASET RELEASE: READY`
 - `NERVOS SUBMISSION: READY`
 
-Remaining human actions: commit/push the reviewed repository; publish `ckb-behaviour-dataset-v1.sqlite`; replace `<DATASET_RELEASE_URL>`; independently verify the release download/hash; post the Nervos completion response.
+Dataset V1 is published at `https://github.com/FadhilMulinya/ckb-intel/releases/tag/ckb-behaviour-dataset-v1`; GitHub reports the expected 862,994,432-byte asset and SHA-256 digest. Remaining human actions: commit/push this reviewed cleanup, optionally verify a full external download, and post the Nervos completion response.

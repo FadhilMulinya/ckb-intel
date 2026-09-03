@@ -52,7 +52,7 @@ CKB absolute and relative `since` semantics are outside the feature model. Timel
 
 Run `./scripts/verify_final_research.sh .venv/bin/python` after installing `requirements-research.txt`. The offline verifier checks hashes, contracts, row alignment, SQLite integrity, and 80 tests.
 
-The approximately 863 MB frozen database is distributed separately at `<DATASET_RELEASE_URL>` as `ckb-behaviour-dataset-v1.sqlite`. Reviewers place it at `ckb_data/ckb_data_v2/ckb_explorer.sqlite`; the verifier checks SHA-256 `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`.
+The approximately 863 MB frozen database is distributed separately through the [Dataset V1 release](https://github.com/FadhilMulinya/ckb-intel/releases/tag/ckb-behaviour-dataset-v1) as `ckb-behaviour-dataset-v1.sqlite`. Reviewers place/rename it to `ckb_data/ckb_data_v2/ckb_explorer.sqlite`; the verifier checks SHA-256 `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`.
 
 | Grant area | Status | Verification |
 |---|---|---|
