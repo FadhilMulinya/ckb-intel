@@ -20,4 +20,4 @@
 | GMM selection | Structure discovery | `ckb_data/exploratory_ml_phase2_v1/gmm_model_selection.csv` | 60 | derived | `da4adb408eb1fe621915500fa447d70e6cf4269549b415b0c8aaa3c010f511fc` |
 | UMAP configuration | Structure discovery | `ckb_data/exploratory_ml_phase2_v1/umap_visualization_config.json` |  | derived | `b988d7cafca5c9bc24b5150ca75d617139c4199e367f6b8bd3c07b8c988301db` |
 | Evidence review | Structure discovery | `ckb_data/exploratory_ml_phase2_v1/evidence_review_records.csv` | 9 | derived | `ce9c58cbe4248b747a6ea7a73077e36e6d6d6ef7cb0a082db389cdfbffb50733` |
-| Final report | Submission | `reports/final-research-report.md` |  | derived | `5b767ba0f2ea2bd6254a38081600270b5b37b9d7ad4081bb7fcc28100f2b31c8` |
+| Final report | Submission | `reports/final-research-report.md` |  | derived | `1ec4eaf4353111d1d6f4a0ef19741d4a8b1228d53a86386153767c257c8c73b7` |

@@ -26,4 +26,4 @@ The frozen population is therefore a reproducible observational cohort derived f
 
 ## Database distribution
 
-The approximately 863 MB database is excluded from normal Git history and will be published separately at `<DATASET_RELEASE_URL>`. Place the downloaded file at `ckb_data/ckb_data_v2/ckb_explorer.sqlite`; its expected SHA-256 is `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`. The offline verifier rejects a missing or mismatched file.
+The approximately 863 MB database is excluded from normal Git history and is distributed through the [Dataset V1 release](https://github.com/FadhilMulinya/ckb-intel/releases/tag/ckb-behaviour-dataset-v1). Download `ckb-behaviour-dataset-v1.sqlite` and place/rename it to `ckb_data/ckb_data_v2/ckb_explorer.sqlite`; its expected SHA-256 is `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`. The offline verifier rejects a missing or mismatched file.
