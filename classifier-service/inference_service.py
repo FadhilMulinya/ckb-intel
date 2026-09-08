@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-"""
-CKB Wallet Behavioral Analyzer - Inference Pipeline
-
-This module provides the complete inference pipeline for analyzing CKB wallet behavior.
-Input: CKB wallet address (or lock hash)
-Output: Behavioral analysis with feature descriptions and structural grouping
-
-No identity classification is performed; analysis is descriptive only.
-"""
 from __future__ import annotations
 
 import asyncio
@@ -28,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 class SupportState(str, Enum):
-    """Feature evidence support classification."""
     SUPPORTED = "SUPPORTED"
     PARTIAL = "PARTIAL"
     INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
@@ -37,7 +26,6 @@ class SupportState(str, Enum):
 
 
 class BehavioralStructure(str, Enum):
-    """Discovered behavioral structures from exploratory analysis."""
     LOW_TARGET_CONSUMED_CAPACITY = "LOW_TARGET_CONSUMED_CAPACITY_STRUCTURE"
     SCRIPT_TYPE_DIVERSE = "SCRIPT_TYPE_DIVERSE_STRUCTURE"
     UNINTERPRETED = "UNINTERPRETED"
@@ -46,7 +34,6 @@ class BehavioralStructure(str, Enum):
 
 @dataclass
 class FeatureResult:
-    """Individual feature extraction result."""
     name: str
     family: str
     value: Optional[float | str | dict] = None
@@ -67,7 +54,6 @@ class FeatureResult:
 
 @dataclass
 class BehavioralProfile:
-    """Complete behavioral analysis profile for a wallet."""
     wallet_address: str
     lock_hash: Optional[str] = None
     analysis_timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -135,16 +121,9 @@ class BehavioralProfile:
 
 
 class CKBDataCollector:
-    """Collects real-time transaction data from CKB blockchain."""
     
     def __init__(self, db_path: Path, api_endpoint: str = "https://mainnet-api.explorer.nervos.org"):
-        """
-        Initialize data collector.
         
-        Args:
-            db_path: Path to frozen dataset database
-            api_endpoint: CKB Explorer API endpoint
-        """
         self.db_path = db_path
         self.api_endpoint = api_endpoint
         self.conn = None
@@ -163,29 +142,6 @@ class CKBDataCollector:
             self.conn = None
     
     async def fetch_wallet_transactions(self, address: str, limit: int = 300) -> list[dict]:
-        """
-        Fetch wallet transactions live from the CKB Explorer API and normalize
-        them into the same shape produced by fetch_wallet_transactions_cached():
-        a list of tx dicts with 'tx_hash', 'block_timestamp' (seconds), and
-        enriched 'inputs'/'outputs' lists.
-
-        Uses GET /api/v1/address_transactions/{address}, which returns
-        display_inputs/display_outputs inline per transaction (JSON:API
-        format) -- no separate per-transaction detail calls needed.
-
-        Note: display_inputs/display_outputs do not carry lock-script data
-        (this is a limitation of the CKB Explorer API itself, not of this
-        collector), so unique_lock_types will be unavailable in live mode
-        for the same reason it's unavailable against the cached dataset.
-
-        Args:
-            address: CKB wallet address
-            limit: Maximum transactions to fetch across all pages
-
-        Returns:
-            List of normalized transaction dicts (empty list on failure or
-            if the address has no transactions).
-        """
         import aiohttp
 
         page_size = 50
@@ -242,10 +198,6 @@ class CKBDataCollector:
 
     @staticmethod
     def _normalize_live_transaction(row: dict) -> Optional[dict]:
-        """
-        Convert one JSON:API address_transactions row into the internal
-        tx dict shape (matching fetch_wallet_transactions_cached output).
-        """
         attrs = row.get("attributes", {})
         tx_hash = attrs.get("transaction_hash")
         if not tx_hash:
@@ -306,16 +258,6 @@ class CKBDataCollector:
         return [dict(zip(columns, row)) for row in cursor.fetchall()]
     
     def get_observation_window(self, address: str) -> Optional[dict]:
-        """
-        Fetch the wallet_observations window metadata for an address.
-
-        Args:
-            address: CKB wallet address
-
-        Returns:
-            Dict with observation_id, window_start_timestamp, window_end_timestamp
-            (as ISO-8601 strings) plus raw epoch seconds, or None if not found.
-        """
         if not self.conn:
             raise RuntimeError("Not connected to database")
 
@@ -348,15 +290,6 @@ class CKBDataCollector:
         }
 
     def fetch_wallet_transactions_cached(self, address: str) -> list[dict]:
-        """
-        Fetch cached transactions for a wallet from the frozen dataset.
-        
-        Args:
-            address: CKB wallet address
-        
-        Returns:
-            List of enriched transaction records with inputs, outputs, and scripts
-        """
         if not self.conn:
             raise RuntimeError("Not connected to database")
         
@@ -442,7 +375,6 @@ class CKBDataCollector:
 
 
 class FeatureExtractor:
-    """Extracts CKB-native behavioral features from transaction data."""
     
     # Minimum samples required per feature family
     MINIMUM_SAMPLES = {
@@ -458,11 +390,9 @@ class FeatureExtractor:
     }
     
     def __init__(self):
-        """Initialize feature extractor."""
         pass
     
     def extract_temporal_features(self, transactions: list[dict]) -> dict[str, FeatureResult]:
-        """Extract temporal structure features."""
         results = {}
         
         if len(transactions) < self.MINIMUM_SAMPLES["temporal"]:
@@ -527,7 +457,6 @@ class FeatureExtractor:
         return results
     
     def extract_topology_features(self, transactions: list[dict]) -> dict[str, FeatureResult]:
-        """Extract transaction topology features (input/output structure)."""
         results = {}
         
         if len(transactions) < self.MINIMUM_SAMPLES["topology"]:
@@ -581,7 +510,6 @@ class FeatureExtractor:
         return results
     
     def extract_capacity_features(self, transactions: list[dict]) -> dict[str, FeatureResult]:
-        """Extract capacity (value) features."""
         results = {}
         
         if len(transactions) < self.MINIMUM_SAMPLES["capacity"]:
@@ -593,9 +521,6 @@ class FeatureExtractor:
             )
             return results
         
-        # Extract capacity from outputs (in shannon, 1 CKB = 1e8 shannon)
-        # Cached DB rows use 'capacity_shannon' (see cells table schema);
-        # live CKB Explorer API responses use 'capacity'. Support both.
         output_capacities = []
         for tx in transactions:
             for output in tx.get("outputs", []):
@@ -614,7 +539,7 @@ class FeatureExtractor:
             )
             return results
         
-        # Convert shannon to CKB for readability
+        
         capacities_ckb = [c / 1e8 for c in output_capacities]
         
         results["avg_output_capacity_ckb"] = FeatureResult(
@@ -647,7 +572,6 @@ class FeatureExtractor:
         return results
     
     def extract_script_features(self, transactions: list[dict]) -> dict[str, FeatureResult]:
-        """Extract script type and diversity features."""
         results = {}
         
         if len(transactions) < self.MINIMUM_SAMPLES["scripts"]:
@@ -726,7 +650,6 @@ class FeatureExtractor:
 
 
 class BehavioralClassifier:
-    """Classifies wallets into behavioral structures using trained model."""
     
     # PCA component loadings from Phase 1 analysis
     PC1_LOADINGS = {
@@ -754,15 +677,7 @@ class BehavioralClassifier:
         pass
     
     def classify_structure(self, features: dict[str, FeatureResult]) -> tuple[BehavioralStructure, float]:
-        """
-        Classify wallet into behavioral structure.
         
-        Args:
-            features: Extracted features
-        
-        Returns:
-            Tuple of (structure, confidence)
-        """
         # Calculate PCA-like score for script diversity
         type_scripts = next((f.value for f in features.values() if f.name == "unique_type_scripts"), 0)
         unique_locks = next((f.value for f in features.values() if f.name == "unique_lock_types"), 0)
@@ -790,16 +705,8 @@ class BehavioralClassifier:
 
 
 class InferencePipeline:
-    """Complete inference pipeline for wallet behavioral analysis."""
     
     def __init__(self, db_path: Path, use_live_data: bool = True):
-        """
-        Initialize inference pipeline.
-        
-        Args:
-            db_path: Path to frozen dataset database
-            use_live_data: Whether to fetch live data from CKB Explorer
-        """
         self.db_path = db_path
         self.use_live_data = use_live_data
         self.collector = CKBDataCollector(db_path)
@@ -811,29 +718,12 @@ class InferencePipeline:
         wallet_address: str,
         use_live_data: Optional[bool] = None,
     ) -> BehavioralProfile:
-        """
-        Analyze a CKB wallet address and return behavioral profile.
-        
-        Args:
-            wallet_address: CKB wallet address or lock hash
-            use_live_data: Per-request override for data source. If None,
-                falls back to the instance default (self.use_live_data).
-                Passing this explicitly lets a single long-lived pipeline
-                (e.g. the FastAPI global instance) serve both cached and
-                live requests based on what each caller asks for.
-        
-        Returns:
-            BehavioralProfile with complete analysis
-        """
         effective_use_live = self.use_live_data if use_live_data is None else use_live_data
         logger.info(f"Analyzing wallet: {wallet_address} (live={effective_use_live})")
         
         profile = BehavioralProfile(wallet_address=wallet_address)
         
         try:
-            # Only the cached path needs the SQLite file to exist; live mode
-            # talks to the CKB Explorer API directly and shouldn't fail if
-            # the frozen dataset isn't present.
             if not effective_use_live:
                 self.collector.connect()
 
@@ -858,12 +748,7 @@ class InferencePipeline:
 
             logger.info(f"Found {profile.total_transactions} transactions")
 
-            # Observation window.
-            # Cached mode: wallet_observations tracks a fixed 30-day window.
-            # Live mode: no fixed window exists -- derive start/end from the
-            # actual fetched transaction timestamps, and note that this
-            # reflects however much history the API returned, not a fixed
-            # collection period.
+            
             if not effective_use_live:
                 window = self.collector.get_observation_window(wallet_address)
                 if window:
@@ -897,9 +782,7 @@ class InferencePipeline:
                     "cached mode"
                 )
 
-            # Observed/spent cell counts, derived from the enriched output cells.
-            # Cached DB rows carry the original CKB Explorer raw_json, which
-            # includes a 'status' field ('live' = unspent, 'dead' = spent).
+            
             observed_cells = 0
             spent_cells = 0
             for tx in transactions:
@@ -968,9 +851,7 @@ class InferencePipeline:
                 f"{profile.supported_features} supported features"
             )
 
-            # Flag known data collection gap: lock_script_hash is not populated
-            # for cells/inputs in this dataset, so unique_lock_types will read
-            # 0 even when the wallet interacts with multiple lock script types.
+            
             lock_feature = features.get("unique_lock_types")
             if lock_feature is not None and lock_feature.value == 0:
                 profile.limitations.append(
@@ -1003,7 +884,7 @@ if __name__ == "__main__":
     
     # Example usage
     async def main():
-        db_path = Path("ckb_data/ckb-behaviour-dataset-v1.sqlite")
+        db_path = Path("../ckb_data/ckb-behaviour-dataset-v1.sqlite")
         pipeline = InferencePipeline(db_path, use_live_data=False)
         
         # Analyze a wallet (example address)

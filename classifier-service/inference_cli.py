@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-"""
-CLI Interface for CKB Wallet Behavioral Analysis
-
-Usage:
-    python inference_cli.py <wallet_address> [--db <path>] [--live] [--json] [--verbose]
-
-Example:
-    python inference_cli.py ckt1qqxv4yfrg69j4zhu007f0u4fs5hnwyx408d837e91cf8923b59044aecfffd9mf --live --json
-"""
 from __future__ import annotations
 
 import argparse
@@ -134,26 +124,12 @@ async def analyze_wallet_cli(
     output_json: bool = False,
     verbose: bool = False
 ) -> int:
-    """
-    Analyze a wallet and output results.
-    
-    Args:
-        wallet_address: CKB wallet address or lock hash
-        db_path: Path to frozen dataset database
-        use_live: Whether to fetch live data from CKB Explorer
-        output_json: Whether to output JSON format
-        verbose: Whether to enable verbose logging
-    
-    Returns:
-        Exit code (0 for success, 1 for error)
-    """
-    # Set up logging
     if verbose:
         logging.getLogger().setLevel(logging.DEBUG)
     
     # Set default database path
     if db_path is None:
-        db_path = Path("ckb_data/ckb_data_v2/ckb_explorer.sqlite")
+        db_path = Path("../ckb_data/ckb-behaviour-dataset-v1.sqlite")
     
     logger.info(f"Initializing inference pipeline")
     logger.info(f"Database: {db_path}")
@@ -225,7 +201,7 @@ IMPORTANT:
         "--db",
         type=Path,
         default=None,
-        help="Path to frozen dataset database (default: ckb_data/ckb_data_v2/ckb_explorer.sqlite)"
+        help="Path to frozen dataset database (default: ../ckb_data/ckb-behaviour-dataset-v1.sqlite)"
     )
     
     parser.add_argument(
