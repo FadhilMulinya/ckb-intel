@@ -8,3 +8,5 @@ __pycache__/
 .data-e2e/
 ckb_data/ckb_data_v2/ckb_explorer.sqlite
 ckb_data/missing_prev_tx.txt
+DATA_QUALITY_ANALYSIS_REPORT.md
+*.sqlite
