@@ -27,9 +27,6 @@ logger = logging.getLogger(__name__)
 
 
 class ModelTrainer:
-    """Trains clustering models on frozen CKB wallet dataset."""
-    
-    # High-Confidence features used for training (from Feature Engineering V2)
     HIGH_CONFIDENCE_FEATURES = [
         "capacity__target_consumed_capacity",
         "capacity__target_net_capacity_delta",
@@ -44,13 +41,6 @@ class ModelTrainer:
     ]
     
     def __init__(self, frozen_csv_path: Path, output_dir: Path):
-        """
-        Initialize model trainer.
-        
-        Args:
-            frozen_csv_path: Path to frozen dataset feature CSV
-            output_dir: Directory to save trained models
-        """
         self.frozen_csv_path = frozen_csv_path
         self.output_dir = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -64,7 +54,6 @@ class ModelTrainer:
         self.models = {}
     
     def load_frozen_dataset(self) -> pd.DataFrame:
-        """Load frozen dataset features."""
         logger.info(f"Loading frozen dataset from {self.frozen_csv_path}")
         
         if not self.frozen_csv_path.exists():
@@ -76,7 +65,6 @@ class ModelTrainer:
         return self.data
     
     def prepare_high_confidence_matrix(self) -> np.ndarray:
-        """Prepare High-Confidence feature matrix (10 features, complete cases only)."""
         if self.data is None:
             raise RuntimeError("Must load dataset first")
         
@@ -96,7 +84,6 @@ class ModelTrainer:
         return self.X_raw
     
     def scale_features(self) -> np.ndarray:
-        """Scale features using StandardScaler."""
         if self.X_raw is None:
             raise RuntimeError("Must prepare feature matrix first")
         
@@ -117,7 +104,6 @@ class ModelTrainer:
         return self.X_scaled
     
     def apply_pca(self, n_components: int = 4) -> tuple[np.ndarray, dict]:
-        """Apply PCA dimensionality reduction."""
         if self.X_scaled is None:
             raise RuntimeError("Must scale features first")
         
@@ -156,7 +142,6 @@ class ModelTrainer:
         return self.X_pca, pca_info
     
     def train_hdbscan(self) -> dict:
-        """Train HDBSCAN clustering model."""
         if not HAS_HDBSCAN:
             logger.warning("HDBSCAN not installed; skipping")
             return {}
@@ -166,7 +151,6 @@ class ModelTrainer:
         
         logger.info("Training HDBSCAN model")
         
-        # Reference parameters from Phase 2 analysis
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=20,
             min_samples=10,
@@ -217,7 +201,6 @@ class ModelTrainer:
         return clustering_info
     
     def train_gmm(self) -> dict:
-        """Train Gaussian Mixture Model."""
         if not HAS_GMM:
             logger.warning("GaussianMixture not installed; skipping")
             return {}
@@ -287,7 +270,6 @@ class ModelTrainer:
         return clustering_info
     
     def generate_training_summary(self) -> dict:
-        """Generate comprehensive training summary."""
         summary = {
             "dataset": {
                 "total_rows": len(self.data) if self.data is not None else 0,
@@ -322,16 +304,6 @@ def train_models(
     frozen_csv: Optional[Path] = None,
     output_dir: Optional[Path] = None
 ) -> dict:
-    """
-    Train all models on frozen dataset.
-    
-    Args:
-        frozen_csv: Path to frozen dataset CSV
-        output_dir: Output directory for models
-    
-    Returns:
-        Training summary
-    """
     if frozen_csv is None:
         frozen_csv = Path("ckb_data/feature_engineering_v2/wallet_behaviour_features_v2_ml.csv")
     
