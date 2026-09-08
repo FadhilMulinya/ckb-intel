@@ -10,6 +10,18 @@ python3 -m venv .venv
 ./scripts/verify_final_research.sh .venv/bin/python
 ```
 
+On Windows PowerShell, run the equivalent verifier with:
+
+```powershell
+python .\scripts\verify_final_research.py
+# or
+powershell -ExecutionPolicy Bypass -File .\scripts\verify_final_research.ps1 -Python python
+```
+
+The verifier fails deliberately when the local SQLite file is not the released
+frozen snapshot. It reports the expected and observed size and SHA-256 rather
+than accepting a database with matching table counts alone.
+
 The wrapper verifies the manifest and database hashes, SQLite `quick_check`, 1,172-row aligned artifacts, Phase 2 source integrity, and all offline tests.
 
 `requirements-research.txt` is the flexible supported dependency declaration. `requirements-research.lock.txt` records the exact CPython 3.12.13 artifact-generation environment; an independent clean-room audit also passed using Python 3.14.

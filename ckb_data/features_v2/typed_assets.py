@@ -22,7 +22,11 @@ def _decode(cell: dict, resolved: bool) -> dict | None:
     if not isinstance(data, str) or len(data.removeprefix("0x")) < 32:
         return {"asset_identifier": cell.get(prefix + "type_script_hash"), "amount": None,
                 "decode_status": "MISSING_16_BYTE_AMOUNT"}
-    amount = int.from_bytes(bytes.fromhex(data.removeprefix("0x")[:32]), "little")
+    try:
+        amount = int.from_bytes(bytes.fromhex(data.removeprefix("0x")[:32]), "little")
+    except (TypeError, ValueError):
+        return {"asset_identifier": cell.get(prefix + "type_script_hash"), "amount": None,
+                "decode_status": "INVALID_AMOUNT_ENCODING"}
     raw = cell.get("raw") or {}
     raw_amount = ((raw.get("xudt_info") or {}).get("amount") or
                   (raw.get("extra_info") or {}).get("amount"))

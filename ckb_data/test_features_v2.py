@@ -106,6 +106,16 @@ class CellV2Tests(unittest.TestCase):
         cap = capacity.extract(obs)
         self.assertEqual(cap.values["target_net_capacity_delta"], -300)
 
+    def test_xudt_invalid_amount_encoding_is_unsupported(self):
+        obs = observation([tx(1, 100)])
+        item = obs["transactions"][0]["outputs"][0]
+        item["type_script"] = {"code_hash": XUDT_CODE_HASH, "hash_type": "data1", "args": "0x" + "22" * 32}
+        item["type_script_hash"] = "asset"
+        item["output_data"] = "0x" + ("zz" * 16)
+        result = typed_assets.extract(obs)
+        self.assertEqual(result.support_state, SupportState.PARTIAL)
+        self.assertEqual(result.evidence["decoded_cells"][0]["decode_status"], "INVALID_AMOUNT_ENCODING")
+
 
 class PipelineV2Tests(unittest.TestCase):
     def test_assessment_is_label_free(self):
