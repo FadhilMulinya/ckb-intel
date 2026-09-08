@@ -61,6 +61,7 @@ HDBSCAN in full scaled High-Confidence space was unstable; PCA3, PCA4, and PCA6 
 - [Exploratory ML](docs/exploratory-ml.md)
 - [Limitations](docs/limitations.md)
 - [Offline reproduction](docs/reproduction.md)
+- [Validation gates](docs/validation-gates.md)
 - [Repository audit](docs/repository-audit.md)
 - [Artifact index](artifacts/README.md)
 - [Final research report](reports/final-research-report.md)
