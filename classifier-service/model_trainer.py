@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-"""
-Model Trainer - Trains behavioral clustering models on frozen dataset
-
-This module trains unsupervised clustering models (HDBSCAN, GMM) on the frozen
-CKB wallet dataset using the High-Confidence feature matrix (10 features, 513 wallets).
-
-Models are trained without labels and represent observable behavioral structures only.
-"""
 from __future__ import annotations
 
 import json
