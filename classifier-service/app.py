@@ -1,213 +1,350 @@
-"""
-app.py -- FastAPI/uvicorn wrapper around predict.classify() for deploying
-the bot/human classifier as an HTTP service.
+from __future__ import annotations
 
-Deliberately thin: all real logic (fetch, features, model, uncertain band)
-stays in predict.py, which is also usable standalone from the CLI. This
-file only adds an HTTP layer + input validation + a health check, so
-predict.py doesn't quietly develop two divergent code paths.
-
-RUN LOCALLY
------------
-    pip install -r requirements.txt fastapi uvicorn
-    uvicorn app:app --host 0.0.0.0 --port 8000 --reload
-    # (MODEL_PATH resolves relative to this file's location, not cwd, so
-    # this works whether you run it from classifier-service/ or its parent dir)
-
-    # from another terminal:
-    curl "http://localhost:8000/classify/ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9j8mmc2fzdz24pkq4rrfe3nkywsflvtn2v9wc9"
-    curl http://localhost:8000/health
-
-Full interactive API reference: http://localhost:8000/api/v1/docs
-
-DEPLOYMENT
-----------
-See the accompanying Dockerfile in this directory for a container-based
-deploy -- build context is classifier-service/ so it can COPY both
-requirements.txt and the rest of this directory in one shot.
-"""
-from fastapi import FastAPI, HTTPException, Path, Query
-from fastapi.responses import HTMLResponse, JSONResponse
-from pydantic import BaseModel, Field
+import asyncio
+import logging
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
-import predict as pr
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
-EXAMPLE_ADDRESS = "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2hhwwfmxw3e2v6wya8kjw4wc7vlz9jqmgfk8t3y"
-
-app = FastAPI(
-    title="CKB Bot/Human Classifier",
-    description=(
-        "Classifies a CKB mainnet address as bot-operated or human-operated from its real "
-        "transaction history. Fetches the address's history from the CKB Explorer mainnet API, "
-        "extracts 10 behavioral features (timing regularity, amount variation, counterparty "
-        "fan-out -- never raw magnitudes), and scores it with a trained Random Forest classifier. "
-        "This service does the entire classification job itself -- it does not depend on, or "
-        "require, the separate registry-service (Node) wallet registry to function. See "
-        "classifier-service/README.md for methodology, feature definitions, and evaluation results, "
-        "and label-provenance caveats before trusting any single verdict as ground truth."
-    ),
-    version="1.0",
-    # Spec + default Swagger/ReDoc UIs moved under /api/v1 -- /api/v1/docs is
-    # Scalar instead (see below), served against the auto-generated
-    # /api/v1/openapi.json FastAPI already produces. No schema authoring
-    # needed here, unlike registry-service's hand-written openapi.ts -- FastAPI
-    # derives it from the route signatures/response_model/Field(...)
-    # descriptions below. The actual endpoints (/health, /classify/{address})
-    # stay unversioned as they already were; only the docs surface moved to
-    # match registry-service's shape.
-    openapi_url="/api/v1/openapi.json",
-    docs_url=None,
-    redoc_url=None,
+from inference_service import (
+    InferencePipeline,
+    BehavioralProfile,
+    SupportState,
+    BehavioralStructure
 )
 
-# Load once at process start, not per-request -- joblib.load() + the sklearn
-# bundle is not free, and predict.classify() currently reloads it internally.
-# We keep using classify()'s own loading for correctness (single source of
-# truth), but warm it once here so the first real request isn't slow AND so
-# a broken/missing model.joblib fails fast at startup, not on first request.
-_startup_ok = {"loaded": False, "error": None}
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(
+    title="CKB Wallet Behavioral Analysis API",
+    description="Analyze CKB wallet on-chain behavioral patterns",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+pipeline: Optional[InferencePipeline] = None
+
+
+class WalletAnalysisRequest(BaseModel):
+    wallet_address: str = Field(
+        ...,
+        description="CKB wallet address or lock hash",
+        example="ckt1qqxv4yfrg69j4zhu007f0u4fs5hnwyx408d837e91cf8923b59044aecfffd9mf"
+    )
+    use_live_data: bool = Field(
+        False,
+        description="Fetch live data from CKB Explorer (slower but more current)"
+    )
+
+
+class FeatureDTO(BaseModel):
+    name: str
+    family: str
+    value: Optional[float | str | dict] = None
+    support_state: str
+    evidence_count: int
+    description: str
+
+
+class BehavioralAssessmentDTO(BaseModel):
+    structure: str
+    confidence: float
+    description: str
+
+
+class SupportSummaryDTO(BaseModel):
+    supported: int
+    partial: int
+    insufficient: int
+    missing: int
+
+
+class WalletAnalysisResponse(BaseModel):
+    """Response model for wallet analysis."""
+    wallet_address: str
+    lock_hash: Optional[str]
+    analysis_timestamp: str
+    observation_period: dict
+    observation_counts: dict
+    features: dict[str, FeatureDTO]
+    behavioral_assessment: BehavioralAssessmentDTO
+    support_summary: SupportSummaryDTO
+    quality_assessment: dict
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "wallet_address": "ckt1qqxv4yfrg69j4zhu007f0u4fs5hnwyx408d837e91cf8923b59044aecfffd9mf",
+                "lock_hash": None,
+                "analysis_timestamp": "2026-09-07T12:00:00+00:00",
+                "observation_period": {
+                    "start": "2026-08-01T00:00:00",
+                    "end": "2026-08-31T00:00:00"
+                },
+                "observation_counts": {
+                    "total_transactions": 42,
+                    "total_inputs": 87,
+                    "total_outputs": 95,
+                    "observed_cells": 85,
+                    "spent_cells": 42
+                },
+                "features": {
+                    "gap_mean_seconds": {
+                        "name": "gap_mean_seconds",
+                        "family": "temporal",
+                        "value": 86400.5,
+                        "support_state": "SUPPORTED",
+                        "evidence_count": 41,
+                        "description": "Mean time between consecutive transactions (seconds)"
+                    }
+                },
+                "behavioral_assessment": {
+                    "structure": "SCRIPT_TYPE_DIVERSE_STRUCTURE",
+                    "confidence": 0.65,
+                    "description": "Wallet exhibits diverse script type interactions..."
+                },
+                "support_summary": {
+                    "supported": 8,
+                    "partial": 0,
+                    "insufficient": 2,
+                    "missing": 0
+                },
+                "quality_assessment": {
+                    "notes": ["Analysis based on 42 transactions..."],
+                    "limitations": ["No identity classification performed..."]
+                }
+            }
+        }
+
+
+class HealthCheckResponse(BaseModel):
+    """Response model for health check."""
+    status: str
+    pipeline_ready: bool
+    database_path: Optional[str] = None
+    timestamp: str
+
+
+class ErrorResponse(BaseModel):
+    error: str
+    detail: Optional[str] = None
+    timestamp: str
 
 
 @app.on_event("startup")
-def _warm_model():
+async def startup_event():
+    global pipeline
+    
+    logger.info("Initializing inference pipeline...")
+    
     try:
-        import joblib
-        joblib.load(pr.MODEL_PATH)
-        _startup_ok["loaded"] = True
-    except Exception as e:  # noqa: BLE001 -- deliberately broad, this is a health signal
-        _startup_ok["error"] = str(e)
-
-
-class ClassifyResponse(BaseModel):
-    address: str = Field(description="The address that was classified.", example=EXAMPLE_ADDRESS)
-    n_tx_fetched: int = Field(
-        description="How many transactions were actually fetched from the Explorer API for this address (capped by max_tx).",
-        example=30,
-    )
-    bot_probability: Optional[float] = Field(
-        None,
-        description="The model's raw bot-probability score, 0-1. Null only when verdict is \"unknown\" (too little history to score at all).",
-        example=0.9593,
-    )
-    verdict: str = Field(
-        description=(
-            "One of exactly four values -- this is the field registry-service's wallet registry mirrors byte-for-byte when "
-            "REGISTRY_SERVICE_URL is set:\n"
-            "- `bot` -- classified as automated/bot-operated behavior.\n"
-            "- `human` -- classified as human-operated behavior.\n"
-            "- `uncertain` -- bot_probability fell inside the model's calibrated uncertain band; not a confident call, route to manual review.\n"
-            "- `unknown` -- fewer than 2 transactions were found; not enough history to extract behavioral features at all."
-        ),
-        example="bot",
-    )
-    warning: Optional[str] = Field(
-        None,
-        description="Present when verdict is \"uncertain\", or when history is short enough that interval-based features are degenerate by construction. Explains why this specific verdict should be treated as low-confidence.",
-    )
-    reason: Optional[str] = Field(
-        None,
-        description="Present only when verdict is \"unknown\" -- explains why (e.g. \"only 1 transaction(s) found\").",
-    )
-
-
-class HealthResponse(BaseModel):
-    status: str = Field(description="\"ok\" if the trained model loaded successfully at startup, \"degraded\" otherwise.", example="ok")
-    model_path: str = Field(description="Absolute filesystem path to the model.joblib bundle this instance loaded.")
-    error: Optional[str] = Field(None, description="Present only when status is \"degraded\" -- the exception raised while loading the model.")
+        db_path = Path("ckb_data/ckb-behaviour-dataset-v1.sqlite")
+        pipeline = InferencePipeline(db_path, use_live_data=False)
+        logger.info("Pipeline initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize pipeline: {e}")
+        logger.warning("Pipeline will be unavailable until fixed")
 
 
 @app.get(
     "/health",
-    response_model=HealthResponse,
-    tags=["Health"],
-    summary="Liveness + model-load check",
-    description=(
-        "Reports whether the trained model (model.joblib) loaded successfully when this process started. "
-        "The model is loaded once at startup (not per-request) specifically so a broken or missing model.joblib "
-        "fails fast here, visibly, rather than on someone's first live classification request. "
-        "Returns HTTP 503 (not 200) when degraded, so this doubles as a container/load-balancer health probe."
-    ),
-    responses={
-        200: {"description": "Model loaded successfully; service is fully functional."},
-        503: {"description": "Model failed to load at startup -- /classify will fail with 500 until this is fixed and the process restarts."},
-    },
+    response_model=HealthCheckResponse,
+    summary="Health Check",
+    tags=["System"]
 )
-def health():
-    status = "ok" if _startup_ok["loaded"] else "degraded"
-    body = {"status": status, "model_path": pr.MODEL_PATH}
-    if _startup_ok["error"]:
-        body["error"] = _startup_ok["error"]
-    return JSONResponse(body, status_code=200 if _startup_ok["loaded"] else 503)
+async def health_check():
+    """Check API health and readiness."""
+    return HealthCheckResponse(
+        status="healthy" if pipeline else "degraded",
+        pipeline_ready=pipeline is not None,
+        database_path="ckb_data/ckb-behaviour-dataset-v1.sqlite",
+        timestamp=datetime.now(timezone.utc).isoformat()
+    )
 
 
-@app.get(
-    "/classify/{address}",
-    response_model=ClassifyResponse,
-    tags=["Classification"],
-    summary="Classify a CKB address as bot or human",
-    description=(
-        "Fetches the address's transaction history from the CKB Explorer mainnet API, extracts behavioral "
-        "features, and scores it with the trained classifier. Mirrors `python3 predict.py <address> --json` "
-        "exactly -- same function, same model, same uncertain-band logic, nothing added or skipped for the "
-        "HTTP path.\n\n"
-        "If `REGISTRY_SERVICE_URL` is set in this process's environment, the resulting verdict is also written back "
-        "to the registry-service wallet registry as a side effect (best-effort -- a failure there never affects this "
-        "response). That is entirely optional; this endpoint fetches and classifies on its own regardless."
-    ),
-    responses={
-        200: {"description": "Classification succeeded (verdict may still be \"unknown\" if history was too short)."},
-        400: {"description": "max_tx was outside the allowed 2-1000 range."},
-        502: {"description": "The upstream CKB Explorer API failed (rate limited, address not found, timeout, etc.) -- not this service's fault."},
-        500: {"description": "This deployment is misconfigured -- model.joblib is missing or corrupt. Check GET /health."},
-    },
+@app.post(
+    "/analyze",
+    response_model=WalletAnalysisResponse,
+    summary="Analyze Wallet Behavior",
+    tags=["Analysis"]
 )
-def classify_address(
-    address: str = Path(description="A CKB mainnet address to classify.", example=EXAMPLE_ADDRESS),
-    max_tx: int = Query(
-        300,
-        description="Maximum recent transactions to fetch and use for feature extraction (2-1000). Most-recent-first, so this caps history depth, not just page count. Out-of-range values return 400 with a clear message, not FastAPI's generic 422 -- validated manually below on purpose.",
-    ),
-):
-    if max_tx < 2 or max_tx > 1000:
-        raise HTTPException(status_code=400, detail="max_tx must be between 2 and 1000")
+async def analyze_wallet(request: WalletAnalysisRequest):
+    if not pipeline:
+        raise HTTPException(
+            status_code=503,
+            detail="Analysis service not available. Database not loaded."
+        )
+    
+    logger.info(f"Analyzing wallet: {request.wallet_address}")
+    
     try:
-        result = pr.classify(address, max_tx=max_tx)
-    except pr.ApiError as e:
-        # upstream explorer API issue (rate limit, address not found, timeout)
-        # -- surface as 502, not 500, since it's not our code that's broken
-        raise HTTPException(status_code=502, detail=str(e))
-    except pr.ModelLoadError as e:
-        # our deployment is misconfigured (missing/corrupt model.joblib) --
-        # surface as 500, distinct from an upstream API problem
-        raise HTTPException(status_code=500, detail=str(e))
-    return result
-
-
-@app.get("/api/v1/docs", response_class=HTMLResponse, include_in_schema=False)
-def scalar_docs():
-    return """<!doctype html>
-<html>
-  <head>
-    <title>CKB Bot/Human Classifier -- API docs</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-  </head>
-  <body>
-    <script id="api-reference" data-url="/api/v1/openapi.json"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
-  </body>
-</html>"""
+        profile = await pipeline.analyze_wallet(
+            request.wallet_address,
+            use_live_data=request.use_live_data,
+        )
+        
+        response = WalletAnalysisResponse(
+            wallet_address=profile.wallet_address,
+            lock_hash=profile.lock_hash,
+            analysis_timestamp=profile.analysis_timestamp,
+            observation_period={
+                "start": profile.observation_period_start,
+                "end": profile.observation_period_end
+            },
+            observation_counts={
+                "total_transactions": profile.total_transactions,
+                "total_inputs": profile.total_inputs,
+                "total_outputs": profile.total_outputs,
+                "observed_cells": profile.observed_cells,
+                "spent_cells": profile.spent_cells
+            },
+            features={
+                name: FeatureDTO(
+                    name=feat.name,
+                    family=feat.family,
+                    value=feat.value,
+                    support_state=feat.support_state.value,
+                    evidence_count=feat.evidence_count,
+                    description=feat.description
+                )
+                for name, feat in profile.features.items()
+            },
+            behavioral_assessment=BehavioralAssessmentDTO(
+                structure=profile.behavioral_structure.value,
+                confidence=profile.behavioral_confidence,
+                description=profile.structure_description
+            ),
+            support_summary=SupportSummaryDTO(
+                supported=profile.supported_features,
+                partial=profile.partial_features,
+                insufficient=profile.insufficient_features,
+                missing=profile.missing_features
+            ),
+            quality_assessment={
+                "notes": profile.data_quality_notes,
+                "limitations": profile.limitations
+            }
+        )
+        
+        logger.info(f"Analysis completed for {request.wallet_address}")
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error analyzing wallet: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Analysis failed: {str(e)}"
+        )
 
 
 @app.get(
-    "/",
-    tags=["Health"],
-    summary="Service pointer",
-    description="Minimal landing response -- points to the full API docs. Not meant to carry any real information itself.",
+    "/docs-overview",
+    summary="API Overview",
+    tags=["Documentation"]
 )
-def root():
+async def docs_overview():
     return {
-        "service": "ckb-bot-oneclass",
-        "docs": "/api/v1/docs",
+        "title": "CKB Wallet Behavioral Analysis API",
+        "version": "1.0.0",
+        "endpoints": [
+            {
+                "path": "/health",
+                "method": "GET",
+                "description": "Check API health and readiness"
+            },
+            {
+                "path": "/analyze",
+                "method": "POST",
+                "description": "Analyze wallet behavioral patterns"
+            }
+        ],
+        "important_disclaimers": [
+            "This API analyzes OBSERVABLE ON-CHAIN BEHAVIORAL PATTERNS ONLY",
+            "It is NOT a human/bot identity classifier",
+            "Results represent exploratory structural patterns, not verified identities",
+            "Analysis is based on fixed historical dataset (August 2026)",
+            "Temporal generalization not supported with single 30-day window"
+        ],
+        "data_sources": [
+            "Frozen CKB mainnet transaction data (August 1-31, 2026)",
+            "Live CKB Explorer API (optional, if use_live_data=true)",
+            "Feature extraction from V2 pipeline (CKB-native cell model)"
+        ]
     }
+
+
+@app.get(
+    "/features-reference",
+    summary="Features Reference",
+    tags=["Documentation"]
+)
+async def features_reference():
+    return {
+        "features_overview": {
+            "temporal": {
+                "description": "Time-based patterns in transaction sequence",
+                "features": [
+                    "gap_mean_seconds - average time between transactions",
+                    "gap_std_seconds - variability in transaction timing",
+                    "gap_min_seconds - minimum gap between transactions",
+                    "gap_max_seconds - maximum gap between transactions"
+                ]
+            },
+            "topology": {
+                "description": "Input/output structure and consolidation patterns",
+                "features": [
+                    "avg_inputs_per_tx - average inputs per transaction",
+                    "avg_outputs_per_tx - average outputs per transaction",
+                    "max_inputs - maximum inputs in single transaction",
+                    "consolidation_ratio - fraction of consolidating transactions"
+                ]
+            },
+            "capacity": {
+                "description": "Cell value (capacity) characteristics",
+                "features": [
+                    "avg_output_capacity_ckb - average output value",
+                    "total_output_capacity_ckb - total value transferred",
+                    "capacity_volatility - variability in output values"
+                ]
+            },
+            "scripts": {
+                "description": "Script type diversity and usage patterns",
+                "features": [
+                    "unique_lock_types - number of different lock script types",
+                    "unique_type_scripts - number of different type script families"
+                ]
+            }
+        },
+        "support_states": {
+            "SUPPORTED": "Feature has sufficient evidence (recommended for analysis)",
+            "PARTIAL": "Feature has limited evidence (use with caution)",
+            "INSUFFICIENT_EVIDENCE": "Feature lacks adequate evidence (unreliable)",
+            "UNRESOLVED": "Feature could not be computed from available data",
+            "NOT_APPLICABLE": "Feature not applicable to this wallet"
+        }
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        log_level="info"
+    )
