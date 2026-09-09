@@ -8,7 +8,7 @@ from ckb_clients import (ClientUnavailable, binary_search_block,
                          consensus_median_time, resolve_observation_boundaries)
 from ckb_native import install_schema, normalize_transaction, persist_transaction
 from input_resolver import resolve_transaction_inputs
-from test_ckb_native import LOCK_A, LOCK_B, cell, payload
+from ckb_data.tests.test_ckb_native import LOCK_A, LOCK_B, cell, payload
 
 
 class BlockClient:

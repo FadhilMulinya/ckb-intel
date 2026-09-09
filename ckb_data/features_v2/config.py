@@ -1,5 +1,3 @@
-"""Versioned, reviewable configuration for CKB behaviour features V2."""
-
 FEATURE_SCHEMA_VERSION = "ckb-behaviour-features-v2"
 FEATURE_CONFIG_VERSION = "ckb-behaviour-feature-config-v2"
 DATASET_VERSION = "ckb-behaviour-dataset-v1"
