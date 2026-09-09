@@ -4,15 +4,13 @@ import asyncio
 import json
 import logging
 import sqlite3
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 import numpy as np
-import pandas as pd
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -60,28 +58,28 @@ class BehavioralProfile:
     observation_period_start: Optional[str] = None
     observation_period_end: Optional[str] = None
     
-    # Observation counts
+    
     total_transactions: int = 0
     total_inputs: int = 0
     total_outputs: int = 0
     observed_cells: int = 0
     spent_cells: int = 0
     
-    # Feature results
+    
     features: dict[str, FeatureResult] = field(default_factory=dict)
     
-    # Behavioral assessment
+    
     behavioral_structure: BehavioralStructure = BehavioralStructure.UNKNOWN
     behavioral_confidence: float = 0.0  # 0-1 scale
     structure_description: str = ""
     
-    # Support summary
+    
     supported_features: int = 0
     partial_features: int = 0
     insufficient_features: int = 0
     missing_features: int = 0
     
-    # Metadata
+    
     data_quality_notes: list[str] = field(default_factory=list)
     limitations: list[str] = field(default_factory=list)
     
@@ -129,14 +127,12 @@ class CKBDataCollector:
         self.conn = None
     
     def connect(self) -> None:
-        """Connect to CKB database."""
         if not self.db_path.exists():
             raise FileNotFoundError(f"Database not found: {self.db_path}")
         self.conn = sqlite3.connect(self.db_path)
         self.conn.row_factory = sqlite3.Row
     
     def disconnect(self) -> None:
-        """Disconnect from database."""
         if self.conn:
             self.conn.close()
             self.conn = None
@@ -205,7 +201,6 @@ class CKBDataCollector:
 
         raw_ts = attrs.get("block_timestamp")
         try:
-            # CKB Explorer returns block_timestamp in milliseconds
             block_timestamp = int(raw_ts) // 1000 if raw_ts is not None else None
         except (TypeError, ValueError):
             block_timestamp = None
@@ -220,8 +215,8 @@ class CKBDataCollector:
                 "previous_tx_hash": inp.get("generated_tx_hash"),
                 "previous_output_index": inp.get("cell_index"),
                 "resolved_capacity_shannon": capacity,
-                "resolved_lock_script_hash": None,  # not exposed by this endpoint
-                "resolved_type_script_hash": None,  # not exposed by this endpoint
+                "resolved_lock_script_hash": None,  
+                "resolved_type_script_hash": None, 
                 "from_cellbase": inp.get("from_cellbase", False),
             })
 
@@ -237,8 +232,8 @@ class CKBDataCollector:
                 "consumed_tx_hash": out.get("consumed_tx_hash"),
                 "cell_type": out.get("cell_type"),
                 "address_hash": out.get("address_hash"),
-                "lock_script_hash": None,  # not exposed by this endpoint
-                "type_script_hash": None,  # not exposed by this endpoint
+                "lock_script_hash": None,  
+                "type_script_hash": None,  
             })
 
         return {
@@ -249,7 +244,6 @@ class CKBDataCollector:
         }
     
     def query_database(self, query: str, params: tuple = ()) -> list[dict]:
-        """Query the frozen dataset database."""
         if not self.conn:
             raise RuntimeError("Not connected to database")
         
@@ -294,7 +288,6 @@ class CKBDataCollector:
             raise RuntimeError("Not connected to database")
         
         try:
-            # Step 1: Get observation_id for the address
             obs_query = "SELECT observation_id FROM wallet_observations WHERE address = ? LIMIT 1"
             cursor = self.conn.execute(obs_query, (address,))
             obs_result = cursor.fetchone()
@@ -306,7 +299,6 @@ class CKBDataCollector:
             observation_id = obs_result[0]
             logger.info(f"Found observation_id: {observation_id}")
             
-            # Step 2: Query transactions that involve this observation/wallet
             query = """
             SELECT DISTINCT t.* 
             FROM transactions t
@@ -319,12 +311,10 @@ class CKBDataCollector:
             tx_results = self.query_database(query, (observation_id,))
             logger.info(f"Found {len(tx_results)} cached transactions for {address}")
             
-            # Step 3: Enrich transactions with inputs, outputs, and scripts
             enriched_txs = []
             for tx in tx_results:
                 tx_hash = tx['tx_hash']
                 
-                # Get inputs for this transaction
                 inputs_query = """
                 SELECT * FROM transaction_inputs 
                 WHERE tx_hash = ?
@@ -332,7 +322,6 @@ class CKBDataCollector:
                 """
                 tx['inputs'] = self.query_database(inputs_query, (tx_hash,))
                 
-                # Get outputs (cells) created by this transaction
                 outputs_query = """
                 SELECT * FROM cells 
                 WHERE creating_tx_hash = ?
@@ -340,7 +329,6 @@ class CKBDataCollector:
                 """
                 tx['outputs'] = self.query_database(outputs_query, (tx_hash,))
                 
-                # Enrich inputs with lock/type script details
                 for inp in tx['inputs']:
                     if inp.get('resolved_lock_script_hash'):
                         lock_script_query = "SELECT * FROM lock_scripts WHERE script_hash = ?"
@@ -352,7 +340,6 @@ class CKBDataCollector:
                         type_scripts = self.query_database(type_script_query, (inp['resolved_type_script_hash'],))
                         inp['type_script'] = type_scripts[0] if type_scripts else None
                 
-                # Enrich outputs with lock/type script details
                 for out in tx['outputs']:
                     if out.get('lock_script_hash'):
                         lock_script_query = "SELECT * FROM lock_scripts WHERE script_hash = ?"
@@ -376,7 +363,6 @@ class CKBDataCollector:
 
 class FeatureExtractor:
     
-    # Minimum samples required per feature family
     MINIMUM_SAMPLES = {
         "temporal": 2,
         "periodicity": 10,
@@ -591,25 +577,20 @@ class FeatureExtractor:
             for output in tx.get("outputs", []):
                 output_count += 1
                 
-                # Check enriched lock_script data
                 if output.get("lock_script"):
                     lock_script = output["lock_script"]
                     if lock_script.get("code_hash"):
                         lock_types.add(lock_script["code_hash"][:16])
                 elif output.get("lock", {}).get("code_hash"):
-                    # Fallback for alternative data structure
                     lock_types.add(output["lock"]["code_hash"][:16])
                 
-                # Check enriched type_script data
                 if output.get("type_script"):
                     type_script = output["type_script"]
                     if type_script.get("code_hash"):
                         type_types.add(type_script["code_hash"][:16])
                 elif output.get("type", {}).get("code_hash"):
-                    # Fallback for alternative data structure
                     type_types.add(output["type"]["code_hash"][:16])
 
-                # Also check inputs for lock scripts
                 for tx in transactions:
                     for inp in tx.get("inputs", []):
                         if inp.get("lock_script"):
@@ -650,8 +631,6 @@ class FeatureExtractor:
 
 
 class BehavioralClassifier:
-    
-    # PCA component loadings from Phase 1 analysis
     PC1_LOADINGS = {
         "capacity__target_consumed_capacity": -0.5966,
         "lineage__lineage_depth": -0.5466,
@@ -677,24 +656,18 @@ class BehavioralClassifier:
         pass
     
     def classify_structure(self, features: dict[str, FeatureResult]) -> tuple[BehavioralStructure, float]:
-        
-        # Calculate PCA-like score for script diversity
         type_scripts = next((f.value for f in features.values() if f.name == "unique_type_scripts"), 0)
         unique_locks = next((f.value for f in features.values() if f.name == "unique_lock_types"), 0)
         
-        # Calculate proxy for consumed capacity (use avg_output_capacity as proxy)
         avg_capacity = next((f.value for f in features.values() if f.name == "avg_output_capacity_ckb"), 0)
         
-        # Heuristic classification based on observable patterns
         confidence = 0.0
         structure = BehavioralStructure.UNKNOWN
-        
-        # HIGH script diversity suggests dApp interaction
+    
         if type_scripts and type_scripts > 1:
             structure = BehavioralStructure.SCRIPT_TYPE_DIVERSE
-            confidence = min(0.7, (type_scripts / 5.0))  # Normalize by typical max
-        # LOW capacity suggests simpler wallet usage
-        elif avg_capacity and avg_capacity < 0.1:  # Less than 0.1 CKB average
+            confidence = min(0.7, (type_scripts / 5.0))  
+        elif avg_capacity and avg_capacity < 0.1:  
             structure = BehavioralStructure.LOW_TARGET_CONSUMED_CAPACITY
             confidence = 0.5
         else:
@@ -800,12 +773,12 @@ class InferencePipeline:
             profile.observed_cells = observed_cells
             profile.spent_cells = spent_cells
             
-            # Extract features
+            
             logger.info("Extracting features...")
             features = self.extractor.extract_all_features(transactions)
             profile.features = features
             
-            # Summarize support
+           
             support_counts = {}
             for feat in features.values():
                 state = feat.support_state.value
@@ -816,13 +789,13 @@ class InferencePipeline:
             profile.insufficient_features = support_counts.get("INSUFFICIENT_EVIDENCE", 0)
             profile.missing_features = support_counts.get("UNRESOLVED", 0)
             
-            # Classify behavioral structure
+            
             logger.info("Classifying behavioral structure...")
             structure, confidence = self.classifier.classify_structure(features)
             profile.behavioral_structure = structure
             profile.behavioral_confidence = confidence
             
-            # Add structure description
+            
             if structure == BehavioralStructure.SCRIPT_TYPE_DIVERSE:
                 profile.structure_description = (
                     "Wallet exhibits diverse script type interactions, suggesting usage across multiple "
@@ -839,7 +812,7 @@ class InferencePipeline:
                     "extended observation period may reveal clearer structures."
                 )
             
-            # Add quality notes
+            
             if profile.total_transactions < 10:
                 profile.data_quality_notes.append(
                     f"Limited transaction history ({profile.total_transactions} tx). Patterns may not be stable."
@@ -861,7 +834,6 @@ class InferencePipeline:
                     "single-lock-type usage"
                 )
 
-            # Add standard limitations
             profile.limitations.append("No identity classification performed; analysis is behavioral description only")
             profile.limitations.append("Single observation period; temporal generalization not supported")
             profile.limitations.append("Cell/script patterns observed but not linked to owner identity")
@@ -887,10 +859,8 @@ if __name__ == "__main__":
         db_path = Path("../ckb_data/ckb-behaviour-dataset-v1.sqlite")
         pipeline = InferencePipeline(db_path, use_live_data=False)
         
-        # Analyze a wallet (example address)
         result = await pipeline.analyze_wallet("ckt1qqxv4yfrg69j4zhu007f0u4fs5hnwyx408d837e91cf8923b59044aecfffd9mf")
         
-        # Output results
         print(json.dumps(result.to_dict(), indent=2))
     
     asyncio.run(main())
