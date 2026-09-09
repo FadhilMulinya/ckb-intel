@@ -231,8 +231,7 @@ activity diagnostics, or prior clusters entered discovery.
 
 ## 7. Data quality and ML-suitability verdict
 
-An independent September 7, 2026 data-quality and ML-suitability review
-(`fix/data` branch) rated:
+An independent September 7, 2026 data-quality and ML-suitability review rated:
 
 | Criterion | Verdict |
 |---|---|
