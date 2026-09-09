@@ -10,7 +10,7 @@ from typing import Optional
 
 from inference_service import InferencePipeline, BehavioralProfile
 
-# Configure logging
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -19,14 +19,12 @@ logger = logging.getLogger(__name__)
 
 
 def format_profile_text(profile: BehavioralProfile) -> str:
-    """Format behavioral profile as human-readable text."""
     output = []
     output.append("=" * 80)
     output.append("CKB WALLET BEHAVIORAL ANALYSIS REPORT")
     output.append("=" * 80)
     output.append("")
     
-    # Wallet info
     output.append("WALLET INFORMATION")
     output.append("-" * 80)
     output.append(f"Address: {profile.wallet_address}")
@@ -35,7 +33,6 @@ def format_profile_text(profile: BehavioralProfile) -> str:
     output.append(f"Analysis Timestamp: {profile.analysis_timestamp}")
     output.append("")
     
-    # Observation counts
     output.append("TRANSACTION HISTORY")
     output.append("-" * 80)
     output.append(f"Total Transactions: {profile.total_transactions}")
@@ -45,7 +42,6 @@ def format_profile_text(profile: BehavioralProfile) -> str:
     output.append(f"Spent Cells: {profile.spent_cells}")
     output.append("")
     
-    # Feature summary
     output.append("FEATURE ANALYSIS")
     output.append("-" * 80)
     output.append(f"Supported Features: {profile.supported_features}")
@@ -54,7 +50,7 @@ def format_profile_text(profile: BehavioralProfile) -> str:
     output.append(f"Missing Features: {profile.missing_features}")
     output.append("")
     
-    # Feature details
+   
     if profile.features:
         output.append("EXTRACTED FEATURES")
         output.append("-" * 80)
@@ -76,7 +72,7 @@ def format_profile_text(profile: BehavioralProfile) -> str:
                         output.append(f"    → {feat.description}")
         output.append("")
     
-    # Behavioral classification
+    
     output.append("BEHAVIORAL CLASSIFICATION")
     output.append("-" * 80)
     output.append(f"Structure: {profile.behavioral_structure.value}")
@@ -87,7 +83,7 @@ def format_profile_text(profile: BehavioralProfile) -> str:
             output.append(f"  {line}")
     output.append("")
     
-    # Quality assessment
+    
     if profile.data_quality_notes or profile.limitations:
         output.append("QUALITY ASSESSMENT")
         output.append("-" * 80)
@@ -103,13 +99,12 @@ def format_profile_text(profile: BehavioralProfile) -> str:
                 output.append(f"  ⚠ {limit}")
         output.append("")
     
-    # Footer
+  
     output.append("=" * 80)
     output.append("IMPORTANT DISCLAIMER")
     output.append("=" * 80)
     output.append(
         "This analysis describes OBSERVABLE ON-CHAIN BEHAVIOR PATTERNS ONLY.\n"
-        "It is NOT a human/bot identity classifier and makes NO identity claims.\n"
         "Results are exploratory and representation-dependent (see limitations above)."
     )
     output.append("=" * 80)
@@ -127,7 +122,7 @@ async def analyze_wallet_cli(
     if verbose:
         logging.getLogger().setLevel(logging.DEBUG)
     
-    # Set default database path
+  
     if db_path is None:
         db_path = Path("../ckb_data/ckb-behaviour-dataset-v1.sqlite")
     
@@ -143,12 +138,11 @@ async def analyze_wallet_cli(
         logger.info(f"Analyzing wallet: {wallet_address}")
         profile = await pipeline.analyze_wallet(wallet_address)
         
-        # Output results
+        
         if output_json:
-            # JSON output
+            
             print(json.dumps(profile.to_dict(), indent=2))
         else:
-            # Human-readable output
             print(format_profile_text(profile))
         
         return 0
@@ -167,7 +161,6 @@ async def analyze_wallet_cli(
 
 
 def main():
-    """Main entry point."""
     parser = argparse.ArgumentParser(
         description="CKB Wallet Behavioral Analysis - Inference Pipeline",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -226,7 +219,7 @@ IMPORTANT:
     
     args = parser.parse_args()
     
-    # Run analysis
+   
     exit_code = asyncio.run(
         analyze_wallet_cli(
             wallet_address=args.wallet_address,

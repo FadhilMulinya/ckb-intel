@@ -14,7 +14,7 @@ from features.pipeline import assess_observation
 from input_resolver import resolve_transaction_inputs
 from research_cache import CacheStats, install_statistics_schema, persist_statistics
 from research_manifest import build_manifest, sampling_stratum
-from test_ckb_native import LOCK_A, LOCK_B, cell, payload
+from ckb_data.tests.test_ckb_native import LOCK_A, LOCK_B, cell, payload
 
 
 class ManifestTests(unittest.TestCase):

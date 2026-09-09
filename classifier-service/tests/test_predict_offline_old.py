@@ -1,11 +1,3 @@
-"""Offline sanity check for predict.py's classify() route, using fixtures
-shaped like the documented Explorer API responses (same convention as
-test_fetch_offline.py) plus a tiny fake model bundle standing in for a
-real trained model.joblib. No network calls, no dependency on an actual
-trained model file -- this only proves the address -> features -> score
-wiring is correct, not real-world accuracy (that's what eval_results.json
-covers).
-"""
 import os
 import sys
 import tempfile
