@@ -74,6 +74,43 @@ HDBSCAN in full scaled High-Confidence space was unstable; PCA3, PCA4, and PCA6 
 - [Repository audit](docs/repository-audit.md)
 - [Artifact index](artifacts/README.md)
 - [Final research report](reports/final-research-report.md)
+- [Current project status](reports/project-status-report.md)
+
+## Start the services
+
+The registry requires MongoDB. Start a local MongoDB instance first, then run
+both application services from the repository root:
+
+```bash
+./scripts/start-services.sh
+```
+
+The script starts classifier-service on `http://127.0.0.1:8000` and
+registry-service on `http://127.0.0.1:3000`. Set `CLASSIFIER_PYTHON` if the
+classifier dependencies are installed in a virtual environment, for example:
+
+```bash
+CLASSIFIER_PYTHON=/private/tmp/ckb-forensic-env/bin/python ./scripts/start-services.sh
+```
+
+Check service health at:
+
+```text
+http://127.0.0.1:8000/health
+http://127.0.0.1:3000/api/v1/health
+```
+
+Interactive Scalar API documentation for the registry is available at
+`http://127.0.0.1:3000/api/v1/docs`; the generated OpenAPI document is at
+`http://127.0.0.1:3000/api/v1/openapi.json`.
+
+To analyze a wallet after startup:
+
+```bash
+curl -X POST http://127.0.0.1:3000/api/v1/wallets/analyze \
+  -H 'content-type: application/json' \
+  -d '{"address":"ckb1...","mode":"live"}'
+```
 
 ## Verify offline
 
