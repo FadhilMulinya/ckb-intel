@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from ckb_explorer_pull import Store
+from wallet_intelligence.collection import Store
 from dataset_completion import (
     OBSERVATION_WINDOW_ID,
     POPULATION_VERSION,
@@ -21,7 +21,7 @@ from dataset_completion import (
     safety_check,
     stable_population_rows,
 )
-from research_cache import CacheStats
+from wallet_intelligence.cache import CacheStats
 from validate_existing_wallets import network_safe_address, sensitivity, validate_wallet
 
 

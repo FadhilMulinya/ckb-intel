@@ -5,7 +5,7 @@ import argparse
 import sqlite3
 from pathlib import Path
 
-from ckb_native import rebuild_from_raw_cache
+from wallet_intelligence.normalization import rebuild_from_raw_cache
 
 
 def main() -> None:

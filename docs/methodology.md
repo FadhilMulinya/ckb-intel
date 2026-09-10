@@ -2,7 +2,7 @@
 
 ## Historical baseline
 
-The early project assigned `human_like` to low lifetime-transaction-count addresses and `bot_like` to high-count addresses, then trained a classifier on those proxy labels. The reported 95.24% held-out accuracy was accuracy against the heuristic, not verified ownership ground truth. Transaction count is not a defensible human/bot boundary, and Explorer `is_special` is not a bot signal. This path is preserved as the **LEGACY / ABANDONED BASELINE** in `REPORT.md` and the service directories.
+The early project assigned `human_like` to low lifetime-transaction-count addresses and `bot_like` to high-count addresses, then trained a classifier on those proxy labels. The reported 95.24% held-out accuracy was accuracy against the heuristic, not verified ownership ground truth. Transaction count is not a defensible human/bot boundary, and Explorer `is_special` is not a bot signal. That executable path was retired and removed; Git history preserves the superseded implementation.
 
 ## Final methodology
 
