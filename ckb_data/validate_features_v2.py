@@ -11,8 +11,13 @@ import statistics
 from collections import Counter, defaultdict
 from pathlib import Path
 
+<<<<<<< HEAD
 from features_v2.periodicity import _baseline
 from features_v2.stats import normalized_entropy, pearson, quantile, repeat_ratio
+=======
+from wallet_intelligence.features_v2.periodicity import _baseline
+from wallet_intelligence.features_v2.stats import normalized_entropy, pearson, quantile, repeat_ratio
+>>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 
 ROOT = Path(__file__).resolve().parent
 V2_DIR = ROOT / "feature_engineering_v2"

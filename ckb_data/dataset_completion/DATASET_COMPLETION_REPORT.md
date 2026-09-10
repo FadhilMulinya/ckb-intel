@@ -217,8 +217,8 @@ Constant/near-constant features, outliers, impossible values, and missingness ar
 
 ## I. ML-safe dataset
 
-- `/Users/fadhil/Personal/ckb-intel/ckb_data/dataset_completion/wallet_behaviour_features_ml_v1.csv`
-- Companion metadata: `/Users/fadhil/Personal/ckb-intel/ckb_data/dataset_completion/wallet_behaviour_features_ml_metadata_v1.csv`
+- `ckb_data/dataset_completion/wallet_behaviour_features_ml_v1.csv`
+- Companion metadata: `/ckb_data/dataset_completion/wallet_behaviour_features_ml_metadata_v1.csv`
 
 ## J. Manual-review evidence set
 

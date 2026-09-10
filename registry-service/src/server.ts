@@ -1,8 +1,9 @@
 import Fastify, { FastifyInstance } from "fastify";
+import fastifySwagger from "@fastify/swagger";
 import { config } from "./config/index.js";
 import { connectMongo, disconnectMongo } from "./db/mongo.js";
-import { v1Routes } from "./routes/v1/index.js";
-import { assertExternalDependenciesAlive } from "./services/preflight.service.js";
+import { registryRoutes } from "./routes/index.js";
+import { registerDocs } from "./docs.js";
 
 /**
  * All server wiring lives here so the entrypoint (index.ts) stays clean:
@@ -16,8 +17,18 @@ import { assertExternalDependenciesAlive } from "./services/preflight.service.js
 export function buildApp(): FastifyInstance {
   const app = Fastify({ logger: true });
 
-  app.register(v1Routes, { prefix: "/api/v1" });
-  // Future breaking API changes: app.register(v2Routes, { prefix: "/api/v2" });
+  app.register(fastifySwagger, {
+    openapi: {
+      info: {
+        title: "CKB Wallet Behaviour Registry",
+        version: "1.0.0",
+        description: "Descriptive wallet-behaviour profiles produced by classifier-service.",
+      },
+      tags: [{ name: "Registry" }],
+    },
+  });
+  app.register(registryRoutes, { prefix: "/api/v1" });
+  registerDocs(app);
 
   return app;
 }
@@ -25,8 +36,6 @@ export function buildApp(): FastifyInstance {
 export async function startServer(): Promise<void> {
   // Refuse to start unless every external API (CKB RPC via CCC, Explorer API)
   // is reachable — a server whose dependencies are down would only serve errors.
-  await assertExternalDependenciesAlive();
-
   await connectMongo();
 
   const app = buildApp();

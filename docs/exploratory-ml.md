@@ -19,6 +19,10 @@ HDBSCAN audited 192 configurations across eight scaled/PCA representations. Refe
 | Cell scaled | `MODERATELY_STABLE` |
 | Cell PCA7 | `UNSTABLE` |
 
+<<<<<<< HEAD
 The robust High-Confidence views produced 2, 3, and 2 groups. PCA4 was used only as the predeclared ~80%-variance evidence-review view. It supported `LOW_TARGET_CONSUMED_CAPACITY_STRUCTURE`, `SCRIPT_TYPE_DIVERSE_STRUCTURE`, and one `UNINTERPRETED` group; all had low activity dependence.
+=======
+The robust High-Confidence views produced 2, 3, and 2 groups within this frozen cohort and observation window. PCA4 was used only as the predeclared ~80%-variance evidence-review view. It supported `LOW_TARGET_CONSUMED_CAPACITY_STRUCTURE`, `SCRIPT_TYPE_DIVERSE_STRUCTURE`, and one `UNINTERPRETED` group; all had low activity dependence. These are cohort-specific descriptive structures, not wallet identities or a taxonomy of CKB wallets generally.
+>>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 
 GMM independently selected 10, 1, and 5 components for the High-Confidence, Temporal, and Cell scaled matrices and showed weak agreement with HDBSCAN. It is not confirmation. Nine UMAP views were visualization-only; UMAP coordinates were never clustered. No definitive global clustering solution was established.
