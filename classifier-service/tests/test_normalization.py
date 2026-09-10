@@ -58,6 +58,22 @@ class NativeTransactionTests(unittest.TestCase):
         self.assertTrue(tx["outputs"][0]["target_controls_output"])
         self.assertNotIn("is_change", tx["outputs"][0])
 
+    def test_explorer_address_hash_is_accepted_as_target_identity(self):
+        tx = normalize_transaction({"data": {"attributes": {
+            "transaction_hash": "0x" + "ab" * 32,
+            "display_inputs": [],
+            "display_outputs": [{"address_hash": "ckb1target", "capacity": "100"}],
+        }}}, target_lock_hash="ckb1target")
+        self.assertTrue(tx["outputs"][0]["target_controls_output"])
+
+    def test_target_address_fallback_with_script_hash_target(self):
+        tx = normalize_transaction({"data": {"attributes": {
+            "transaction_hash": "0x" + "ac" * 32,
+            "display_inputs": [],
+            "display_outputs": [{"address_hash": "ckb1target", "capacity": "100"}],
+        }}}, target_lock_hash="0xscript", target_address="ckb1target")
+        self.assertTrue(tx["outputs"][0]["target_controls_output"])
+
     def test_missing_previous_output_is_explicitly_unresolved(self):
         unresolved = {"previous_output": {"tx_hash": "0xmissing", "index": 7}}
         tx = normalize_transaction(payload([unresolved], [cell(90, LOCK_B)]))

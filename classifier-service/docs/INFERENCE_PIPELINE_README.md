@@ -8,8 +8,9 @@ ownership, or assign a definitive wallet type.
 ## Runtime flow
 
 ```text
-CKB address → local frozen observation → Feature V2 → V2 behaviour rules
-                                      → structured wallet behaviour profile
+CKB address → frozen observation OR live Explorer collection
+           → common V2 observation → Feature V2 → V2 behaviour rules
+           → structured wallet behaviour profile
 ```
 
 `classifier-service/` is the authoritative Python implementation of CKB Wallet
@@ -23,9 +24,10 @@ modules and are not duplicated here.
 Frozen/offline mode is operational for addresses represented in
 `ckb_data/ckb_data_v2/ckb_explorer.sqlite`. It performs no network requests.
 
-Live mode is intentionally explicit: it returns
-`V2_LIVE_ANALYSIS_NOT_YET_SUPPORTED`. The old capped transaction path was
-removed rather than being presented as V2 analysis.
+Live mode collects a deterministic UTC rolling 30-day window from the CKB
+Explorer mainnet API, resolves available previous outputs, and feeds the same
+V2 observation/feature/rule pipeline. Incomplete Explorer evidence is exposed
+through support states and limitations; the frozen SQLite is never modified.
 
 ## API and CLI
 
@@ -40,6 +42,8 @@ The `POST /analyze` request is:
 ```json
 {"address": "ckb1...", "mode": "frozen"}
 ```
+
+Use `"mode": "live"` for an arbitrary valid mainnet address.
 
 The response is versioned as `wallet-behaviour-v2` and contains observation
 metadata, evidence counts, one support state per V2 family, all V2 feature

@@ -32,7 +32,9 @@ descriptive behavior rules.
 - Invalid addresses returned `400 INVALID_ADDRESS`.
 - A valid address absent from the frozen database returned
   `422 NOT_IN_FROZEN_DATASET`.
-- Live mode returned `422 V2_LIVE_ANALYSIS_NOT_YET_SUPPORTED`.
+- Live mode now executes through CKB Explorer for arbitrary valid addresses;
+  the supplied live fixture completed with a zero-activity 30-day window and
+  truthful `INSUFFICIENT_EVIDENCE` feature support states.
 - Classifier outage returned `503 CLASSIFIER_SERVICE_UNAVAILABLE`, and normal
   analysis recovered after restart.
 - Malformed classifier profiles were rejected.
@@ -62,5 +64,6 @@ final SHA-256 values are recorded in the final review report.
 
 ## Remaining product gap
 
-Arbitrary live-wallet V2 analysis is still not implemented. That is the next
-product phase and is separate from registry/classifier parity.
+Live collection is operational through the public Explorer path. Further
+product work can add richer live-wallet history and operational monitoring;
+the frozen research artifacts remain immutable.

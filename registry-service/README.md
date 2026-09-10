@@ -15,6 +15,12 @@ The service is mounted under `/api/v1`:
 | GET | `/api/v1/wallets/:address/behaviors` | Descriptive behavior results |
 | GET | `/api/v1/wallets/:address/features` | Features and support states |
 
+Interactive Scalar API documentation is available at
+`http://127.0.0.1:3000/api/v1/docs`; the machine-readable OpenAPI document is
+at `/api/v1/openapi.json`. Both are generated from the Fastify route schemas
+at startup, so adding a route schema keeps the reference in sync without a
+second hand-maintained endpoint list.
+
 `POST /api/v1/wallets/analyze` accepts `{ "address": "ckb1...", "mode": "frozen" }`.
 The registry validates the returned `wallet-behaviour-v2` version, mainnet
 network, and evidence-bearing response before upserting it into MongoDB.
@@ -26,8 +32,9 @@ Classifier domain errors are preserved: `NOT_IN_FROZEN_DATASET`,
 Timeouts and connection failures return `503 CLASSIFIER_SERVICE_UNAVAILABLE`;
 malformed classifier profiles return `422 INVALID_ANALYSIS_RESPONSE`.
 
-Live analysis remains explicitly unsupported when classifier-service returns
-`V2_LIVE_ANALYSIS_NOT_YET_SUPPORTED`.
+Live analysis is supported when classifier-service can collect the requested
+address from CKB Explorer. It uses the same `wallet-behaviour-v2` contract and
+persists the source/window metadata alongside the profile.
 
 The former V1 label, probability, ingestion, and model-evaluation semantics
 were removed. The historical routes are preserved in Git history only.

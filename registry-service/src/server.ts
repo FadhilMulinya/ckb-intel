@@ -1,7 +1,9 @@
 import Fastify, { FastifyInstance } from "fastify";
+import fastifySwagger from "@fastify/swagger";
 import { config } from "./config/index.js";
 import { connectMongo, disconnectMongo } from "./db/mongo.js";
 import { registryRoutes } from "./routes/index.js";
+import { registerDocs } from "./docs.js";
 
 /**
  * All server wiring lives here so the entrypoint (index.ts) stays clean:
@@ -15,7 +17,18 @@ import { registryRoutes } from "./routes/index.js";
 export function buildApp(): FastifyInstance {
   const app = Fastify({ logger: true });
 
+  app.register(fastifySwagger, {
+    openapi: {
+      info: {
+        title: "CKB Wallet Behaviour Registry",
+        version: "1.0.0",
+        description: "Descriptive wallet-behaviour profiles produced by classifier-service.",
+      },
+      tags: [{ name: "Registry" }],
+    },
+  });
   app.register(registryRoutes, { prefix: "/api/v1" });
+  registerDocs(app);
 
   return app;
 }

@@ -249,7 +249,16 @@ def _lock_identifier(cell: dict, lock: Optional[dict]) -> Optional[str]:
     return script_hash(lock) or cell.get("lock_hash") or cell.get("address_hash")
 
 
-def normalize_transaction(payload: dict, target_lock_hash: Optional[str] = None) -> dict:
+def _target_matches(cell: dict, lock: Optional[dict], target: Optional[str], target_address: Optional[str] = None) -> bool:
+    """Match canonical script identity and Explorer address identity."""
+    if not target and not target_address:
+        return False
+    identities = {_lock_identifier(cell, lock), cell.get("lock_hash"), cell.get("address_hash")}
+    return bool((target and target in identities) or (target_address and target_address in identities))
+
+
+def normalize_transaction(payload: dict, target_lock_hash: Optional[str] = None,
+                           target_address: Optional[str] = None) -> dict:
     data, attrs = _attrs(payload)
     tx_hash = attrs.get("transaction_hash") or data.get("id") or payload.get("tx_hash")
     if not tx_hash:
@@ -271,7 +280,7 @@ def normalize_transaction(payload: dict, target_lock_hash: Optional[str] = None)
             "type_script": type_script,
             "type_script_hash": script_hash(type_script),
             "output_data": _data(cell),
-            "target_controls_output": bool(target_lock_hash and _lock_identifier(cell, lock) == target_lock_hash),
+            "target_controls_output": _target_matches(cell, lock, target_lock_hash, target_address),
             "raw": cell,
         })
 
@@ -300,7 +309,7 @@ def normalize_transaction(payload: dict, target_lock_hash: Optional[str] = None)
             "resolution_source": ("cellbase" if from_cellbase else
                                   ("normalized_payload" if lock is not None else
                                    "local_address_transaction") if has_resolved_cell else "unresolved"),
-            "target_controls_input": bool(target_lock_hash and lock_identifier == target_lock_hash),
+            "target_controls_input": _target_matches(cell, lock, target_lock_hash, target_address),
             "raw": cell,
         })
 
