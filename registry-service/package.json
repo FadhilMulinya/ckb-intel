@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@ckb-ccc/core": "^1.16.1",
+    "@fastify/swagger": "^9.8.1",
     "axios": "^1.18.1",
     "dotenv": "^17.4.2",
     "fastify": "^5.10.0",

@@ -10,18 +10,40 @@ from v2_service import AnalysisError, V2WalletService, validate_ckb_address  # n
 
 
 VALID = "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg239ffgrtl3mf4m6s02eweangtpe0gy9cph6u05"
+LIVE_FIXTURE = "ckb1qyqvkel34xpgrdtja8fddy93fgkp6lduy90q2u385q"
 
 
 class V2ServiceTests(unittest.TestCase):
     def test_address_validation_rejects_invalid_and_accepts_known_mainnet_address(self):
         self.assertTrue(validate_ckb_address(VALID))
+        self.assertTrue(validate_ckb_address(LIVE_FIXTURE))
         self.assertFalse(validate_ckb_address("ckb1not-an-address"))
         self.assertFalse(validate_ckb_address(VALID.upper()))
 
-    def test_live_mode_is_explicitly_not_supported_until_v2_collection_exists(self):
-        with self.assertRaisesRegex(AnalysisError, "V2-compatible") as raised:
+    def test_live_mode_reports_collection_failure_without_explorer_evidence(self):
+        fake_explorer = mock.MagicMock()
+        fake_explorer.get_address.return_value = {"data": {"attributes": {}}}
+        with patch("v2_service.ExplorerClient", return_value=fake_explorer), \
+             self.assertRaisesRegex(AnalysisError, "lock identifier") as raised:
             V2WalletService().analyze(VALID, live=True)
-        self.assertEqual(raised.exception.status, "V2_LIVE_ANALYSIS_NOT_YET_SUPPORTED")
+        self.assertEqual(raised.exception.status, "COLLECTION_FAILED")
+
+    def test_live_collection_stops_pagination_at_window_boundary(self):
+        fake_explorer = mock.MagicMock()
+        fake_explorer.get_address.return_value = {
+            "data": [{"attributes": {"lock_script": {
+                "code_hash": "0x" + "11" * 32, "hash_type": "data1", "args": "0x"
+            }}}]
+        }
+        fake_explorer.get_address_transactions.return_value = {
+            "data": [{"attributes": {"block_timestamp": "1", "transaction_hash": "0xold"}}],
+            "meta": {"total": 4000000},
+        }
+        with patch("v2_service.ExplorerClient", return_value=fake_explorer):
+            result = V2WalletService().analyze("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg239ffgrtl3mf4m6s02eweangtpe0gy9cph6u05", live=True)
+        self.assertEqual(result["evidence"]["transactions"], 0)
+        self.assertEqual(fake_explorer.get_address_transactions.call_count, 1)
+        fake_explorer.get_transaction.assert_not_called()
 
     def test_active_service_has_no_legacy_model_dependency(self):
         active = "\n".join((SERVICE_DIR / name).read_text(encoding="utf-8")

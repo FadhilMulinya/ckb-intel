@@ -7,8 +7,15 @@ rule computation to ``classifier-service/wallet_intelligence/features_v2``.
 from __future__ import annotations
 
 import sqlite3
+import datetime as dt
+import os
+import tempfile
 from pathlib import Path
 from typing import Any
+
+from wallet_intelligence.clients import ClientUnavailable, ExplorerClient
+from wallet_intelligence.normalization import ObservationContract, install_schema, normalize_transaction, persist_observation, persist_transaction, script_hash
+from wallet_intelligence.resolution import resolve_transaction_inputs
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CKB_DATA = REPO_ROOT / "ckb_data"
@@ -53,9 +60,11 @@ def validate_ckb_address(address: str) -> bool:
     if len(data) < 7 or any(char not in charset for char in data):
         return False
     values = [charset.index(char) for char in data]
-    # CKB full/short addresses use the bech32m checksum constant.
-    return _bech32_polymod([ord(char) >> 5 for char in "ckb"] + [0] +
-                           [ord(char) & 31 for char in "ckb"] + values) == 0x2BC830A3
+    # CKB mainnet addresses use either the original Bech32 checksum
+    # (notably short addresses) or Bech32m (full addresses).
+    checksum = _bech32_polymod([ord(char) >> 5 for char in "ckb"] + [0] +
+                                [ord(char) & 31 for char in "ckb"] + values)
+    return checksum in {1, 0x2BC830A3}
 
 
 def _observation_status(collection_state: str | None) -> str:
@@ -130,8 +139,95 @@ class V2WalletService:
         if not validate_ckb_address(address):
             raise AnalysisError("INVALID_ADDRESS", "invalid mainnet CKB address")
         if live:
-            raise AnalysisError(
-                "V2_LIVE_ANALYSIS_NOT_YET_SUPPORTED",
-                "live collection has not yet been wired to a V2-compatible observation",
-            )
+            return self.analyze_live(address)
         return self.analyze_frozen(address)
+
+    def analyze_live(self, address: str) -> dict[str, Any]:
+        """Collect one explicit rolling 30-day observation without touching frozen SQLite."""
+        now = int(dt.datetime.now(dt.timezone.utc).timestamp())
+        start, end = now - 30 * 86400, now
+        explorer = ExplorerClient()
+        try:
+            detail = explorer.get_address(address) or {}
+            data = detail.get("data", detail)
+            if isinstance(data, list): data = data[0] if data else {}
+            attrs = (data or {}).get("attributes", {})
+            lock_script = attrs.get("lock_script")
+            target_lock = (attrs.get("lock_hash") or attrs.get("lock_script_hash") or
+                           script_hash(lock_script))
+            if not target_lock:
+                raise AnalysisError("COLLECTION_FAILED", "Explorer returned no lock identifier")
+            summaries, page, total = [], 1, None
+            page_size = max(1, int(os.getenv("EXPLORER_LIVE_PAGE_SIZE", "50")))
+            while True:
+                payload = explorer.get_address_transactions(address, page=page, page_size=page_size) or {}
+                items = payload.get("data") or []
+                if not items: break
+                summaries.extend(items)
+                total = (payload.get("meta") or {}).get("total", total)
+                if total is not None and len(summaries) >= int(total): break
+                # Explorer sorts by time.desc. Once a page reaches before the
+                # rolling-window boundary, older pages cannot contain eligible
+                # observations and must not be fetched (critical for wallets
+                # with millions of historical transactions).
+                timestamps = []
+                for item in items:
+                    try:
+                        timestamps.append(int((item.get("attributes") or {}).get("block_timestamp", 0)))
+                    except (TypeError, ValueError):
+                        continue
+                if timestamps and min(timestamps) < start * 1000:
+                    break
+                if len(items) < page_size: break
+                page += 1
+            def in_window(item: dict) -> bool:
+                try:
+                    timestamp = int((item.get("attributes") or {}).get("block_timestamp", 0))
+                except (TypeError, ValueError):
+                    return False
+                return start * 1000 <= timestamp < end * 1000
+            summaries = [item for item in summaries if in_window(item)]
+            with tempfile.NamedTemporaryFile(prefix="ckb-live-", suffix=".sqlite") as tmp:
+                conn = sqlite3.connect(tmp.name)
+                install_schema(conn)
+                conn.execute("CREATE TABLE raw_transactions (tx_hash TEXT PRIMARY KEY, raw_json TEXT NOT NULL, fetched_at INTEGER NOT NULL, source_kind TEXT NOT NULL)")
+                transactions = []
+                for item in summaries:
+                    item_attrs = item.get("attributes") or {}
+                    tx_hash = item_attrs.get("transaction_hash") or item.get("id")
+                    if not tx_hash: continue
+                    payload = explorer.get_transaction(tx_hash)
+                    if not payload: continue
+                    tx = normalize_transaction(payload, target_lock_hash=target_lock, target_address=address)
+                    conn.execute("INSERT OR REPLACE INTO raw_transactions VALUES (?,?,?,?)", (tx_hash, __import__("json").dumps(payload), now, "ckb_explorer_live"))
+                    persist_transaction(conn, tx)
+                    resolve_transaction_inputs(conn, tx, explorer=explorer)
+                    persist_transaction(conn, tx)
+                    transactions.append(tx)
+                observation = ObservationContract(
+                    address=address, canonical_lock_identifier=target_lock,
+                    window_start_timestamp=start, window_end_timestamp=end,
+                    boundary_resolution_source="live_utc_rolling_window",
+                    boundary_resolution_status="complete", transactions_observed=len(transactions),
+                    listing_status="complete", detail_status="complete" if len(transactions) == len(summaries) else "incomplete",
+                    input_resolution_status="complete" if all(i.get("resolution_status") in {"complete", "not_applicable"} for tx in transactions for i in tx["inputs"]) else "incomplete",
+                    listing_complete=True, detail_complete=len(transactions) == len(summaries),
+                    input_resolution_complete=all(i.get("resolution_status") in {"complete", "not_applicable"} for tx in transactions for i in tx["inputs"]),
+                    collection_timestamp=dt.datetime.now(dt.timezone.utc).isoformat())
+                persist_observation(conn, observation, transactions)
+                conn.commit()
+                from wallet_intelligence.features_v2.pipeline import load_observation_v2, assess_observation_v2
+                normalized = load_observation_v2(conn, observation.observation_id, collection_state="COMPLETE" if observation.detail_complete else "PARTIAL")
+                result = assess_observation_v2(normalized)
+                metadata = normalized.get("metadata", {})
+                evidence = {"transactions": len(transactions), "inputs": sum(len(t["inputs"]) for t in transactions), "outputs": sum(len(t["outputs"]) for t in transactions), "cells": len(normalized.get("observed_target_cells", []))}
+                return {"version": V2_VERSION, "address": address, "network": NETWORK,
+                        "observation": {"source": "ckb_explorer_mainnet", "mode": "live", "window_start": start, "window_end": end, "status": "SUPPORTED" if observation.detail_complete else "PARTIAL", "collection_timestamp": metadata.get("collection_timestamp")},
+                        "evidence": evidence, "feature_support": {family: result["features"][family]["support_state"] for family in FAMILIES},
+                        "features": result["features"], "behaviors": result["rules"],
+                        "limitations": ["Observable behaviour only; no identity or ownership attribution.", "Live evidence is bounded to the UTC rolling 30-day window."] + ([] if observation.detail_complete else ["Explorer transaction detail collection was incomplete."])}
+        except AnalysisError: raise
+        except ClientUnavailable as exc:
+            raise AnalysisError("COLLECTION_FAILED", str(exc)) from exc
+        except Exception as exc:
+            raise AnalysisError("COLLECTION_FAILED", f"live Explorer collection failed: {exc}") from exc

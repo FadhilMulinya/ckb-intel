@@ -55,6 +55,10 @@ def load_normalized_observation(conn, observation_id: str) -> dict:
         raise KeyError(f"observation not found: {observation_id}")
     metadata = dict(observation)
     target = metadata["canonical_lock_identifier"]
+    # Explorer payloads may expose the wallet address without a lock-script
+    # hash. Preserve both identities so target Cells remain attributable after
+    # persistence regardless of which representation a source supplied.
+    target_identities = {target, metadata.get("address")}
     tx_rows = conn.execute(
         """SELECT t.* FROM transactions t
            JOIN wallet_transaction_participation p ON p.tx_hash=t.tx_hash
@@ -81,7 +85,7 @@ def load_normalized_observation(conn, observation_id: str) -> dict:
             item["resolved_type_script"] = script("type_scripts", item["resolved_type_script_hash"])
             item["resolved_lock_script_hash"] = (item.get("resolved_lock_script_hash") or
                                                   item.get("resolved_lock_identifier"))
-            item["target_controls_input"] = item["resolved_lock_script_hash"] == target
+            item["target_controls_input"] = item["resolved_lock_script_hash"] in target_identities
             tx["inputs"].append(item)
         tx["outputs"] = []
         for row in conn.execute("SELECT * FROM cells WHERE creating_tx_hash=? ORDER BY output_index",
@@ -91,7 +95,7 @@ def load_normalized_observation(conn, observation_id: str) -> dict:
             item["lock_script"] = script("lock_scripts", item["lock_script_hash"])
             item["type_script"] = script("type_scripts", item["type_script_hash"])
             item["lock_script_hash"] = item.get("lock_script_hash") or item.get("lock_identifier")
-            item["target_controls_output"] = item["lock_script_hash"] == target
+            item["target_controls_output"] = item["lock_script_hash"] in target_identities
             tx["outputs"].append(item)
         transactions.append(tx)
     return {"metadata": metadata, "transactions": transactions}
