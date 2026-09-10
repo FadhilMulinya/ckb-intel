@@ -13,14 +13,23 @@ The historical project used lifetime transaction-count thresholds to create `hum
 | Dataset | `ckb-behaviour-dataset-v1` |
 | Population | 1,172 frozen wallets; 939 complete, 6 partial, 224 retry-exhausted, 3 invalid |
 | Observation | 2026-08-01 00:00 UTC through 2026-08-31 00:00 UTC |
-| Transactions | 51,816 |
-| Applicable inputs | 56,407 / 56,407 resolved (100%); Cellbase inputs are `NOT_APPLICABLE` |
+| Wallet-transaction participation rows | 51,816 |
+| Distinct participating transactions | 47,145 |
+| Applicable input rows | 56,407 / 56,407 resolved (100% resolution status); Cellbase inputs are `NOT_APPLICABLE` |
+| Authoritative manifest | `ckb_data/dataset_completion/population_manifest_v1.jsonl` |
 | Manifest SHA-256 | `6d8b5cd777e9ea9825466dc7500fdcb1dd639981d74475387c405aa6599583fe` |
 | Database SHA-256 | `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322` |
 
-This is a reproducible observational cohort assembled from overlapping historical local sources, not a random or statistically representative sample of all CKB wallets. Of 1,172 wallets, 425 retain provenance-only legacy proxy metadata (222 `bot_like`, 203 `human_like`); 747 have no proxy label. Those fields were excluded from Feature V2 and all exploratory ML.
+This is a reproducible observational cohort assembled from overlapping historical local sources, not a random or statistically representative sample of all CKB wallets. The authoritative population manifest is `ckb_data/dataset_completion/population_manifest_v1.jsonl`; other manifest-like files are validation or historical artifacts. Of 1,172 wallets, 425 retain provenance-only legacy proxy metadata (222 `bot_like`, 203 `human_like`); 747 have no proxy label. Those fields were excluded from Feature V2 and all exploratory ML.
 
 ## Architecture
+
+`classifier-service/` is the authoritative Python implementation boundary for
+wallet observation loading, Feature V2 extraction, support states, and
+descriptive behaviour rules, collection clients, normalization, and
+previous-output resolution. `ckb_data/` contains frozen observations,
+manifests, datasets, and research orchestration that consumes the service
+package.
 
 ```text
 CKB Mainnet Evidence
@@ -76,8 +85,11 @@ python3 -m venv .venv
 
 `requirements-research.lock.txt` records the exact artifact-generation versions; the flexible file is the supported installer. The frozen database is distributed separately in the [Dataset V1 release](https://github.com/FadhilMulinya/ckb-intel/releases/tag/ckb-behaviour-dataset-v1) and must be downloaded as `ckb-behaviour-dataset-v1.sqlite` and placed at `ckb_data/ckb_data_v2/ckb_explorer.sqlite`.
 
-The verifier does not call Explorer. It validates hashes, contracts, row alignment, SQLite integrity, and runs the complete offline suite. The currently verified suite contains **80 passing tests**.
+The verifier does not call Explorer. It validates hashes, contracts, row alignment, SQLite integrity, and runs the complete offline suite under `ckb_data/tests`. The suite currently contains 71 passing tests and 11 intentional skips.
 
 ## Historical software
 
-`classifier-service/`, `registry-service/`, and `REPORT.md` are retained as the **LEGACY / ABANDONED BASELINE**. They must not be used to interpret the final research outputs. See [limitations](docs/limitations.md).
+An earlier V1 proxy-label human/bot classifier was retired after review. Its
+executable source, model artifacts, and registry service were removed; Git
+history preserves the superseded implementation. The active
+`classifier-service/` is the V2 wallet behaviour service.

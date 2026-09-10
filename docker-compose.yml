@@ -1,0 +1,35 @@
+services:
+  mongodb:
+    image: mongo:8
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - registry-mongo:/data/db
+
+  classifier-service:
+    build:
+      context: .
+      dockerfile: classifier-service/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: "8000"
+
+  registry-service:
+    build:
+      context: .
+      dockerfile: registry-service/Dockerfile
+    depends_on:
+      - mongodb
+      - classifier-service
+    ports:
+      - "3000:3000"
+    environment:
+      API_HOST: "0.0.0.0"
+      API_PORT: "3000"
+      MONGODB_URI: "mongodb://mongodb:27017/behaviour-intelligence"
+      CLASSIFIER_SERVICE_URL: "http://classifier-service:8000"
+
+volumes:
+  registry-mongo:

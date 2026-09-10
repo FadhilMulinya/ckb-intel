@@ -6,10 +6,10 @@ import sys
 from pathlib import Path
 
 try:
-    import ckb_explorer_pull as crawler
+    import wallet_intelligence.collection as crawler
 except ImportError:
     print(
-        "Could not import ckb_explorer_pull.py -- it must be in the same "
+        "Could not import wallet_intelligence.collection as ckb_explorer_pull.py -- it must be in the same "
         "directory as this script (or on PYTHONPATH). This reuses its "
         "fetch_block_transactions/fetch_transaction_detail rather than "
         "reimplementing the HTTP/retry/rate-limit handling from scratch.",

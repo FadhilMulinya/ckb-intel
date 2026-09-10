@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import Optional
 
 try:
-    import ckb_explorer_pull as crawler
-    from ckb_native import (
+    import wallet_intelligence.collection as crawler
+    from wallet_intelligence.normalization import (
         ObservationContract,
         STATUS_COMPLETE,
         STATUS_FAILED,
@@ -23,11 +23,11 @@ try:
         persist_observation,
         ratio,
     )
-    from ckb_clients import resolve_observation_boundaries
-    from input_resolver import resolve_transaction_inputs
+    from wallet_intelligence.clients import resolve_observation_boundaries
+    from wallet_intelligence.resolution import resolve_transaction_inputs
 except ImportError:
     print(
-        "Could not import ckb_explorer_pull.py -- it must be in the same "
+        "Could not import wallet_intelligence.collection as ckb_explorer_pull.py -- it must be in the same "
         "directory as this script (or on PYTHONPATH). Reuses its proven "
         "fetch_* functions rather than reimplementing HTTP/retry handling.",
         file=sys.stderr,

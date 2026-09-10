@@ -104,13 +104,15 @@ def main(root: Path) -> None:
 
     check_artifact_index(root)
     check_source_integrity(root)
-    result = subprocess.run(
-        [sys.executable, "-m", "unittest", "discover", "-s", "ckb_data", "-p", "test_*.py"],
-        cwd=root,
-        check=False,
-    )
-    if result.returncode:
-        raise SystemExit(result.returncode)
+    # Discover both the authoritative service tests and research-only tests.
+    for test_dir in ("classifier-service/tests", "ckb_data/tests"):
+        result = subprocess.run(
+            [sys.executable, "-m", "unittest", "discover", "-s", test_dir, "-p", "test_*.py"],
+            cwd=root,
+            check=False,
+        )
+        if result.returncode:
+            raise SystemExit(result.returncode)
     print("Frozen contracts, hashes, indexed artifacts, SQLite integrity, and tests: OK")
     print("FINAL_RESEARCH_OFFLINE_VERIFICATION_OK")
 

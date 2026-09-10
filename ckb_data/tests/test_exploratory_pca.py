@@ -54,7 +54,9 @@ class PcaMathTests(unittest.TestCase):
         self.assertFalse(feasible(46, 36)[0])
 
     def test_frozen_candidate_sizes(self):
-        base = Path(__file__).resolve().parent / "feature_validation"
+        # The canonical frozen validation artifacts live at ckb_data/feature_validation,
+        # alongside the research tooling, rather than under ckb_data/tests.
+        base = Path(__file__).resolve().parents[1] / "feature_validation"
         with (base / "high_confidence.csv").open() as handle:
             reader = csv.DictReader(handle); rows = [[float(row[name]) if row[name] else None
                                                       for name in reader.fieldnames] for row in reader]

@@ -24,7 +24,9 @@ explicitly marked `pairwise_value_attribution = NOT_ESTABLISHED`.
 script, optional type script, output data, output index, and the unmodified
 Explorer Cell JSON.
 
-`transaction_inputs` stores each previous outpoint plus the resolved capacity,
+`transaction_inputs` stores each previous transaction hash plus resolved capacity;
+the dedicated `previous_output_index` column is present but null in the frozen normalized
+rows and is recovered from cached raw JSON by the V2 loader where available. It also stores the
 lock/type scripts, data, an explicit resolution status, and `resolution_source`.
 Missing previous
 outputs remain `incomplete`; they are never converted to zero-value Cells.
