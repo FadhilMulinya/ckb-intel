@@ -7,4 +7,4 @@ __pycache__/
 .data/
 .data-e2e/
 *.sqlite
-DATA_QUALITY_ANALYSIS_REPORT.md
+.vscode/
