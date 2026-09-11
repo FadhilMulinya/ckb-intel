@@ -6,5 +6,5 @@ __pycache__/
 
 .data/
 .data-e2e/
-*.sqlite
+**/**/**.sqlite
 .vscode/
