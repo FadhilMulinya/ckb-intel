@@ -1,9 +1,3 @@
-"""Validate existing local wallets against wallet-observation-30d-v1.
-
-This command never discovers wallets.  It imports historical local Explorer
-JSONL into the shared cache, selects a label-blind cohort, and only asks
-Explorer for evidence not already sufficient locally.
-"""
 from __future__ import annotations
 
 import argparse
@@ -14,29 +8,16 @@ import sqlite3
 from collections import Counter
 from pathlib import Path
 
-<<<<<<< HEAD
-from ckb_clients import ClientUnavailable, ExplorerClient, resolve_observation_boundaries
-from ckb_explorer_pull import Store
-from ckb_native import (ObservationContract, STATUS_COMPLETE, STATUS_INCOMPLETE,
-                        STATUS_NOT_APPLICABLE, normalize_transaction,
-                        persist_observation, persist_transaction, ratio)
-from features.base import load_normalized_observation
-from features.pipeline import assess_observation
-from features.rule_config import THRESHOLDS
-from input_resolver import resolve_transaction_inputs
-from research_cache import CacheStats, persist_statistics
-=======
-from wallet_intelligence.clients import ClientUnavailable, ExplorerClient, resolve_observation_boundaries
-from wallet_intelligence.collection import Store
-from wallet_intelligence.normalization import (ObservationContract, STATUS_COMPLETE, STATUS_INCOMPLETE,
+from classifier_service.wallet_intelligence.clients import ClientUnavailable, ExplorerClient, resolve_observation_boundaries
+from classifier_service.wallet_intelligence.collection import Store
+from classifier_service.wallet_intelligence.normalization import (ObservationContract, STATUS_COMPLETE, STATUS_INCOMPLETE,
                         STATUS_NOT_APPLICABLE, normalize_transaction,
                         persist_observation, persist_transaction, ratio)
 from research_pipeline.dataset_features.base import load_normalized_observation
 from research_pipeline.dataset_features.pipeline import assess_observation
 from research_pipeline.dataset_features.rule_config import THRESHOLDS
-from wallet_intelligence.resolution import resolve_transaction_inputs
-from wallet_intelligence.cache import CacheStats, persist_statistics
->>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
+from classifier_service.wallet_intelligence.resolution import resolve_transaction_inputs
+from classifier_service.wallet_intelligence.cache import CacheStats, persist_statistics
 from research_manifest import build_manifest, write_manifest
 
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-"""Phase 2 unsupervised structure discovery over immutable PCA representations."""
 import csv, hashlib, json, math, os, platform, sqlite3, statistics
 from collections import Counter, defaultdict
 from pathlib import Path

@@ -1,4 +1,3 @@
-"""Build the label-safe manifest for the existing local CKB wallet population."""
 from __future__ import annotations
 
 import argparse

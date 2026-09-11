@@ -1,4 +1,4 @@
-"""Target-lock capacity projections without pairwise attribution or change inference."""
+
 from __future__ import annotations
 
 import statistics

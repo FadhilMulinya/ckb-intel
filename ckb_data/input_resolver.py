@@ -1,4 +1,3 @@
-"""Targeted previous-output resolver; never scans beyond requested outpoints."""
 from __future__ import annotations
 
 import json

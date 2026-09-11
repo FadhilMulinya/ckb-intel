@@ -1,10 +1,3 @@
-"""Transparent timing features for irregular event timestamps.
-
-Dominant period uses the median interarrival as the candidate period. Strength
-is `exp(-MAD(gaps)/period)` and phase stability is circular resultant length of
-timestamps modulo that period. This avoids interpolation and makes every value
-auditable, but detects a single dominant cadence rather than multiple spectra.
-"""
 from __future__ import annotations
 
 import math

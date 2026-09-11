@@ -1,4 +1,3 @@
-"""Durable counters for cache-first CKB research collection."""
 from __future__ import annotations
 
 import json

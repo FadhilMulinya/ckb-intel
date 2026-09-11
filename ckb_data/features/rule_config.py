@@ -1,4 +1,3 @@
-"""Versioned, reviewable thresholds for transparent behaviour rules."""
 
 RULE_CONFIG_VERSION = "ckb-rule-thresholds-v1"
 

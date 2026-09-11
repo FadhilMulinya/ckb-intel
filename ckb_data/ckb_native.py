@@ -1,9 +1,3 @@
-"""Lossless CKB transaction/Cell normalization and observation contracts.
-
-The normalized transaction is a hypergraph: inputs consume previous outputs and
-outputs create new Cells.  This module deliberately does not create pairwise
-wallet value transfers because CKB transactions do not establish that mapping.
-"""
 from __future__ import annotations
 
 import datetime as dt

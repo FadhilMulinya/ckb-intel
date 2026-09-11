@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 try:
-    import wallet_intelligence.collection as crawler
+    import classifier_service.wallet_intelligence.collection as crawler
 except ImportError:
     print(
         "Could not import wallet_intelligence.collection as ckb_explorer_pull.py -- it must be in the same "

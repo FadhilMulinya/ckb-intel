@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-"""Generate CKB-native behaviour features V2 from the frozen local dataset only."""
 from __future__ import annotations
 
 import argparse

@@ -1,4 +1,3 @@
-"""Versioned registry of conservatively recognized CKB script families."""
 from __future__ import annotations
 
 from collections import Counter

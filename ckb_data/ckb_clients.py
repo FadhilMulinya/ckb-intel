@@ -1,4 +1,4 @@
-"""Reusable standard-library clients for CKB Node, Indexer, and Explorer."""
+
 from __future__ import annotations
 
 import json

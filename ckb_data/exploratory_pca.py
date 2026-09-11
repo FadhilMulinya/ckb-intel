@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-"""Reproducible PCA diagnostics for the frozen CKB V2 feature space."""
 from __future__ import annotations
 
 import csv
