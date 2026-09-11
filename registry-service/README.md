@@ -1,4 +1,10 @@
+<<<<<<< HEAD
+# LEGACY / ABANDONED BASELINE — registry-service
+
+> This service stores historical proxy-classifier outputs. It is retained for auditability and is not part of the final CKB-native behavioural research result.
+=======
 # CKB Wallet Behaviour Registry
+>>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 
 This Node/Fastify service stores and queries `wallet-behaviour-v2` profiles
 returned by `classifier-service`. It does not perform feature engineering,

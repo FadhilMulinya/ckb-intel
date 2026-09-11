@@ -1,5 +1,4 @@
 
-
 RULE_CONFIG_VERSION = "ckb-rule-thresholds-v1"
 
 THRESHOLDS = {

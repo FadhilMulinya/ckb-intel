@@ -20,7 +20,11 @@ Every frozen wallet remains represented. Failed wallets were neither removed nor
 
 The cohort was assembled from overlapping historical local sources, including `ckb_data/addresses.txt` (890 members), prior `ckb_data/ckb_data_v2/provenance` and feature exports (887 each), and the earlier recent-mainnet-activity discovery checkpoint (630). These memberships overlap and are retained per wallet in the research manifest.
 
+<<<<<<< HEAD
+Exactly 425 wallets (36.26%) retain a historical `legacy_proxy_label`: 222 `bot_like` and 203 `human_like`; 747 have no such metadata. These values are provenance from the abandoned threshold baseline, not ground truth. They were excluded from Feature V2, PCA, HDBSCAN, GMM, and behavioural interpretation and remain only for auditability.
+=======
 Exactly 425 wallets (36.26%) retain a historical `legacy_proxy_label`: 222 `bot_like` and 203 `human_like`; 747 have no such metadata. These values are provenance from the abandoned threshold baseline, not ground truth. They were excluded from Feature V2, PCA, HDBSCAN, GMM, and behavioural interpretation and remain only for auditability. The legacy services are retained as historical software and are not the V2 research execution path.
+>>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 
 The frozen population is therefore a reproducible observational cohort derived from historical discovery sources—not a random or statistically representative sample of the global CKB wallet population. Structures found here must not be generalized to all CKB wallets without additional sampling validation.
 

@@ -1,11 +1,10 @@
-"""Install the normalized CKB schema and rebuild it from cached raw details."""
 from __future__ import annotations
 
 import argparse
 import sqlite3
 from pathlib import Path
 
-from wallet_intelligence.normalization import rebuild_from_raw_cache
+from classifier_service.wallet_intelligence.normalization import rebuild_from_raw_cache
 
 
 def main() -> None:

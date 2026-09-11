@@ -8,6 +8,18 @@ import urllib.error
 from pathlib import Path
 from unittest import mock
 
+<<<<<<< HEAD
+from ckb_clients import ClientUnavailable, ExplorerClient, binary_search_explorer_block
+from ckb_native import install_schema, normalize_transaction, persist_transaction
+from features.pipeline import assess_observation
+from input_resolver import resolve_transaction_inputs
+from research_cache import CacheStats, install_statistics_schema, persist_statistics
+from research_manifest import build_manifest, sampling_stratum
+from ckb_data.tests.test_ckb_native import LOCK_A, LOCK_B, cell, payload
+
+
+class ManifestTests(unittest.TestCase):
+=======
 from wallet_intelligence.clients import ClientUnavailable, ExplorerClient, binary_search_explorer_block
 from wallet_intelligence.normalization import install_schema, normalize_transaction, persist_transaction
 from research_pipeline.dataset_features.pipeline import assess_observation
@@ -24,6 +36,7 @@ class ManifestTests(unittest.TestCase):
         self.assertIn('"ckb_data/tests"', source)
         self.assertNotIn('discover", "-s", "ckb_data",', source)
 
+>>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
     def test_stratum_boundaries_and_unknown(self):
         values = [(None, "unknown"), (0, "unknown"), (1, "1-10"), (10, "1-10"),
                   (11, "11-50"), (50, "11-50"), (51, "51-200"),

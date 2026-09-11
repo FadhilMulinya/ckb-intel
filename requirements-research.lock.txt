@@ -1,5 +1,3 @@
-# Tested artifact-generation environment: CPython 3.12.13
-# Independent clean-room verification also passed on CPython 3.14.
 numpy==2.3.5
 pandas==2.2.3
 scipy==1.18.1
