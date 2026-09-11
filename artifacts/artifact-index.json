@@ -1,0 +1,192 @@
+[
+  {
+    "artifact": "Dataset contract",
+    "phase": "Dataset V1",
+    "path": "ckb_data/feature_engineering_v2/dataset_v1_snapshot/dataset_contract_v1.json",
+    "description": "Dataset contract",
+    "row_count": null,
+    "sha256": "1852b56282a46d0ed3fd030be7d7b9000fd635879a1ceb69622589408090c349",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "canonical"
+  },
+  {
+    "artifact": "Population manifest",
+    "phase": "Dataset V1",
+    "path": "ckb_data/dataset_completion/population_manifest_v1.jsonl",
+    "description": "Population manifest",
+    "row_count": 1172,
+    "sha256": "705608bf0603e4ff803896d62305b5084dafbd408256fe007d82a6c3d8ff313e",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "canonical"
+  },
+  {
+    "artifact": "Feature V2 canonical",
+    "phase": "Feature V2",
+    "path": "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2.csv",
+    "description": "Feature V2 canonical",
+    "row_count": 1172,
+    "sha256": "3ffed28c9ad2bed98e735ee02bdad6cd56a6ab956e9fd8a31fbe622707a6ef33",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "canonical"
+  },
+  {
+    "artifact": "Feature V2 ML-safe",
+    "phase": "Feature V2",
+    "path": "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2_ml.csv",
+    "description": "Feature V2 ML-safe",
+    "row_count": 1172,
+    "sha256": "cd952bfcaf3d492d42564fffdc2cc94179f3a7d7f3cd9143b793cdca826dfb62",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "Feature V2 metadata",
+    "phase": "Feature V2",
+    "path": "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2_metadata.csv",
+    "description": "Feature V2 metadata",
+    "row_count": 1172,
+    "sha256": "7746900b415c2d9634ec4960301817ad280df029bfaabf67c8c145e150db35df",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "Feature V2 evidence",
+    "phase": "Feature V2",
+    "path": "ckb_data/feature_engineering_v2/wallet_behaviour_features_v2_evidence.jsonl",
+    "description": "Feature V2 evidence",
+    "row_count": 1172,
+    "sha256": "8c35e586c7f3d5150281e73a2845c7ad2129b06441b87d233861df8198016add",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "canonical"
+  },
+  {
+    "artifact": "Predictor audit",
+    "phase": "Validation",
+    "path": "ckb_data/feature_validation/predictor_audit_v1.csv",
+    "description": "Predictor audit",
+    "row_count": 121,
+    "sha256": "190193fde7513269a2a8cb8aa1407eb726049dd05ade78837c33db4f641bc636",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "Validation report",
+    "phase": "Validation",
+    "path": "ckb_data/feature_validation/FEATURE_VALIDATION_ML_READINESS_REPORT.md",
+    "description": "Validation report",
+    "row_count": null,
+    "sha256": "f80802f054b842a1af00b384712a447809912634395338cdf272792b5fdb8aa4",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "PCA contract",
+    "phase": "PCA",
+    "path": "ckb_data/exploratory_ml_pca_v1/experiment_contract.json",
+    "description": "PCA contract",
+    "row_count": null,
+    "sha256": "46effa585fb53443cfa116339bdbe95682934e36084469143d1a37016c8b0925",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "PCA variance",
+    "phase": "PCA",
+    "path": "ckb_data/exploratory_ml_pca_v1/pca_high_confidence_v1/explained_variance.csv",
+    "description": "PCA variance",
+    "row_count": 10,
+    "sha256": "2d61f613429fa9b869f48b07629291baf7d5a6162654e7f289a550b81ea14e87",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "PCA loadings",
+    "phase": "PCA",
+    "path": "ckb_data/exploratory_ml_pca_v1/pca_high_confidence_v1/loading_matrix.csv",
+    "description": "PCA loadings",
+    "row_count": 100,
+    "sha256": "cd8379627dd924e3d92d9fb0674c37db7d993fd764385071cdb3e790f407a0d0",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "PCA scores",
+    "phase": "PCA",
+    "path": "ckb_data/exploratory_ml_pca_v1/pca_high_confidence_v1/pca_scores.csv",
+    "description": "PCA scores",
+    "row_count": 513,
+    "sha256": "ed079106c182ab94c114998426671cdb0756c8943d661ea30d83e3755d1e882d",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "Phase 2 contract",
+    "phase": "Structure discovery",
+    "path": "ckb_data/exploratory_ml_phase2_v1/experiment_contract.json",
+    "description": "Phase 2 contract",
+    "row_count": null,
+    "sha256": "0e3f8667a714a3dc51d25c06aac47a9c16a38c64f191c3a8fb2db74f3e028a6e",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "HDBSCAN registry",
+    "phase": "Structure discovery",
+    "path": "ckb_data/exploratory_ml_phase2_v1/hdbscan_run_registry.csv",
+    "description": "HDBSCAN registry",
+    "row_count": 192,
+    "sha256": "2a66ae04c75b148b8f27c1c8436e6575674cb3b6bbea3bd7fe81f8e04e368397",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "Stability report",
+    "phase": "Structure discovery",
+    "path": "ckb_data/exploratory_ml_phase2_v1/cluster_stability_report.json",
+    "description": "Stability report",
+    "row_count": null,
+    "sha256": "0c9030a7284fb695d734770dffff2a0f4d6e27cb686f598f95e3a7577ebe6730",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "GMM selection",
+    "phase": "Structure discovery",
+    "path": "ckb_data/exploratory_ml_phase2_v1/gmm_model_selection.csv",
+    "description": "GMM selection",
+    "row_count": 60,
+    "sha256": "da4adb408eb1fe621915500fa447d70e6cf4269549b415b0c8aaa3c010f511fc",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "UMAP configuration",
+    "phase": "Structure discovery",
+    "path": "ckb_data/exploratory_ml_phase2_v1/umap_visualization_config.json",
+    "description": "UMAP configuration",
+    "row_count": null,
+    "sha256": "b988d7cafca5c9bc24b5150ca75d617139c4199e367f6b8bd3c07b8c988301db",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "Evidence review",
+    "phase": "Structure discovery",
+    "path": "ckb_data/exploratory_ml_phase2_v1/evidence_review_records.csv",
+    "description": "Evidence review",
+    "row_count": 9,
+    "sha256": "ce9c58cbe4248b747a6ea7a73077e36e6d6d6ef7cb0a082db389cdfbffb50733",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  },
+  {
+    "artifact": "Final report",
+    "phase": "Submission",
+    "path": "reports/final-research-report.md",
+    "description": "Final report",
+    "row_count": null,
+    "sha256": "1ec4eaf4353111d1d6f4a0ef19741d4a8b1228d53a86386153767c257c8c73b7",
+    "generated_by": "documented phase command or scripts/build_artifact_index.py",
+    "status": "derived"
+  }
+]

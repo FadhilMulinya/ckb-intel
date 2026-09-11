@@ -1,0 +1,48 @@
+{
+  "batch_id": "batch-20260831T231114417312Z",
+  "boundary_inconsistent": 0,
+  "completed_at": "2026-08-31T23:12:42.049875+00:00",
+  "detail_incomplete": 0,
+  "elapsed_seconds": 87.634,
+  "mean_input_resolution": 1.0,
+  "previous_outputs_resolved": 0,
+  "safety_stop": "request failure rate 25.0% exceeded threshold",
+  "started_at": "2026-08-31T23:11:14.417308+00:00",
+  "statistics": {
+    "address_page_cache_hits": 0,
+    "address_page_cache_misses": 1,
+    "block_cache_hits": 0,
+    "block_cache_misses": 0,
+    "explorer_failures": 1,
+    "explorer_requests": 4,
+    "explorer_retries": 3,
+    "explorer_successes": 0,
+    "normalized_cache_hits": 0,
+    "previous_output_cache_hits": 0,
+    "previous_output_cache_misses": 0,
+    "rate_limit_events": 0,
+    "raw_cache_hits": 0,
+    "transaction_cache_hits": 0,
+    "transaction_cache_misses": 0,
+    "transactions_fetched": 0,
+    "transactions_reused": 0
+  },
+  "transaction_bearing_wallets": 0,
+  "transactions_fetched": 0,
+  "transactions_reused": 0,
+  "unresolved_previous_outputs": 0,
+  "wallet_results": [
+    {
+      "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq02u38k4kh65ek037y6ladw8h387u78pcs8gc8lh",
+      "detail_coverage": null,
+      "evidence_state": "PARTIAL",
+      "input_resolution": null,
+      "state": "PARTIAL",
+      "transactions": 0
+    }
+  ],
+  "wallets_attempted": 1,
+  "wallets_completed": 0,
+  "wallets_failed": 0,
+  "wallets_partial": 1
+}

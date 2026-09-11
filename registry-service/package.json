@@ -1,20 +1,24 @@
 {
-  "name": "registry-service",
+  "name": "ckb-wallet-behaviour-registry",
   "version": "1.0.0",
-  "description": "",
+  "description": "CKB wallet behaviour profile registry",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
-    "test": "tsx test/normalize.smoke.ts && tsx test/time-window.smoke.ts"
+    "test": "npm run build && node test/registry-contract.smoke.mjs && node test/contract-validation.mjs"
   },
-  "keywords": ["ckb","ml"],
+  "keywords": [
+    "ckb",
+    "ml"
+  ],
   "author": "fadhil",
   "license": "ISC",
   "dependencies": {
     "@ckb-ccc/core": "^1.16.1",
+    "@fastify/swagger": "^9.8.1",
     "axios": "^1.18.1",
     "dotenv": "^17.4.2",
     "fastify": "^5.10.0",

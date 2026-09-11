@@ -1,81 +1,41 @@
-import { Wallet, WalletDoc, WalletLabel } from "../db/models/Wallet.js";
+import { Wallet, WalletProfile } from "../db/models/Wallet.js";
 
-/**
- * Repository = data. All Wallet collection access goes through here.
- * No business decisions are made in this file — callers (services) decide
- * *when* and *why* to persist; this file only knows *how*.
- */
-
-export interface WalletUpsertInput {
-  address: string;
-  lockScriptHash: string;
-  network: "mainnet";
-}
-
-export interface WalletIngestionUpdate {
-  txCount: number;
-  firstSeenMs?: number;
-  lastSeenMs?: number;
-  ingestionStatus: "complete" | "failed";
-  lastIngestedAt?: Date;
-}
-
-export interface WalletLabelUpdate {
-  label: WalletLabel;
-  botProbability: number | null;
-  classifiedAt: Date;
-}
-
-export async function upsertWallet(input: WalletUpsertInput): Promise<WalletDoc> {
+export async function upsert(profile: Record<string, any>): Promise<WalletProfile> {
   return Wallet.findOneAndUpdate(
-    { address: input.address },
-    { ...input, ingestionStatus: "in_progress" },
+    { address: profile.address },
+    { address: profile.address, network: profile.network,
+      analysisVersion: profile.version, observation: profile.observation,
+      evidence: profile.evidence, featureSupport: profile.feature_support,
+      features: profile.features, behaviors: profile.behaviors,
+      limitations: profile.limitations },
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
 }
 
-export async function updateIngestionResult(
-  address: string,
-  update: WalletIngestionUpdate
-): Promise<void> {
-  await Wallet.findOneAndUpdate({ address }, update);
+export function response(value: WalletProfile): Record<string, unknown> {
+  return {
+    version: value.analysisVersion,
+    address: value.address,
+    network: value.network,
+    observation: value.observation,
+    evidence: value.evidence,
+    feature_support: value.featureSupport,
+    features: value.features,
+    behaviors: value.behaviors,
+    limitations: value.limitations,
+    created_at: value.createdAt,
+    updated_at: value.updatedAt,
+  };
 }
 
-export async function markIngestionFailed(address: string): Promise<void> {
-  await Wallet.findOneAndUpdate({ address }, { ingestionStatus: "failed" });
-}
-
-export async function findWalletByAddress(address: string): Promise<WalletDoc | null> {
+export async function find(address: string): Promise<WalletProfile | null> {
   return Wallet.findOne({ address });
 }
 
-export async function listWallets(
-  limit = 50,
-  skip = 0,
-  label?: WalletLabel
-): Promise<WalletDoc[]> {
-  return Wallet.find(label ? { label } : {})
-    .sort({ updatedAt: -1 })
-    .skip(skip)
-    .limit(limit);
-}
-
-export async function countWallets(label?: WalletLabel): Promise<number> {
-  return Wallet.countDocuments(label ? { label } : {});
-}
-
-// Auto-creates the wallet record if it doesn't exist yet -- a label can
-// arrive (from classifier-service/predict.py) for an address that was never
-// ingested, or whose ingestion failed/hasn't run. Identity fields
-// (lockScriptHash/network) simply stay unset in that case until/unless
-// POST /ingest later fills them in via its own upsert.
-export async function updateLabel(
-  address: string,
-  update: WalletLabelUpdate
-): Promise<WalletDoc> {
-  return Wallet.findOneAndUpdate(
-    { address },
-    { address, ...update },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
+export async function list(skip: number, limit: number): Promise<{ items: WalletProfile[]; total: number }> {
+  const [items, total] = await Promise.all([
+    Wallet.find().sort({ updatedAt: -1 }).skip(skip).limit(limit),
+    Wallet.countDocuments(),
+  ]);
+  return { items, total };
 }

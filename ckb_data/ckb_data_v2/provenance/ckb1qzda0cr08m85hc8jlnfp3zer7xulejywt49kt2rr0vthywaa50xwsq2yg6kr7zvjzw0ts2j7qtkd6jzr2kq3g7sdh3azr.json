@@ -1,0 +1,27 @@
+{
+  "address": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2yg6kr7zvjzw0ts2j7qtkd6jzr2kq3g7sdh3azr",
+  "status": "complete",
+  "collected_at_utc": "2026-08-25T23:51:31.814763+00:00",
+  "window_start_epoch": 1724371200,
+  "window_end_epoch": 1787443200,
+  "window_start_utc": "2024-08-23T00:00:00+00:00",
+  "window_end_utc": "2026-08-23T00:00:00+00:00",
+  "lookback_days": 730,
+  "deepest_block": {
+    "block_number": 19385787,
+    "block_timestamp_epoch": 1779420879,
+    "block_timestamp_utc": "2026-05-22T03:34:39+00:00",
+    "tx_hash": "0x4c19ea946b4fe09c4ccfcdd551d8ff1ace61b964fbc17349b3634583e57735d5"
+  },
+  "shallowest_block": {
+    "block_number": 20234981,
+    "block_timestamp_epoch": 1787435862,
+    "block_timestamp_utc": "2026-08-22T21:57:42+00:00",
+    "tx_hash": "0x04bd1d787a8ae0c5503a3bdcd8437f24e4ff198dc709f7fdb580ccd4dd515b0b"
+  },
+  "n_tx_in_window": 493,
+  "n_tx_detail_fetched": 493,
+  "listing_truncated": false,
+  "detail_sampled": false,
+  "n_dao_events": 0
+}

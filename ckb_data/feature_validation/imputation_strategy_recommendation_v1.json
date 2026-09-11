@@ -1,0 +1,47 @@
+{
+  "capacity": {
+    "future_option": "Model support cohorts separately or add explicit missingness indicators only after sensitivity analysis.",
+    "missing_mechanism": "INSUFFICIENT_OBSERVATION_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  },
+  "lifecycle": {
+    "future_option": "Model support cohorts separately or add explicit missingness indicators only after sensitivity analysis.",
+    "missing_mechanism": "INSUFFICIENT_OBSERVATION_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  },
+  "lineage": {
+    "future_option": "Model support cohorts separately or add explicit missingness indicators only after sensitivity analysis.",
+    "missing_mechanism": "INSUFFICIENT_OBSERVATION_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  },
+  "periodicity": {
+    "future_option": "Model support cohorts separately or add explicit missingness indicators only after sensitivity analysis.",
+    "missing_mechanism": "INSUFFICIENT_OBSERVATION_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  },
+  "scripts": {
+    "future_option": "Model support cohorts separately or add explicit missingness indicators only after sensitivity analysis.",
+    "missing_mechanism": "INSUFFICIENT_OBSERVATION_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  },
+  "templates": {
+    "future_option": "Model support cohorts separately or add explicit missingness indicators only after sensitivity analysis.",
+    "missing_mechanism": "INSUFFICIENT_OBSERVATION_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  },
+  "temporal": {
+    "future_option": "Model support cohorts separately or add explicit missingness indicators only after sensitivity analysis.",
+    "missing_mechanism": "INSUFFICIENT_OBSERVATION_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  },
+  "topology": {
+    "future_option": "Model support cohorts separately or add explicit missingness indicators only after sensitivity analysis.",
+    "missing_mechanism": "INSUFFICIENT_OBSERVATION_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  },
+  "typed_assets": {
+    "future_option": "Exclude from primary ML until raw 16-byte payload support is established.",
+    "missing_mechanism": "RAW_XUDT_PAYLOAD_UNAVAILABLE_AND_INSUFFICIENT_SUPPORT",
+    "recommendation": "DO_NOT_IMPUTE_IN_VALIDATION"
+  }
+}

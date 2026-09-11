@@ -1,0 +1,9 @@
+{
+  "boundary_status": "complete",
+  "observation_end_block": 20311450,
+  "observation_end_timestamp": 1788134400,
+  "observation_start_block": 20025197,
+  "observation_start_timestamp": 1785542400,
+  "observation_window_id": "ckb-mainnet-30d-2026-08-31-v1",
+  "source": "explorer"
+}

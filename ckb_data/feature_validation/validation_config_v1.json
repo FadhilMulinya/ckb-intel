@@ -1,0 +1,37 @@
+{
+  "analysis_version": "ckb-feature-validation-v1",
+  "coverage_thresholds": [
+    0.2,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "high_activity_dependence": 0.8,
+  "high_confidence_max_missing_ratio": 0.6,
+  "high_confidence_minimum_non_missing": 300,
+  "minimum_activity_overlap": 30,
+  "minimum_correlation_overlap": 50,
+  "minimum_non_missing": 30,
+  "moderate_activity_dependence": 0.5,
+  "near_constant_mode_ratio": 0.99,
+  "near_duplicate_correlation": 0.95,
+  "outlier_iqr_multiplier": 3.0,
+  "population_size": 1172,
+  "primary_matrix_exclusions": [
+    "rule scores",
+    "typed assets without supported observations",
+    "explicit activity-volume diagnostics"
+  ],
+  "source_dataset_version": "ckb-behaviour-dataset-v1",
+  "source_manifest_hash": "6d8b5cd777e9ea9825466dc7500fdcb1dd639981d74475387c405aa6599583fe",
+  "source_predictor_count": 121,
+  "sparse_missing_ratio": 0.6,
+  "strong_correlation": 0.9,
+  "very_sparse_missing_ratio": 0.9,
+  "weekly_coverage_note": "Four fixed seven-day windows cover days 1-28; days 29-30 are excluded from stability only.",
+  "weekly_subwindows": 4,
+  "weekly_window_seconds": 604800
+}

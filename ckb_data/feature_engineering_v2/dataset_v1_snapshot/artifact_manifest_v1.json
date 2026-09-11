@@ -1,0 +1,52 @@
+[
+  {
+    "bytes": 1050,
+    "path": "ckb_data/dataset_completion/population_contract_v1.json",
+    "sha256": "993fe68f09c7b887e2932719b28af4ebc9fabf59d83ee769c2f15265eb823e53"
+  },
+  {
+    "bytes": 284,
+    "path": "ckb_data/dataset_completion/observation_window_v1.json",
+    "sha256": "8deb6c2dc11f8c7d18493139844b24b0cf974c4a59e04bb30c7947406cf9e7c5"
+  },
+  {
+    "bytes": 612470,
+    "path": "ckb_data/dataset_completion/population_manifest_v1.jsonl",
+    "sha256": "705608bf0603e4ff803896d62305b5084dafbd408256fe007d82a6c3d8ff313e"
+  },
+  {
+    "bytes": 743913,
+    "path": "ckb_data/dataset_completion/wallet_behaviour_features_canonical_v1.csv",
+    "sha256": "398714a855099c9aa971b227964ebab1d012cbc6c4031961e120017345dde5af"
+  },
+  {
+    "bytes": 180844,
+    "path": "ckb_data/dataset_completion/wallet_behaviour_features_ml_v1.csv",
+    "sha256": "7465b38621b781257a876c38968a89d72658900d4c7183c3afbe9a7f50cd1140"
+  },
+  {
+    "bytes": 206869,
+    "path": "ckb_data/dataset_completion/wallet_behaviour_features_ml_metadata_v1.csv",
+    "sha256": "44aa09e033e76a9f2aa5168ab32bb409aec4a5c19adc3afed795e4bc7599b3f6"
+  },
+  {
+    "bytes": 32530696,
+    "path": "ckb_data/dataset_completion/wallet_behaviour_evidence_v1.jsonl",
+    "sha256": "59ed2aab89554af96e94606406660d0562066487750eb372da7a474279fed722"
+  },
+  {
+    "bytes": 269677,
+    "path": "ckb_data/dataset_completion/wallet_collection_states_v1.csv",
+    "sha256": "6b0c333bb98f6c15ddb0eabbc8b2c9e8ef29e7097afb4849e93e8a7d90ead068"
+  },
+  {
+    "bytes": 40952,
+    "path": "ckb_data/dataset_completion/dataset_quality_v1.json",
+    "sha256": "ed0431ebdcd7c3cf452c9cae24c4bc189bcfc77d5051ae519c014f539b19dc83"
+  },
+  {
+    "bytes": 6398,
+    "path": "ckb_data/dataset_completion/DATASET_COMPLETION_REPORT.md",
+    "sha256": "e19eb939cbb7fe94359116033009e79e53ca3442efcbc4b25f35b2e06cd580a2"
+  }
+]

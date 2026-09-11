@@ -1,0 +1,39 @@
+# Offline reproduction
+
+The grant-review path uses frozen local evidence and must not call Explorer.
+
+Download `ckb-behaviour-dataset-v1.sqlite` from the [Dataset V1 release](https://github.com/FadhilMulinya/ckb-intel/releases/tag/ckb-behaviour-dataset-v1), place/rename it to `ckb_data/ckb_data_v2/ckb_explorer.sqlite`, and verify SHA-256 `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`.
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-research.txt
+./scripts/verify_final_research.sh .venv/bin/python
+```
+
+On Windows PowerShell, run the equivalent verifier with:
+
+```powershell
+python .\scripts\verify_final_research.py
+# or
+powershell -ExecutionPolicy Bypass -File .\scripts\verify_final_research.ps1 -Python python
+```
+
+The verifier fails deliberately when the local SQLite file is not the released
+frozen snapshot. It reports the expected and observed size and SHA-256 rather
+than accepting a database with matching table counts alone.
+
+The wrapper verifies the manifest and database hashes, SQLite `quick_check`, 1,172-row aligned artifacts, Phase 2 source integrity, and discovers the actual tests under `ckb_data/tests`.
+
+`requirements-research.txt` is the flexible supported dependency declaration. `requirements-research.lock.txt` records the exact CPython 3.12.13 artifact-generation environment; an independent clean-room audit also passed using Python 3.14.
+
+To regenerate derived outputs from the frozen database/cache only:
+
+```bash
+PYTHONPATH=classifier-service:ckb_data .venv/bin/python classifier-service/wallet_intelligence/feature_engineering.py
+PYTHONPATH=classifier-service:ckb_data .venv/bin/python ckb_data/validate_features_v2.py
+PYTHONPATH=ckb_data .venv/bin/python ckb_data/exploratory_pca.py
+PYTHONPATH=ckb_data .venv/bin/python ckb_data/exploratory_structure.py
+./scripts/verify_final_research.sh .venv/bin/python
+```
+
+These commands overwrite derived phase directories deterministically where promised, so reviewers who only need verification should use the wrapper. `dataset_completion.py` and all acquisition clients are excluded from the default path. Live collection is historical/optional infrastructure and is intentionally not documented as a final-verification step.
