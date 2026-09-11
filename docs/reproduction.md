@@ -22,24 +22,15 @@ The verifier fails deliberately when the local SQLite file is not the released
 frozen snapshot. It reports the expected and observed size and SHA-256 rather
 than accepting a database with matching table counts alone.
 
-<<<<<<< HEAD
-The wrapper verifies the manifest and database hashes, SQLite `quick_check`, 1,172-row aligned artifacts, Phase 2 source integrity, and all offline tests.
-=======
 The wrapper verifies the manifest and database hashes, SQLite `quick_check`, 1,172-row aligned artifacts, Phase 2 source integrity, and discovers the actual tests under `ckb_data/tests`.
->>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 
 `requirements-research.txt` is the flexible supported dependency declaration. `requirements-research.lock.txt` records the exact CPython 3.12.13 artifact-generation environment; an independent clean-room audit also passed using Python 3.14.
 
 To regenerate derived outputs from the frozen database/cache only:
 
 ```bash
-<<<<<<< HEAD
-PYTHONPATH=ckb_data .venv/bin/python ckb_data/feature_engineering_v2.py
-PYTHONPATH=ckb_data .venv/bin/python ckb_data/validate_features_v2.py
-=======
 PYTHONPATH=classifier-service:ckb_data .venv/bin/python classifier-service/wallet_intelligence/feature_engineering.py
 PYTHONPATH=classifier-service:ckb_data .venv/bin/python ckb_data/validate_features_v2.py
->>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 PYTHONPATH=ckb_data .venv/bin/python ckb_data/exploratory_pca.py
 PYTHONPATH=ckb_data .venv/bin/python ckb_data/exploratory_structure.py
 ./scripts/verify_final_research.sh .venv/bin/python

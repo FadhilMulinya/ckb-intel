@@ -11,12 +11,9 @@
 - No economic sender/recipient attribution, pairwise value-flow claim, or global wallet taxonomy is made.
 - Evidence review is bounded and structured, not external identity adjudication.
 - The cohort comes from historical project discovery sources and is not a random or statistically representative sample of all CKB wallets; external generalization requires new sampling validation.
-<<<<<<< HEAD
-=======
 - The stored `mainnet` identity is configuration and source metadata; the repository does not perform a cryptographic genesis/network identity check.
 - Normalized input rows retain previous transaction hashes, but their dedicated `previous_output_index` column is null in the frozen rows; the V2 loader recovers `cell_index` from cached raw JSON where available.
 - The V1 classifier and registry service were removed. `classifier-service/`
   now exposes only the V2 descriptive behaviour pipeline; PCA and clustering
   remain research artifacts rather than identity predictions.
->>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 - CKB relative/absolute `since` semantics are not modeled. Protocol- or timelock-constrained Cells can therefore appear structurally long-lived, and the study does not distinguish enforced lifetime from discretionary wallet behaviour in those cases.

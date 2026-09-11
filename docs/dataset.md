@@ -9,11 +9,7 @@
 | `FAILED_RETRY_EXHAUSTED` | 224 |
 | `FAILED_INVALID_ADDRESS` | 3 |
 
-<<<<<<< HEAD
-The snapshot contains 51,816 observed transactions and 92,515 total inputs. Of 56,407 applicable previous-output inputs, all 56,407 resolved. The remaining 36,108 Cellbase inputs are `NOT_APPLICABLE`, not unresolved.
-=======
 The snapshot contains 51,816 wallet-transaction participation rows (47,145 distinct transaction hashes) and 92,515 total input rows. Of 56,407 applicable previous-output inputs, all 56,407 have `resolution_status=complete`; the normalized `previous_output_index` column is present but null in the frozen rows and is recovered from cached raw JSON by the V2 loader. The remaining 36,108 Cellbase inputs are `NOT_APPLICABLE`, not unresolved.
->>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 
 - Manifest: `6d8b5cd777e9ea9825466dc7500fdcb1dd639981d74475387c405aa6599583fe`
 - Database: `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`
