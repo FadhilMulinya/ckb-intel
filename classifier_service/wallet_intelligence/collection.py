@@ -4,7 +4,6 @@ import argparse
 import csv
 import json
 import logging
-import os
 import sqlite3
 import sys
 import time
@@ -20,18 +19,15 @@ except ImportError:  # Store/cache operations require only the standard library.
     requests = None
     HTTPAdapter = Retry = None
 
-<<<<<<< HEAD:ckb_data/ckb_explorer_pull.py
-from ckb_native import (
-=======
+from environments import environments
 from wallet_intelligence.normalization import (
->>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6:classifier-service/wallet_intelligence/collection.py
     install_schema,
     normalize_transaction,
     persist_transaction,
 )
 
 
-BASE_URL = os.getenv("EXPLORER_API_URL", "https://mainnet-api.explorer.nervos.org/api/v1")
+BASE_URL = environments.explorer_api_url
 HEADERS = {
     "Accept": "application/vnd.api+json",
     "Content-Type": "application/vnd.api+json",
@@ -77,11 +73,7 @@ def api_get(path: str, params: Optional[dict] = None) -> Optional[dict]:
     """GET a single Explorer API endpoint, return parsed JSON or None on failure."""
     url = f"{BASE_URL}{path}"
     if SESSION is None:
-<<<<<<< HEAD:ckb_data/ckb_explorer_pull.py
-        from ckb_clients import ClientUnavailable, ExplorerClient
-=======
         from wallet_intelligence.clients import ClientUnavailable, ExplorerClient
->>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6:classifier-service/wallet_intelligence/collection.py
         try:
             return ExplorerClient(BASE_URL, timeout=REQUEST_TIMEOUT)._get(path, params)
         except ClientUnavailable as e:

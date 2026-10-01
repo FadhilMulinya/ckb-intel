@@ -1,6 +1,8 @@
-import Fastify, { FastifyInstance } from "fastify";
+import Fastify, { FastifyInstance, FastifyError } from "fastify";
 import fastifySwagger from "@fastify/swagger";
-import { config } from "./config/index.js";
+import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
+import { environments } from "./environments.js";
 import { connectMongo, disconnectMongo } from "./db/mongo.js";
 import { registryRoutes } from "./routes/index.js";
 import { registerDocs } from "./docs.js";
@@ -15,7 +17,26 @@ import { registerDocs } from "./docs.js";
  */
 
 export function buildApp(): FastifyInstance {
-  const app = Fastify({ logger: true });
+  const app = Fastify({ logger: true, bodyLimit: 16384,
+    trustProxy: environments.trustedProxies.length ? environments.trustedProxies : false });
+
+  app.setErrorHandler<FastifyError>((error, request, reply) => {
+    const statusCode = error.statusCode ?? 500;
+    if (statusCode >= 500) {
+      request.log.error({ err: error }, "request failed");
+      return reply.code(500).send({ status: "REGISTRY_INTERNAL_ERROR", message: "Internal server error" });
+    }
+    return reply.code(statusCode).send(error);
+  });
+  app.register(cors, {
+    origin: environments.corsAllowedOrigins,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Accept"],
+    exposedHeaders: ["Retry-After", "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+    credentials: false,
+  });
+  app.register(rateLimit, { global: false, max: environments.readRateLimit,
+    timeWindow: environments.readRateWindowMs, cache: 10000 });
 
   app.register(fastifySwagger, {
     openapi: {
@@ -34,12 +55,11 @@ export function buildApp(): FastifyInstance {
 }
 
 export async function startServer(): Promise<void> {
-  // Refuse to start unless every external API (CKB RPC via CCC, Explorer API)
-  // is reachable — a server whose dependencies are down would only serve errors.
+  // Initial database connectivity is required; health thereafter is liveness.
   await connectMongo();
 
   const app = buildApp();
-  await app.listen({ port: config.apiPort, host: config.apiHost });
+  await app.listen({ port: environments.apiPort, host: environments.apiHost });
 
   const shutdown = async (signal: string) => {
     app.log.info(`received ${signal}, shutting down`);

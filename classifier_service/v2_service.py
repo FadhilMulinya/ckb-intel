@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import sqlite3
 import datetime as dt
-import os
 import tempfile
 from pathlib import Path
 from typing import Any
 
+from environments import environments
 from wallet_intelligence.clients import ClientUnavailable, ExplorerClient
 from wallet_intelligence.normalization import ObservationContract, install_schema, normalize_transaction, persist_observation, persist_transaction, script_hash
 from wallet_intelligence.resolution import resolve_transaction_inputs
@@ -158,7 +158,7 @@ class V2WalletService:
             if not target_lock:
                 raise AnalysisError("COLLECTION_FAILED", "Explorer returned no lock identifier")
             summaries, page, total = [], 1, None
-            page_size = max(1, int(os.getenv("EXPLORER_LIVE_PAGE_SIZE", "50")))
+            page_size = environments.explorer_live_page_size
             while True:
                 payload = explorer.get_address_transactions(address, page=page, page_size=page_size) or {}
                 items = payload.get("data") or []

@@ -34,7 +34,7 @@ trap cleanup TERM INT EXIT
 
 echo "Starting classifier-service on http://127.0.0.1:8000"
 (
-  cd "$ROOT_DIR/classifier-service"
+  cd "$ROOT_DIR/classifier_service"
   PYTHONPATH=. "$CLASSIFIER_PYTHON" -m uvicorn app:app --host "${CLASSIFIER_HOST:-127.0.0.1}" --port "${CLASSIFIER_PORT:-8000}"
 ) &
 classifier_pid=$!

@@ -29,8 +29,8 @@ The wrapper verifies the manifest and database hashes, SQLite `quick_check`, 1,1
 To regenerate derived outputs from the frozen database/cache only:
 
 ```bash
-PYTHONPATH=classifier-service:ckb_data .venv/bin/python classifier-service/wallet_intelligence/feature_engineering.py
-PYTHONPATH=classifier-service:ckb_data .venv/bin/python ckb_data/validate_features_v2.py
+PYTHONPATH=classifier_service:ckb_data .venv/bin/python classifier_service/wallet_intelligence/feature_engineering.py
+PYTHONPATH=classifier_service:ckb_data .venv/bin/python ckb_data/validate_features_v2.py
 PYTHONPATH=ckb_data .venv/bin/python ckb_data/exploratory_pca.py
 PYTHONPATH=ckb_data .venv/bin/python ckb_data/exploratory_structure.py
 ./scripts/verify_final_research.sh .venv/bin/python

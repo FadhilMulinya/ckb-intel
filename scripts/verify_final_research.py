@@ -105,7 +105,7 @@ def main(root: Path) -> None:
     check_artifact_index(root)
     check_source_integrity(root)
     # Discover both the authoritative service tests and research-only tests.
-    for test_dir in ("classifier-service/tests", "ckb_data/tests"):
+    for test_dir in ("classifier_service/tests", "ckb_data/tests"):
         result = subprocess.run(
             [sys.executable, "-m", "unittest", "discover", "-s", test_dir, "-p", "test_*.py"],
             cwd=root,
