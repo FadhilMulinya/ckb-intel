@@ -3,7 +3,7 @@ from __future__ import annotations
 import sqlite3
 import unittest
 
-from ckb_native import (
+from wallet_intelligence.normalization import (
     OBSERVATION_CONTRACT_VERSION,
     ObservationContract,
     install_schema,
