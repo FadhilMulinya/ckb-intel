@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-# LEGACY / ABANDONED BASELINE — registry-service
-
-> This service stores historical proxy-classifier outputs. It is retained for auditability and is not part of the final CKB-native behavioural research result.
-=======
 # CKB Wallet Behaviour Registry
->>>>>>> 3ffa0873a230edae6a181e1c5144ffb635dd7af6
 
 This Node/Fastify service stores and queries `wallet-behaviour-v2` profiles
 returned by `classifier-service`. It does not perform feature engineering,
@@ -34,7 +28,7 @@ network, and evidence-bearing response before upserting it into MongoDB.
 Address requests must be lowercase mainnet `ckb1...` addresses with a valid
 CKB Bech32/Bech32m checksum. Invalid addresses return `400 INVALID_ADDRESS`.
 Classifier domain errors are preserved: `NOT_IN_FROZEN_DATASET`,
-`V2_LIVE_ANALYSIS_NOT_YET_SUPPORTED`, and `COLLECTION_FAILED` return `422`.
+and `COLLECTION_FAILED` return `422`.
 Timeouts and connection failures return `503 CLASSIFIER_SERVICE_UNAVAILABLE`;
 malformed classifier profiles return `422 INVALID_ANALYSIS_RESPONSE`.
 
@@ -47,7 +41,8 @@ were removed. The historical routes are preserved in Git history only.
 
 ## Local services
 
-Run MongoDB, classifier-service on port 8000, and this service on port 3000.
-Set `MONGODB_URI` (default `mongodb://localhost:27017/behaviour-intelligence`)
-and `CLASSIFIER_SERVICE_URL` (default `http://127.0.0.1:8000`). A combined
-development stack is available from the repository root with `docker compose up`.
+Run classifier-service on port 8000 and registry on localhost port 3000.
+Set `MONGODB_URI` to external MongoDB/Atlas (required, no local fallback)
+and `CLASSIFIER_SERVICE_URL` (standalone default `http://127.0.0.1:8000`).
+Use npm (`npm ci`, `npm test`, `npm start`). For the production Compose stack,
+proxy trust, CORS and operational limits, see [deployment](../README.md#production-deployment).

@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
-    "test": "npm run build && node test/registry-contract.smoke.mjs && node test/contract-validation.mjs"
+    "test": "npm run build && node test/registry-contract.smoke.mjs && node test/contract-validation.mjs && node --test test/production.mjs"
   },
   "keywords": [
     "ckb",
@@ -18,10 +18,12 @@
   "license": "ISC",
   "dependencies": {
     "@ckb-ccc/core": "^1.16.1",
+    "@fastify/cors": "^11.3.0",
+    "@fastify/rate-limit": "^10.3.0",
     "@fastify/swagger": "^9.8.1",
     "axios": "^1.18.1",
     "dotenv": "^17.4.2",
-    "fastify": "^5.10.0",
+    "fastify": "^5.12.5",
     "mongoose": "^9.7.4"
   },
   "devDependencies": {

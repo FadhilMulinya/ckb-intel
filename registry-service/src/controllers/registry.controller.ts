@@ -7,8 +7,12 @@ export async function analyze(request: FastifyRequest<{ Body: { address?: string
   if (request.body.mode !== undefined && request.body.mode !== "frozen" && request.body.mode !== "live") return reply.code(400).send({ status: "INVALID_MODE", message: "mode must be frozen or live" });
   try { return reply.send(await service.analyze(request.body.address, request.body.mode ?? "frozen")); }
   catch (error) {
-    if (error instanceof service.RegistryError) return reply.code(error.statusCode).send({ status: error.status, message: error.message, ...(error.details && typeof error.details === "object" ? { details: error.details } : {}) });
-    return reply.code(500).send({ status: "REGISTRY_INTERNAL_ERROR", message: (error as Error).message });
+    if (error instanceof service.RegistryError) {
+      if (error.status === "ANALYSIS_BUSY") reply.header("Retry-After", "5");
+      return reply.code(error.statusCode).send({ status: error.status, message: error.message, ...(error.details && typeof error.details === "object" ? { details: error.details } : {}) });
+    }
+    request.log.error({ err: error }, "analysis failed");
+    return reply.code(500).send({ status: "REGISTRY_INTERNAL_ERROR", message: "Internal server error" });
   }
 }
 

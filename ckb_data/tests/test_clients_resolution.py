@@ -4,10 +4,10 @@ import json
 import sqlite3
 import unittest
 
-from ckb_clients import (ClientUnavailable, binary_search_block,
+from wallet_intelligence.clients import (ClientUnavailable, binary_search_block,
                          consensus_median_time, resolve_observation_boundaries)
-from ckb_native import install_schema, normalize_transaction, persist_transaction
-from input_resolver import resolve_transaction_inputs
+from wallet_intelligence.normalization import install_schema, normalize_transaction, persist_transaction
+from wallet_intelligence.resolution import resolve_transaction_inputs
 from ckb_data.tests.test_ckb_native import LOCK_A, LOCK_B, cell, payload
 
 

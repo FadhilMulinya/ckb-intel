@@ -24,7 +24,7 @@ This is a reproducible observational cohort assembled from overlapping historica
 
 ## Architecture
 
-`classifier-service/` is the authoritative Python implementation boundary for
+`classifier_service/` is the authoritative Python implementation boundary for
 wallet observation loading, Feature V2 extraction, support states, and
 descriptive behaviour rules, collection clients, normalization, and
 previous-output resolution. `ckb_data/` contains frozen observations,
@@ -78,8 +78,9 @@ HDBSCAN in full scaled High-Confidence space was unstable; PCA3, PCA4, and PCA6 
 
 ## Start the services
 
-The registry requires MongoDB. Start a local MongoDB instance first, then run
-both application services from the repository root:
+The registry requires external MongoDB/Atlas. Set `MONGODB_URI` in your
+environment (no local MongoDB), then run both application services from the
+repository root:
 
 ```bash
 ./scripts/start-services.sh
@@ -112,11 +113,105 @@ curl -X POST http://127.0.0.1:3000/api/v1/wallets/analyze \
   -d '{"address":"ckb1...","mode":"live"}'
 ```
 
+## Production deployment
+
+The target is `https://api.afriai.xyz`. Only registry is published, at
+`127.0.0.1:3000`; classifier stays on Docker networking at
+`http://classifier-service:8000`. MongoDB is external Atlas, never a local
+container. Both services use `restart: unless-stopped`.
+
+1. Clone the repository or pull the reviewed commit onto the VPS.
+2. Copy `.env.example` to `.env`, restrict its permissions (`chmod 600 .env`),
+   and set `MONGODB_URI` to your external Atlas URI. Allow the VPS egress IP in
+   Atlas and use a dedicated database user. Never commit `.env`.
+3. Supply the existing Dataset V1 SQLite separately at
+   `deployment-data/ckb_explorer.sqlite`, or set `FROZEN_SQLITE_PATH` to its
+   absolute server-side path. Verify SHA-256
+   `e74b12f269c5b5bbc9acb4d39d11e9259769b01299ec0c310d91fd38d43ff322`
+   (862994432 bytes). Make it readable by container UID 10001, for example mode
+   `0444`. It mounts read-only at `/app/ckb_data/ckb_data_v2/ckb_explorer.sqlite`.
+   Missing mount sources fail startup; do not create or substitute a database.
+4. Build and start from the repository root:
+
+   ```bash
+   docker compose config --quiet
+   docker compose build
+   docker compose up -d
+   docker compose ps
+   ```
+
+5. Verify internal classifier and localhost registry health:
+
+   ```bash
+   docker compose exec classifier-service python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read().decode())"
+   curl --fail http://127.0.0.1:3000/api/v1/health
+   ```
+
+6. Configure your host HTTPS reverse proxy for `api.afriai.xyz` and forward to
+   `http://127.0.0.1:3000`. Configure Cloudflare proxied DNS and Full (strict)
+   TLS yourself, with a valid origin certificate. Allow origin HTTPS only from
+   Cloudflare's published IP ranges; keep administrative access separate.
+
+For nginx, maintain an include with `set_real_ip_from` entries for only the
+current official Cloudflare IPv4/IPv6 ranges. Never trust arbitrary senders of
+`CF-Connecting-IP`. Inside the HTTPS server block:
+
+```nginx
+include /etc/nginx/cloudflare-real-ip.conf;
+real_ip_header CF-Connecting-IP;
+real_ip_recursive on;
+client_max_body_size 16k;
+location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header CF-Connecting-IP "";
+    proxy_set_header Forwarded "";
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 35s;
+    proxy_send_timeout 10s;
+    proxy_next_upstream off;
+}
+```
+
+Overwrite X-Forwarded-For; do not append incoming client headers. Fastify trusts
+only `TRUSTED_PROXY_CIDRS`, defaulting in Compose to the host bridge gateway
+`172.30.0.1/32`. If its subnet conflicts with an existing network, update
+`DOCKER_SUBNET`, `DOCKER_GATEWAY`, and `TRUSTED_PROXY_CIDRS` together. Verify the
+peer address on the VPS and test rate isolation from two real client IPs. Never
+fix a mismatch by trusting all proxies. Standalone registry trusts none by default.
+
+Environment reads live in `registry-service/src/environments.ts` and
+`classifier_service/environments.py`; `.env.example` lists production settings.
+CORS uses exact configurable origins, GET/POST/OPTIONS, Content-Type/Accept,
+and no credentials. Disallowed origins receive no CORS permission header.
+Analysis defaults to 5 requests/IP/60 seconds; the four wallet read routes share
+60 requests/IP/60 seconds. Limits return 429 with retry/rate headers. Health,
+docs/OpenAPI, and OPTIONS are excluded. Buckets are in memory and reset on restart.
+Run one registry process and one classifier worker.
+
+Live analysis permits two simultaneous jobs by default; excess requests receive
+503 `ANALYSIS_BUSY` and `Retry-After: 5`. Slots remain occupied until work ends,
+even if the registry's 20-second timeout expires. Frozen requests do not acquire
+this semaphore. Live collection still uses temporary SQLite and Explorer; there
+is no whole-analysis deadline or total transaction cap, so high-activity wallets
+can exceed available time or memory. This is not a high-volume reliability claim.
+Explorer calls use configurable timeouts/retries; retry sleeps are capped at
+8 seconds plus jitter. Mongo connection/selection timeouts are 5 seconds, socket
+timeout 10 seconds, and pool size 5.
+
+Health checks report liveness, not database/Explorer readiness. Registry requires
+Atlas at startup, but transient Atlas failures do not change its health response.
+Verify the frozen hash separately. Docker build/startup, TLS, Atlas connectivity,
+proxy attribution, and representative live/frozen requests must be checked on
+the VPS. Configuration alone does not mean the public API is deployed.
+
 ## Verify offline
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install -r requirements-research.txt
+.venv/bin/pip install -r requirements-research.txt -r classifier_service/requirements-dev.txt
 ./scripts/verify_final_research.sh .venv/bin/python
 ```
 
@@ -129,4 +224,4 @@ The verifier does not call Explorer. It validates hashes, contracts, row alignme
 An earlier V1 proxy-label human/bot classifier was retired after review. Its
 executable source, model artifacts, and registry service were removed; Git
 history preserves the superseded implementation. The active
-`classifier-service/` is the V2 wallet behaviour service.
+`classifier_service/` is the V2 wallet behaviour service.

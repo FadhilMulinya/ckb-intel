@@ -1,0 +1,17 @@
+**/.env
+**/.env.*
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.venv
+**/venv
+**/dist
+**/*.sqlite
+**/*.sqlite-*
+.git
+.gstack
+.data*
+deployment-data
+ckb_data
+artifacts
+reports

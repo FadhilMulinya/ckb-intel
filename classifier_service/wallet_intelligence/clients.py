@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import os
 import random
 import urllib.error
 import urllib.request
@@ -10,6 +9,8 @@ import statistics
 import time
 from dataclasses import dataclass
 from typing import Any, Optional
+
+from environments import DEFAULT_EXPLORER_API_URL, environments
 
 
 class ClientUnavailable(RuntimeError):
@@ -55,7 +56,7 @@ class JsonRpcClient:
 class CkbRpcClient(JsonRpcClient):
     @classmethod
     def from_env(cls) -> "CkbRpcClient":
-        return cls(os.getenv("CKB_RPC_URL", "http://127.0.0.1:8114"))
+        return cls(environments.ckb_rpc_url)
 
     def get_transaction(self, tx_hash: str) -> Optional[dict]:
         return self.call("get_transaction", [tx_hash, "0x2", True])
@@ -76,8 +77,7 @@ class CkbRpcClient(JsonRpcClient):
 class CkbIndexerClient(JsonRpcClient):
     @classmethod
     def from_env(cls) -> "CkbIndexerClient":
-        default = os.getenv("CKB_RPC_URL", "http://127.0.0.1:8114")
-        return cls(os.getenv("CKB_INDEXER_URL", default))
+        return cls(environments.ckb_indexer_url)
 
     def get_transactions_for_lock(self, lock_script: dict, start_block: int,
                                   end_block: int, limit: int = 100) -> dict:
@@ -96,15 +96,11 @@ class ExplorerClient:
     def __init__(self, url: Optional[str] = None, timeout: Optional[float] = None,
                  stats=None, max_retries: Optional[int] = None,
                  request_delay_ms: Optional[int] = None):
-        self.url = (url or os.getenv("EXPLORER_API_URL") or
-                    "https://mainnet-api.explorer.nervos.org/api/v1").rstrip("/")
-        self.timeout = timeout if timeout is not None else float(
-            os.getenv("EXPLORER_TIMEOUT_SECONDS", "20"))
+        self.url = (url or environments.explorer_api_url or DEFAULT_EXPLORER_API_URL).rstrip("/")
+        self.timeout = timeout if timeout is not None else environments.explorer_timeout_seconds
         self.stats = stats
-        self.max_retries = max_retries if max_retries is not None else int(
-            os.getenv("EXPLORER_MAX_RETRIES", "3"))
-        self.request_delay_ms = request_delay_ms if request_delay_ms is not None else int(
-            os.getenv("EXPLORER_REQUEST_DELAY_MS", "250"))
+        self.max_retries = max_retries if max_retries is not None else environments.explorer_max_retries
+        self.request_delay_ms = request_delay_ms if request_delay_ms is not None else environments.explorer_request_delay_ms
         self._block_cache: dict[int, dict] = {}
 
     def _count(self, name: str, amount: int = 1) -> None:
@@ -146,7 +142,8 @@ class ExplorerClient:
                 delay = float(retry_after) if retry_after else min(2 ** attempt, 8)
             except (TypeError, ValueError):
                 delay = min(2 ** attempt, 8)
-            time.sleep(delay + random.uniform(0, 0.25))
+            # Do not let an upstream Retry-After suspend a worker indefinitely.
+            time.sleep(min(8, max(0, delay)) + random.uniform(0, 0.25))
         self._count("explorer_failures")
         http_status = last_error.code if isinstance(last_error, urllib.error.HTTPError) else None
         if isinstance(last_error, TimeoutError) or "timed out" in str(last_error).lower():

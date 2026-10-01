@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
-import { config } from "../config/index.js";
+import { environments } from "../environments.js";
 
 let connected = false;
 
 export async function connectMongo(): Promise<typeof mongoose> {
   if (connected) return mongoose;
-  await mongoose.connect(config.mongodbUri);
+  if (!environments.mongodbUri) throw new Error("MONGODB_URI is required (external MongoDB/Atlas)");
+  await mongoose.connect(environments.mongodbUri, { serverSelectionTimeoutMS: 5000, connectTimeoutMS: 5000, socketTimeoutMS: 10000, maxPoolSize: 5 });
   connected = true;
-  console.log(`[mongo] connected ✅ -> ${config.mongodbUri}`);
+  console.log("[mongo] connected");
   return mongoose;
 }
 
